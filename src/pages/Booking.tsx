@@ -1,23 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Calendar, Users, MapPin, CreditCard, Check } from 'lucide-react';
+import { Calendar, Users, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
-const tours = [
-  { id: '1', name: 'Hunza Valley Explorer - 7 Days', price: 85000 },
-  { id: '2', name: 'Fairy Meadows Trek - 5 Days', price: 65000 },
-  { id: '3', name: 'Skardu & Deosai Adventure - 8 Days', price: 95000 },
-  { id: '4', name: 'Swat Valley Retreat - 4 Days', price: 45000 },
-  { id: '5', name: 'Complete North Pakistan - 14 Days', price: 180000 },
-];
+interface Tour {
+  id: string;
+  title: string;
+  price: number;
+  discount_price: number | null;
+}
 
 export default function Booking() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [isLoadingTours, setIsLoadingTours] = useState(true);
   const [formData, setFormData] = useState({
     tour: '',
     date: '',
@@ -30,24 +32,76 @@ export default function Booking() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    fetchTours();
+  }, []);
+
+  const fetchTours = async () => {
+    setIsLoadingTours(true);
+    const { data, error } = await supabase
+      .from('tours')
+      .select('id, title, price, discount_price')
+      .eq('is_active', true)
+      .order('title');
+
+    if (!error && data) {
+      setTours(data);
+    }
+    setIsLoadingTours(false);
+  };
+
   const selectedTour = tours.find((t) => t.id === formData.tour);
-  const totalPrice = selectedTour
-    ? selectedTour.price * parseInt(formData.travelers || '1')
+  const tourPrice = selectedTour 
+    ? (selectedTour.discount_price || selectedTour.price) 
     : 0;
+  const totalPrice = tourPrice * parseInt(formData.travelers || '1');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
 
-    toast({
-      title: 'Booking Request Submitted!',
-      description: 'We will contact you within 24 hours to confirm your booking.',
-    });
+      const { error } = await supabase
+        .from('bookings')
+        .insert({
+          user_id: user?.id || null,
+          tour_id: formData.tour || null,
+          customer_name: formData.name,
+          customer_email: formData.email,
+          customer_phone: formData.phone,
+          travel_date: formData.date,
+          num_travelers: parseInt(formData.travelers),
+          special_requests: formData.specialRequests || null,
+          total_price: totalPrice,
+          status: 'pending',
+        });
 
-    setStep(4);
-    setIsSubmitting(false);
+      if (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to submit booking. Please try again.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      toast({
+        title: 'Booking Request Submitted!',
+        description: 'We will contact you within 24 hours to confirm your booking.',
+      });
+
+      setStep(4);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -107,80 +161,91 @@ export default function Booking() {
                   Select Your Tour
                 </h2>
 
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Choose a Tour Package *
-                    </label>
-                    <select
-                      value={formData.tour}
-                      onChange={(e) => setFormData({ ...formData, tour: e.target.value })}
-                      className="w-full h-11 px-4 rounded-lg border border-input bg-background text-foreground"
-                      required
-                    >
-                      <option value="">Select a tour...</option>
-                      {tours.map((tour) => (
-                        <option key={tour.id} value={tour.id}>
-                          {tour.name} - PKR {tour.price.toLocaleString()}
-                        </option>
-                      ))}
-                    </select>
+                {isLoadingTours ? (
+                  <div className="flex justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                   </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
+                ) : (
+                  <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
-                        <Calendar className="w-4 h-4 inline mr-2" />
-                        Preferred Date *
+                        Choose a Tour Package *
                       </label>
-                      <Input
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                        min={new Date().toISOString().split('T')[0]}
+                      <select
+                        value={formData.tour}
+                        onChange={(e) => setFormData({ ...formData, tour: e.target.value })}
+                        className="w-full h-11 px-4 rounded-lg border border-input bg-background text-foreground"
                         required
-                      />
+                      >
+                        <option value="">Select a tour...</option>
+                        {tours.map((tour) => (
+                          <option key={tour.id} value={tour.id}>
+                            {tour.title} - PKR {(tour.discount_price || tour.price).toLocaleString()}
+                          </option>
+                        ))}
+                      </select>
+                      {tours.length === 0 && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                          No tours available at the moment. Please contact us directly.
+                        </p>
+                      )}
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        <Users className="w-4 h-4 inline mr-2" />
-                        Number of Travelers *
-                      </label>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="20"
-                        value={formData.travelers}
-                        onChange={(e) => setFormData({ ...formData, travelers: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
 
-                  {selectedTour && (
-                    <div className="p-6 rounded-xl bg-primary/10 border border-primary/20">
-                      <div className="flex justify-between items-center">
-                        <span className="text-foreground font-medium">Estimated Total:</span>
-                        <span className="text-2xl font-bold text-primary">
-                          PKR {totalPrice.toLocaleString()}
-                        </span>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          <Calendar className="w-4 h-4 inline mr-2" />
+                          Preferred Date *
+                        </label>
+                        <Input
+                          type="date"
+                          value={formData.date}
+                          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                          min={new Date().toISOString().split('T')[0]}
+                          required
+                        />
                       </div>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        * Final price will be confirmed after booking
-                      </p>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          <Users className="w-4 h-4 inline mr-2" />
+                          Number of Travelers *
+                        </label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="20"
+                          value={formData.travelers}
+                          onChange={(e) => setFormData({ ...formData, travelers: e.target.value })}
+                          required
+                        />
+                      </div>
                     </div>
-                  )}
 
-                  <Button
-                    variant="gold"
-                    size="lg"
-                    className="w-full"
-                    onClick={() => setStep(2)}
-                    disabled={!formData.tour || !formData.date}
-                  >
-                    Continue
-                  </Button>
-                </div>
+                    {selectedTour && (
+                      <div className="p-6 rounded-xl bg-primary/10 border border-primary/20">
+                        <div className="flex justify-between items-center">
+                          <span className="text-foreground font-medium">Estimated Total:</span>
+                          <span className="text-2xl font-bold text-primary">
+                            PKR {totalPrice.toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          * Final price will be confirmed after booking
+                        </p>
+                      </div>
+                    )}
+
+                    <Button
+                      variant="gold"
+                      size="lg"
+                      className="w-full"
+                      onClick={() => setStep(2)}
+                      disabled={!formData.date}
+                    >
+                      Continue
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -232,13 +297,12 @@ export default function Booking() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
-                        Nationality *
+                        Nationality
                       </label>
                       <Input
                         value={formData.nationality}
                         onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
                         placeholder="Pakistani"
-                        required
                       />
                     </div>
                   </div>
@@ -287,7 +351,7 @@ export default function Booking() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Tour:</span>
-                        <span className="text-foreground">{selectedTour?.name}</span>
+                        <span className="text-foreground">{selectedTour?.title || 'Custom Request'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Date:</span>
@@ -338,7 +402,14 @@ export default function Booking() {
                       onClick={handleSubmit}
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Submitting...' : 'Submit Booking Request'}
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        'Submit Booking Request'
+                      )}
                     </Button>
                   </div>
                 </div>
