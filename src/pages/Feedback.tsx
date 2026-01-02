@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Star, Send, MessageSquare } from 'lucide-react';
+import { Star, Send, MessageSquare, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Feedback() {
   const { toast } = useToast();
@@ -14,7 +15,6 @@ export default function Feedback() {
     email: '',
     tour: '',
     rating: 0,
-    title: '',
     feedback: '',
   });
   const [hoveredRating, setHoveredRating] = useState(0);
@@ -24,22 +24,51 @@ export default function Feedback() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
 
-    toast({
-      title: 'Thank You!',
-      description: 'Your feedback has been submitted successfully.',
-    });
+      const { error } = await supabase
+        .from('feedback')
+        .insert({
+          user_id: user?.id || null,
+          name: formData.name,
+          email: formData.email,
+          tour_name: formData.tour || null,
+          rating: formData.rating,
+          message: formData.feedback,
+          is_approved: false,
+        });
 
-    setFormData({
-      name: '',
-      email: '',
-      tour: '',
-      rating: 0,
-      title: '',
-      feedback: '',
-    });
-    setIsSubmitting(false);
+      if (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to submit feedback. Please try again.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      toast({
+        title: 'Thank You!',
+        description: 'Your feedback has been submitted successfully.',
+      });
+
+      setFormData({
+        name: '',
+        email: '',
+        tour: '',
+        rating: 0,
+        feedback: '',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -114,12 +143,12 @@ export default function Feedback() {
                     className="w-full h-11 px-4 rounded-lg border border-input bg-background text-foreground"
                   >
                     <option value="">Select a tour...</option>
-                    <option value="hunza">Hunza Valley Explorer</option>
-                    <option value="fairy">Fairy Meadows Trek</option>
-                    <option value="skardu">Skardu & Deosai Adventure</option>
-                    <option value="swat">Swat Valley Retreat</option>
-                    <option value="complete">Complete North Pakistan</option>
-                    <option value="other">Other</option>
+                    <option value="Hunza Valley Explorer">Hunza Valley Explorer</option>
+                    <option value="Fairy Meadows Trek">Fairy Meadows Trek</option>
+                    <option value="Skardu & Deosai Adventure">Skardu & Deosai Adventure</option>
+                    <option value="Swat Valley Retreat">Swat Valley Retreat</option>
+                    <option value="Complete North Pakistan">Complete North Pakistan</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
 
@@ -164,17 +193,6 @@ export default function Feedback() {
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Review Title
-                  </label>
-                  <Input
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="Sum up your experience in a few words"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
                     Your Feedback *
                   </label>
                   <Textarea
@@ -194,7 +212,10 @@ export default function Feedback() {
                   disabled={isSubmitting || formData.rating === 0}
                 >
                   {isSubmitting ? (
-                    'Submitting...'
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Submitting...
+                    </>
                   ) : (
                     <>
                       Submit Feedback
