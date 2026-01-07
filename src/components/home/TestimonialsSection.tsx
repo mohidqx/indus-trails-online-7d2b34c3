@@ -1,48 +1,39 @@
-import { useState } from 'react';
-import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Star, ChevronLeft, ChevronRight, Quote, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
-const testimonials = [
-  {
-    id: 1,
-    name: 'Sarah Mitchell',
-    location: 'London, UK',
-    avatar: 'SM',
-    rating: 5,
-    text: 'The Hunza Valley tour was absolutely magical! Shahzaib and his team went above and beyond to make our trip unforgettable. The landscapes were breathtaking, and the local hospitality was heartwarming.',
-    tour: 'Hunza Valley Explorer',
-  },
-  {
-    id: 2,
-    name: 'Ahmed Hassan',
-    location: 'Dubai, UAE',
-    avatar: 'AH',
-    rating: 5,
-    text: 'As a Pakistani living abroad, I wanted to show my family the beauty of northern Pakistan. Indus Tours made it so easy and memorable. Professional service, great vehicles, and knowledgeable guides.',
-    tour: 'Skardu & Deosai Adventure',
-  },
-  {
-    id: 3,
-    name: 'Emma Thompson',
-    location: 'Sydney, Australia',
-    avatar: 'ET',
-    rating: 5,
-    text: 'Fairy Meadows exceeded all expectations! The trek to Nanga Parbat base camp was challenging but so rewarding. The team took care of everything - accommodation, meals, and safety.',
-    tour: 'Fairy Meadows Trek',
-  },
-  {
-    id: 4,
-    name: 'Michael Chen',
-    location: 'Singapore',
-    avatar: 'MC',
-    rating: 5,
-    text: 'I\'ve traveled to many countries, but Pakistan\'s northern areas stand out as one of the most beautiful places I\'ve ever seen. Indus Tours provided an exceptional experience from start to finish.',
-    tour: 'Complete North Pakistan',
-  },
-];
+interface Feedback {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  rating: number;
+  tour_name: string | null;
+  is_featured: boolean;
+}
 
 export default function TestimonialsSection() {
+  const [testimonials, setTestimonials] = useState<Feedback[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      const { data } = await supabase
+        .from('feedback')
+        .select('*')
+        .eq('is_approved', true)
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (data && data.length > 0) setTestimonials(data);
+      setIsLoading(false);
+    };
+    
+    fetchTestimonials();
+  }, []);
 
   const next = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -50,6 +41,22 @@ export default function TestimonialsSection() {
 
   const prev = () => {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+
+  if (isLoading) {
+    return (
+      <section className="py-24 bg-secondary/30 overflow-hidden">
+        <div className="container mx-auto px-6 flex justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
+
+  if (testimonials.length === 0) return null;
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
   return (
@@ -85,24 +92,23 @@ export default function TestimonialsSection() {
 
               {/* Text */}
               <p className="text-xl md:text-2xl text-foreground leading-relaxed font-serif italic">
-                "{testimonials[currentIndex].text}"
+                "{testimonials[currentIndex].message}"
               </p>
 
               {/* Author */}
               <div className="flex items-center gap-4 pt-4">
                 <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
-                  {testimonials[currentIndex].avatar}
+                  {getInitials(testimonials[currentIndex].name)}
                 </div>
                 <div>
                   <h4 className="font-semibold text-foreground">
                     {testimonials[currentIndex].name}
                   </h4>
-                  <p className="text-sm text-muted-foreground">
-                    {testimonials[currentIndex].location}
-                  </p>
-                  <p className="text-sm text-primary font-medium mt-1">
-                    {testimonials[currentIndex].tour}
-                  </p>
+                  {testimonials[currentIndex].tour_name && (
+                    <p className="text-sm text-primary font-medium mt-1">
+                      {testimonials[currentIndex].tour_name}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

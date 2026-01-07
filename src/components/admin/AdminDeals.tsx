@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import ImageUpload from '@/components/common/ImageUpload';
 import {
   Dialog,
   DialogContent,
@@ -224,11 +225,11 @@ export default function AdminDeals() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium">Image URL</label>
-              <Input
-                value={editingDeal.image_url || ''}
-                onChange={(e) => setEditingDeal({ ...editingDeal, image_url: e.target.value })}
-                placeholder="https://..."
+              <label className="text-sm font-medium">Image</label>
+              <ImageUpload
+                value={editingDeal.image_url || null}
+                onChange={(url) => setEditingDeal({ ...editingDeal, image_url: url || '' })}
+                folder="deals"
               />
             </div>
             <div className="flex gap-4">

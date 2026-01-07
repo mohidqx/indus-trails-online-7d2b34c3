@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import ImageUpload from '@/components/common/ImageUpload';
 import {
   Dialog,
   DialogContent,
@@ -214,11 +215,11 @@ export default function AdminVehicles() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Image URL</label>
-              <Input
-                value={editingVehicle.image_url || ''}
-                onChange={(e) => setEditingVehicle({ ...editingVehicle, image_url: e.target.value })}
-                placeholder="https://..."
+              <label className="text-sm font-medium">Image</label>
+              <ImageUpload
+                value={editingVehicle.image_url || null}
+                onChange={(url) => setEditingVehicle({ ...editingVehicle, image_url: url || '' })}
+                folder="vehicles"
               />
             </div>
             <div>
