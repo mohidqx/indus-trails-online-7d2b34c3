@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Lock, Mail, User, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
+import logo from '@/assets/indus-tours-logo.jpeg';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -25,8 +26,9 @@ export default function Auth() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   useEffect(() => {
-    // Check if user is already logged in
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         navigate('/admin');
       }
@@ -43,7 +45,7 @@ export default function Auth() {
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
-    
+
     try {
       emailSchema.parse(formData.email);
     } catch (e) {
@@ -66,7 +68,7 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
@@ -101,7 +103,7 @@ export default function Auth() {
         });
       } else {
         const redirectUrl = `${window.location.origin}/`;
-        
+
         const { error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -151,33 +153,26 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-gradient-mountain flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <Link 
-          to="/" 
-          className="inline-flex items-center gap-2 text-snow/80 hover:text-snow mb-8 transition-colors"
-        >
+        <Link to="/" className="inline-flex items-center gap-2 text-snow/80 hover:text-snow mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to Home
         </Link>
 
         <div className="bg-card rounded-3xl p-8 md:p-12 shadow-xl">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary flex items-center justify-center">
-              <Lock className="w-8 h-8 text-primary-foreground" />
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border-4 border-primary">
+              <img src={logo} alt="Indus Tours" className="w-full h-full object-cover" />
             </div>
             <h1 className="text-2xl font-serif font-bold text-foreground">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h1>
-            <p className="text-muted-foreground mt-2">
-              {isLogin ? 'Login to access the admin panel' : 'Sign up to get started'}
-            </p>
+            <p className="text-muted-foreground mt-2">{isLogin ? 'Sign in to continue' : 'Sign up to get started'}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Full Name
-                </label>
+                <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -193,9 +188,7 @@ export default function Auth() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Email Address
-              </label>
+              <label className="block text-sm font-medium text-foreground mb-2">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -210,15 +203,11 @@ export default function Auth() {
                   required
                 />
               </div>
-              {errors.email && (
-                <p className="text-sm text-destructive mt-1">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-foreground mb-2">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -240,18 +229,10 @@ export default function Auth() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="text-sm text-destructive mt-1">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-sm text-destructive mt-1">{errors.password}</p>}
             </div>
 
-            <Button 
-              type="submit" 
-              variant="gold" 
-              size="lg" 
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" variant="gold" size="lg" className="w-full" disabled={isLoading}>
               {isLoading ? 'Please wait...' : isLogin ? 'Login' : 'Create Account'}
             </Button>
           </form>

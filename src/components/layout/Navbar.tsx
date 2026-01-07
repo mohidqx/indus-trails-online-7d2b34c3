@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useSiteContent } from '@/hooks/useSiteContent';
+import logo from '@/assets/indus-tours-logo.jpeg';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -19,6 +21,10 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const { data: content } = useSiteContent();
+
+  const phone = (content?.phone as string) || '+92 300 1234567';
+  const address = (content?.address as string) || 'Islamabad, Pakistan';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,14 +55,14 @@ export default function Navbar() {
         <div className="container mx-auto px-6 py-2 flex justify-between items-center text-sm">
           <div className="flex items-center gap-6">
             <a
-              href="tel:+923001234567"
+              href={`tel:${phone.replace(/\s/g, '')}`}
               className={cn(
                 'flex items-center gap-2 hover:text-accent transition-colors',
                 isScrolled || !isHomePage ? 'text-muted-foreground' : 'text-snow/80'
               )}
             >
               <Phone className="w-4 h-4" />
-              +92 300 1234567
+              {phone}
             </a>
             <span
               className={cn(
@@ -65,18 +71,10 @@ export default function Navbar() {
               )}
             >
               <MapPin className="w-4 h-4" />
-              Islamabad, Pakistan
+              {address}
             </span>
           </div>
-          <Link
-            to="/admin"
-            className={cn(
-              'hover:text-accent transition-colors font-medium',
-              isScrolled || !isHomePage ? 'text-muted-foreground' : 'text-snow/80'
-            )}
-          >
-            Admin Portal
-          </Link>
+          {/* Admin link hidden from public navbar; access via /auth */}
         </div>
       </div>
 
@@ -85,16 +83,11 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <div
-              className={cn(
-                'w-12 h-12 rounded-xl flex items-center justify-center font-serif font-bold text-xl transition-all',
-                isScrolled || !isHomePage
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-accent text-accent-foreground'
-              )}
-            >
-              IT
-            </div>
+            <img
+              src={logo}
+              alt="Indus Tours Logo"
+              className="w-12 h-12 rounded-xl object-cover"
+            />
             <div>
               <h1
                 className={cn(

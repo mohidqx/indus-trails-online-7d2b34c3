@@ -1,9 +1,18 @@
 import { Link } from 'react-router-dom';
 import { ChevronDown, Play, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useSiteContent } from '@/hooks/useSiteContent';
 import heroImage from '@/assets/hero-hunza.jpg';
+import logo from '@/assets/indus-tours-logo.jpeg';
 
 export default function HeroSection() {
+  const { data: content } = useSiteContent();
+
+  const heroTitle = (content?.hero_title as string) || 'Explore the Northern Paradise';
+  const heroSubtitle =
+    (content?.hero_subtitle as string) ||
+    'Journey through the breathtaking valleys, majestic mountains, and ancient Silk Road heritage of Pakistan\'s northern regions.';
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -39,22 +48,27 @@ export default function HeroSection() {
       {/* Main Content */}
       <div className="relative container mx-auto px-6 pt-32 pb-20 text-center">
         <div className="max-w-4xl mx-auto space-y-8">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-dark text-snow/90 text-sm animate-fade-up">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse-soft" />
-            Discover the Land of Mountains
+          {/* Logo Badge */}
+          <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full glass-dark text-snow animate-fade-up">
+            <img
+              src={logo}
+              alt="Indus Tours Logo"
+              className="w-14 h-14 rounded-full object-cover border-2 border-accent"
+            />
+            <span className="text-sm font-medium">Pakistan Is Calling</span>
           </div>
 
           {/* Headline */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-snow leading-tight animate-fade-up delay-100">
-            Explore the
-            <span className="block text-gradient-gold">Northern Paradise</span>
+            {heroTitle.split(' ').slice(0, 2).join(' ')}
+            <span className="block text-gradient-gold">
+              {heroTitle.split(' ').slice(2).join(' ') || 'Northern Paradise'}
+            </span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-xl md:text-2xl text-snow/80 max-w-2xl mx-auto leading-relaxed animate-fade-up delay-200">
-            Journey through the breathtaking valleys, majestic mountains, and ancient Silk Road
-            heritage of Pakistan's northern regions.
+            {heroSubtitle}
           </p>
 
           {/* CTA Buttons */}

@@ -1,28 +1,22 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Award, Users, MapPin, Heart, Target, Shield } from 'lucide-react';
-
 import heroImage from '@/assets/hero-hunza.jpg';
+import founderImage from '@/assets/founder-shahzaib.jpeg';
 
 export default function About() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       {/* Hero */}
       <section className="relative pt-32 pb-32 overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src={heroImage}
-            alt="Northern Pakistan"
-            className="w-full h-full object-cover"
-          />
+          <img src={heroImage} alt="Northern Pakistan" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-hero" />
         </div>
         <div className="relative container mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-6xl font-serif font-bold text-snow mb-6">
-            About Us
-          </h1>
+          <h1 className="text-5xl md:text-6xl font-serif font-bold text-snow mb-6">About Us</h1>
           <p className="text-xl text-snow/80 max-w-2xl mx-auto">
             Crafting unforgettable journeys through Pakistan's northern paradise since 2015
           </p>
@@ -37,30 +31,28 @@ export default function About() {
               <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
                 Our Story
               </span>
-              <h2 className="text-4xl font-serif font-bold text-foreground mb-6">
-                Passion for Pakistan's Beauty
-              </h2>
+              <h2 className="text-4xl font-serif font-bold text-foreground mb-6">Passion for Pakistan's Beauty</h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Indus Tours Pakistan was founded in 2015 by <strong className="text-foreground">Shahzaib Khan Mughal</strong>, 
-                  a passionate traveler and native of Islamabad who wanted to share the incredible beauty of 
-                  Pakistan's northern regions with the world.
+                  Indus Tours Pakistan was founded in 2015 by{' '}
+                  <strong className="text-foreground">Shahzaib Khan Mughal</strong>, a passionate traveler and native of
+                  Islamabad who wanted to share the incredible beauty of Pakistan's northern regions with the world.
                 </p>
                 <p>
-                  What started as a small venture with a single vehicle has grown into one of the most 
-                  trusted tour operators in the region, serving hundreds of travelers from around the globe.
+                  What started as a small venture with a single vehicle has grown into one of the most trusted tour
+                  operators in the region, serving hundreds of travelers from around the globe.
                 </p>
                 <p>
-                  Our team consists of experienced local guides, professional drivers, and hospitality 
-                  experts who are dedicated to providing you with safe, comfortable, and memorable adventures.
+                  Our team consists of experienced local guides, professional drivers, and hospitality experts who are
+                  dedicated to providing you with safe, comfortable, and memorable adventures.
                 </p>
               </div>
             </div>
             <div className="relative">
               <div className="aspect-square rounded-3xl overflow-hidden shadow-xl">
                 <img
-                  src={heroImage}
-                  alt="Founder"
+                  src={founderImage}
+                  alt="Shahzaib Khan Mughal - Founder"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -83,8 +75,8 @@ export default function About() {
               </div>
               <h3 className="text-xl font-serif font-bold text-foreground mb-4">Our Mission</h3>
               <p className="text-muted-foreground">
-                To showcase the breathtaking beauty of Pakistan's northern regions while providing 
-                exceptional travel experiences that create lasting memories.
+                To showcase the breathtaking beauty of Pakistan's northern regions while providing exceptional travel
+                experiences that create lasting memories.
               </p>
             </div>
             <div className="text-center p-8 bg-card rounded-3xl shadow-card">
@@ -93,8 +85,8 @@ export default function About() {
               </div>
               <h3 className="text-xl font-serif font-bold text-foreground mb-4">Our Values</h3>
               <p className="text-muted-foreground">
-                Safety, authenticity, and sustainability guide everything we do. We believe in 
-                responsible tourism that benefits local communities.
+                Safety, authenticity, and sustainability guide everything we do. We believe in responsible tourism
+                that benefits local communities.
               </p>
             </div>
             <div className="text-center p-8 bg-card rounded-3xl shadow-card">
@@ -103,8 +95,8 @@ export default function About() {
               </div>
               <h3 className="text-xl font-serif font-bold text-foreground mb-4">Our Promise</h3>
               <p className="text-muted-foreground">
-                Your safety and satisfaction are our top priorities. We promise transparent pricing, 
-                reliable service, and 24/7 support.
+                Your safety and satisfaction are our top priorities. We promise transparent pricing, reliable service,
+                and 24/7 support.
               </p>
             </div>
           </div>
@@ -142,15 +134,17 @@ export default function About() {
             <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
               Meet The Team
             </span>
-            <h2 className="text-4xl font-serif font-bold text-foreground">
-              The People Behind Your Adventures
-            </h2>
+            <h2 className="text-4xl font-serif font-bold text-foreground">The People Behind Your Adventures</h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-3xl font-serif font-bold">
-                SK
+              <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-primary">
+                <img
+                  src={founderImage}
+                  alt="Shahzaib Khan Mughal"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h3 className="text-xl font-semibold text-foreground">Shahzaib Khan Mughal</h3>
               <p className="text-primary font-medium">Founder & CEO</p>
@@ -164,9 +158,7 @@ export default function About() {
               </div>
               <h3 className="text-xl font-semibold text-foreground">Ahmed Raza</h3>
               <p className="text-primary font-medium">Head of Operations</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Ensuring smooth operations and customer satisfaction
-              </p>
+              <p className="text-sm text-muted-foreground mt-2">Ensuring smooth operations and customer satisfaction</p>
             </div>
             <div className="text-center">
               <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-accent flex items-center justify-center text-accent-foreground text-3xl font-serif font-bold">
@@ -174,9 +166,7 @@ export default function About() {
               </div>
               <h3 className="text-xl font-semibold text-foreground">Fatima Ali</h3>
               <p className="text-primary font-medium">Customer Relations</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Dedicated to making every traveler feel at home
-              </p>
+              <p className="text-sm text-muted-foreground mt-2">Dedicated to making every traveler feel at home</p>
             </div>
           </div>
         </div>
