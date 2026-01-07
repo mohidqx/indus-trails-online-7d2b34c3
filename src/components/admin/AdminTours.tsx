@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import ImageUpload from '@/components/common/ImageUpload';
 import {
   Dialog,
   DialogContent,
@@ -260,11 +261,11 @@ export default function AdminTours() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Image URL</label>
-              <Input
-                value={editingTour.image_url || ''}
-                onChange={(e) => setEditingTour({ ...editingTour, image_url: e.target.value })}
-                placeholder="https://..."
+              <label className="text-sm font-medium">Image</label>
+              <ImageUpload
+                value={editingTour.image_url || null}
+                onChange={(url) => setEditingTour({ ...editingTour, image_url: url || '' })}
+                folder="tours"
               />
             </div>
             <div>

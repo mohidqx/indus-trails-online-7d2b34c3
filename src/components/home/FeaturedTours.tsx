@@ -1,57 +1,56 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Users, Clock, Star, ArrowRight } from 'lucide-react';
+import { Users, Clock, Star, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
-import hunzaImage from '@/assets/hero-hunza.jpg';
-import fairyMeadows from '@/assets/fairy-meadows.jpg';
-import skardu from '@/assets/skardu.jpg';
-
-const tours = [
-  {
-    id: 1,
-    name: 'Hunza Valley Explorer',
-    duration: '7 Days',
-    groupSize: '8-12',
-    startDate: 'Mar 15, 2026',
-    price: 85000,
-    originalPrice: 95000,
-    rating: 4.9,
-    reviews: 124,
-    image: hunzaImage,
-    highlights: ['Attabad Lake', 'Baltit Fort', 'Eagle\'s Nest', 'Passu Cones'],
-    featured: true,
-  },
-  {
-    id: 2,
-    name: 'Fairy Meadows & Nanga Parbat',
-    duration: '5 Days',
-    groupSize: '6-10',
-    startDate: 'Apr 1, 2026',
-    price: 65000,
-    originalPrice: 75000,
-    rating: 4.8,
-    reviews: 89,
-    image: fairyMeadows,
-    highlights: ['Base Camp Trek', 'Beyal Camp', 'Nanga Parbat View', 'Raikot Bridge'],
-    featured: false,
-  },
-  {
-    id: 3,
-    name: 'Skardu & Deosai Adventure',
-    duration: '8 Days',
-    groupSize: '10-15',
-    startDate: 'May 10, 2026',
-    price: 95000,
-    originalPrice: 110000,
-    rating: 4.9,
-    reviews: 156,
-    image: skardu,
-    highlights: ['Shangrila', 'Deosai Plains', 'Satpara Lake', 'Cold Desert'],
-    featured: true,
-  },
-];
+interface Tour {
+  id: string;
+  title: string;
+  description: string | null;
+  duration: string | null;
+  price: number;
+  discount_price: number | null;
+  max_group_size: number | null;
+  difficulty: string | null;
+  includes: string[] | null;
+  image_url: string | null;
+  is_featured: boolean;
+}
 
 export default function FeaturedTours() {
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      const { data } = await supabase
+        .from('tours')
+        .select('*')
+        .eq('is_active', true)
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(3);
+      
+      if (data) setTours(data);
+      setIsLoading(false);
+    };
+    
+    fetchTours();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <section className="py-24 bg-secondary/30">
+        <div className="container mx-auto px-6 flex justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
+
+  if (tours.length === 0) return null;
+
   return (
     <section className="py-24 bg-secondary/30">
       <div className="container mx-auto px-6">
@@ -88,92 +87,96 @@ export default function FeaturedTours() {
             >
               {/* Image */}
               <div className="relative aspect-[4/3] overflow-hidden">
-                <img
-                  src={tour.image}
-                  alt={tour.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
+                {tour.image_url ? (
+                  <img
+                    src={tour.image_url}
+                    alt={tour.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
+                    <span className="text-muted-foreground">No image</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-mountain/60 to-transparent" />
 
                 {/* Badges */}
                 <div className="absolute top-4 left-4 flex gap-2">
-                  {tour.featured && (
-                    <span className="px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-semibold">
-                      Featured
-                    </span>
-                  )}
-                  {tour.originalPrice > tour.price && (
+                  <span className="px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-semibold">
+                    Featured
+                  </span>
+                  {tour.discount_price && tour.discount_price < tour.price && (
                     <span className="px-3 py-1 rounded-full bg-destructive text-destructive-foreground text-xs font-semibold">
-                      {Math.round(((tour.originalPrice - tour.price) / tour.originalPrice) * 100)}%
-                      OFF
+                      {Math.round(((tour.price - tour.discount_price) / tour.price) * 100)}% OFF
                     </span>
                   )}
-                </div>
-
-                {/* Rating */}
-                <div className="absolute bottom-4 left-4 flex items-center gap-2 glass-dark rounded-full px-3 py-1.5">
-                  <Star className="w-4 h-4 fill-accent text-accent" />
-                  <span className="text-snow text-sm font-medium">{tour.rating}</span>
-                  <span className="text-snow/60 text-sm">({tour.reviews})</span>
                 </div>
               </div>
 
               {/* Content */}
               <div className="p-6 space-y-4">
                 <h3 className="text-xl font-serif font-bold text-foreground group-hover:text-primary transition-colors">
-                  {tour.name}
+                  {tour.title}
                 </h3>
 
                 {/* Meta */}
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4" />
-                    {tour.duration}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Users className="w-4 h-4" />
-                    {tour.groupSize}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4" />
-                    {tour.startDate}
-                  </span>
-                </div>
-
-                {/* Highlights */}
-                <div className="flex flex-wrap gap-2">
-                  {tour.highlights.slice(0, 3).map((highlight) => (
-                    <span
-                      key={highlight}
-                      className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs"
-                    >
-                      {highlight}
+                  {tour.duration && (
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-4 h-4" />
+                      {tour.duration}
                     </span>
-                  ))}
-                  {tour.highlights.length > 3 && (
-                    <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs">
-                      +{tour.highlights.length - 3} more
+                  )}
+                  {tour.max_group_size && (
+                    <span className="flex items-center gap-1.5">
+                      <Users className="w-4 h-4" />
+                      Up to {tour.max_group_size}
+                    </span>
+                  )}
+                  {tour.difficulty && (
+                    <span className="flex items-center gap-1.5">
+                      <Star className="w-4 h-4" />
+                      {tour.difficulty}
                     </span>
                   )}
                 </div>
+
+                {/* Highlights */}
+                {tour.includes && tour.includes.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {tour.includes.slice(0, 3).map((item) => (
+                      <span
+                        key={item}
+                        className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                    {tour.includes.length > 3 && (
+                      <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs">
+                        +{tour.includes.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* Price & CTA */}
                 <div className="flex items-center justify-between pt-4 border-t border-border">
                   <div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-bold text-foreground">
-                        PKR {tour.price.toLocaleString()}
+                        PKR {(tour.discount_price || tour.price).toLocaleString()}
                       </span>
-                      {tour.originalPrice > tour.price && (
+                      {tour.discount_price && tour.discount_price < tour.price && (
                         <span className="text-sm text-muted-foreground line-through">
-                          {tour.originalPrice.toLocaleString()}
+                          {tour.price.toLocaleString()}
                         </span>
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">per person</p>
                   </div>
                   <Button variant="default" size="sm" asChild>
-                    <Link to={`/tours/${tour.id}`}>Book Now</Link>
+                    <Link to={`/booking?tour=${tour.id}`}>Book Now</Link>
                   </Button>
                 </div>
               </div>

@@ -1,106 +1,55 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Calendar, Users, Clock, Star, MapPin, Filter, Search } from 'lucide-react';
+import { Users, Clock, Star, Search, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
 
-import hunzaImage from '@/assets/hero-hunza.jpg';
-import fairyMeadows from '@/assets/fairy-meadows.jpg';
-import skardu from '@/assets/skardu.jpg';
-import swatValley from '@/assets/swat-valley.jpg';
-import attabadLake from '@/assets/attabad-lake.jpg';
-
-const tours = [
-  {
-    id: 1,
-    name: 'Hunza Valley Explorer',
-    duration: '7 Days',
-    groupSize: '8-12',
-    startDate: 'Mar 15, 2026',
-    price: 85000,
-    originalPrice: 95000,
-    rating: 4.9,
-    reviews: 124,
-    image: hunzaImage,
-    destination: 'Hunza',
-    highlights: ['Attabad Lake', 'Baltit Fort', 'Eagle\'s Nest', 'Passu Cones'],
-    category: 'Adventure',
-  },
-  {
-    id: 2,
-    name: 'Fairy Meadows Trek',
-    duration: '5 Days',
-    groupSize: '6-10',
-    startDate: 'Apr 1, 2026',
-    price: 65000,
-    originalPrice: 75000,
-    rating: 4.8,
-    reviews: 89,
-    image: fairyMeadows,
-    destination: 'Diamer',
-    highlights: ['Base Camp Trek', 'Beyal Camp', 'Nanga Parbat View'],
-    category: 'Trekking',
-  },
-  {
-    id: 3,
-    name: 'Skardu & Deosai Adventure',
-    duration: '8 Days',
-    groupSize: '10-15',
-    startDate: 'May 10, 2026',
-    price: 95000,
-    originalPrice: 110000,
-    rating: 4.9,
-    reviews: 156,
-    image: skardu,
-    destination: 'Skardu',
-    highlights: ['Shangrila', 'Deosai Plains', 'Satpara Lake'],
-    category: 'Adventure',
-  },
-  {
-    id: 4,
-    name: 'Swat Valley Retreat',
-    duration: '4 Days',
-    groupSize: '8-12',
-    startDate: 'Mar 20, 2026',
-    price: 45000,
-    originalPrice: 50000,
-    rating: 4.7,
-    reviews: 78,
-    image: swatValley,
-    destination: 'Swat',
-    highlights: ['Malam Jabba', 'Kalam', 'Mahodand Lake'],
-    category: 'Family',
-  },
-  {
-    id: 5,
-    name: 'Complete North Pakistan',
-    duration: '14 Days',
-    groupSize: '6-8',
-    startDate: 'Jun 1, 2026',
-    price: 180000,
-    originalPrice: 220000,
-    rating: 5.0,
-    reviews: 45,
-    image: attabadLake,
-    destination: 'Multiple',
-    highlights: ['Hunza', 'Skardu', 'Fairy Meadows', 'Naltar'],
-    category: 'Premium',
-  },
-];
-
-const categories = ['All', 'Adventure', 'Trekking', 'Family', 'Premium'];
+interface Tour {
+  id: string;
+  title: string;
+  description: string | null;
+  duration: string | null;
+  price: number;
+  discount_price: number | null;
+  max_group_size: number | null;
+  difficulty: string | null;
+  includes: string[] | null;
+  image_url: string | null;
+  is_featured: boolean;
+}
 
 export default function Tours() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('All');
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      const { data } = await supabase
+        .from('tours')
+        .select('*')
+        .eq('is_active', true)
+        .order('is_featured', { ascending: false })
+        .order('created_at', { ascending: false });
+      
+      if (data) setTours(data);
+      setIsLoading(false);
+    };
+    
+    fetchTours();
+  }, []);
+
+  const difficulties = ['All', ...new Set(tours.map(t => t.difficulty).filter(Boolean))];
 
   const filteredTours = tours.filter((tour) => {
-    const matchesCategory = selectedCategory === 'All' || tour.category === selectedCategory;
-    const matchesSearch = tour.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tour.destination.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    const matchesDifficulty = selectedDifficulty === 'All' || tour.difficulty === selectedDifficulty;
+    const matchesSearch = tour.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tour.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesDifficulty && matchesSearch;
   });
 
   return (
@@ -124,17 +73,17 @@ export default function Tours() {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => (
+              {difficulties.map((diff) => (
                 <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
+                  key={diff}
+                  onClick={() => setSelectedDifficulty(diff as string)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    selectedCategory === cat
+                    selectedDifficulty === diff
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                   }`}
                 >
-                  {cat}
+                  {diff}
                 </button>
               ))}
             </div>
@@ -154,80 +103,105 @@ export default function Tours() {
       {/* Tours Grid */}
       <section className="py-16">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredTours.map((tour) => (
-              <div
-                key={tour.id}
-                className="group bg-card rounded-3xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-500"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img
-                    src={tour.image}
-                    alt={tour.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-mountain/60 to-transparent" />
-                  
-                  <div className="absolute top-4 left-4 flex gap-2">
-                    <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                      {tour.category}
-                    </span>
-                    {tour.originalPrice > tour.price && (
-                      <span className="px-3 py-1 rounded-full bg-destructive text-destructive-foreground text-xs font-semibold">
-                        {Math.round(((tour.originalPrice - tour.price) / tour.originalPrice) * 100)}% OFF
-                      </span>
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : filteredTours.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No tours found</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredTours.map((tour) => (
+                <div
+                  key={tour.id}
+                  className="group bg-card rounded-3xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-500"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    {tour.image_url ? (
+                      <img
+                        src={tour.image_url}
+                        alt={tour.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <span className="text-muted-foreground">No image</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-mountain/60 to-transparent" />
+                    
+                    <div className="absolute top-4 left-4 flex gap-2">
+                      {tour.difficulty && (
+                        <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+                          {tour.difficulty}
+                        </span>
+                      )}
+                      {tour.discount_price && tour.discount_price < tour.price && (
+                        <span className="px-3 py-1 rounded-full bg-destructive text-destructive-foreground text-xs font-semibold">
+                          {Math.round(((tour.price - tour.discount_price) / tour.price) * 100)}% OFF
+                        </span>
+                      )}
+                    </div>
+
+                    {tour.is_featured && (
+                      <div className="absolute bottom-4 left-4 flex items-center gap-2 glass-dark rounded-full px-3 py-1.5">
+                        <Star className="w-4 h-4 fill-accent text-accent" />
+                        <span className="text-snow text-sm font-medium">Featured</span>
+                      </div>
                     )}
                   </div>
 
-                  <div className="absolute bottom-4 left-4 flex items-center gap-2 glass-dark rounded-full px-3 py-1.5">
-                    <Star className="w-4 h-4 fill-accent text-accent" />
-                    <span className="text-snow text-sm font-medium">{tour.rating}</span>
-                    <span className="text-snow/60 text-sm">({tour.reviews})</span>
-                  </div>
-                </div>
+                  <div className="p-6 space-y-4">
+                    <h3 className="text-xl font-serif font-bold text-foreground">
+                      {tour.title}
+                    </h3>
 
-                <div className="p-6 space-y-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4" />
-                    {tour.destination}
-                  </div>
-                  
-                  <h3 className="text-xl font-serif font-bold text-foreground">
-                    {tour.name}
-                  </h3>
+                    {tour.description && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {tour.description}
+                      </p>
+                    )}
 
-                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4" />
-                      {tour.duration}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Users className="w-4 h-4" />
-                      {tour.groupSize}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
-                      {tour.startDate}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-foreground">
-                          PKR {tour.price.toLocaleString()}
+                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                      {tour.duration && (
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-4 h-4" />
+                          {tour.duration}
                         </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">per person</p>
+                      )}
+                      {tour.max_group_size && (
+                        <span className="flex items-center gap-1.5">
+                          <Users className="w-4 h-4" />
+                          Up to {tour.max_group_size}
+                        </span>
+                      )}
                     </div>
-                    <Button variant="default" size="sm" asChild>
-                      <Link to="/booking">Book Now</Link>
-                    </Button>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                      <div>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-2xl font-bold text-foreground">
+                            PKR {(tour.discount_price || tour.price).toLocaleString()}
+                          </span>
+                          {tour.discount_price && tour.discount_price < tour.price && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              {tour.price.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">per person</p>
+                      </div>
+                      <Button variant="default" size="sm" asChild>
+                        <Link to={`/booking?tour=${tour.id}`}>Book Now</Link>
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
