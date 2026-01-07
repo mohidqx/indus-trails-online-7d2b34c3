@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import { useSiteContent } from '@/hooks/useSiteContent';
+import logo from '@/assets/indus-tours-logo.jpeg';
 
 const quickLinks = [
   { name: 'Home', path: '/' },
@@ -12,9 +14,7 @@ const quickLinks = [
 const supportLinks = [
   { name: 'About Us', path: '/about' },
   { name: 'Contact', path: '/contact' },
-  { name: 'FAQ', path: '/faq' },
   { name: 'Feedback', path: '/feedback' },
-  { name: 'Privacy Policy', path: '/privacy' },
 ];
 
 const destinations = [
@@ -27,6 +27,21 @@ const destinations = [
 ];
 
 export default function Footer() {
+  const { data: content } = useSiteContent();
+
+  const phone = (content?.phone as string) || '+92 300 1234567';
+  const email = (content?.email as string) || 'info@industours.pk';
+  const address = (content?.address as string) || 'Blue Area, F-7 Markaz, Islamabad, Pakistan';
+  const facebookUrl = (content?.facebook_url as string) || '#';
+  const instagramUrl = (content?.instagram_url as string) || '#';
+
+  const socialLinks = [
+    { Icon: Facebook, url: facebookUrl },
+    { Icon: Instagram, url: instagramUrl },
+    { Icon: Twitter, url: '#' },
+    { Icon: Youtube, url: '#' },
+  ];
+
   return (
     <footer className="bg-mountain text-snow">
       {/* Main Footer */}
@@ -35,9 +50,7 @@ export default function Footer() {
           {/* Company Info */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center font-serif font-bold text-xl text-accent-foreground">
-                IT
-              </div>
+              <img src={logo} alt="Indus Tours Logo" className="w-12 h-12 rounded-xl object-cover" />
               <div>
                 <h3 className="font-serif font-bold text-xl">Indus Tours</h3>
                 <p className="text-sm text-snow/70">Pakistan</p>
@@ -48,10 +61,12 @@ export default function Footer() {
               curated tours. Founded by Shahzaib Khan Mughal, we bring you unforgettable adventures.
             </p>
             <div className="flex gap-4">
-              {[Facebook, Instagram, Twitter, Youtube].map((Icon, index) => (
+              {socialLinks.map(({ Icon, url }, index) => (
                 <a
                   key={index}
-                  href="#"
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full bg-snow/10 hover:bg-accent hover:text-accent-foreground flex items-center justify-center transition-all duration-300"
                 >
                   <Icon className="w-5 h-5" />
@@ -66,10 +81,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.path}>
-                  <Link
-                    to={link.path}
-                    className="text-snow/80 hover:text-accent transition-colors"
-                  >
+                  <Link to={link.path} className="text-snow/80 hover:text-accent transition-colors">
                     {link.name}
                   </Link>
                 </li>
@@ -83,10 +95,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {destinations.map((dest) => (
                 <li key={dest}>
-                  <Link
-                    to="/destinations"
-                    className="text-snow/80 hover:text-accent transition-colors"
-                  >
+                  <Link to="/destinations" className="text-snow/80 hover:text-accent transition-colors">
                     {dest}
                   </Link>
                 </li>
@@ -100,28 +109,24 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 mt-0.5 text-accent flex-shrink-0" />
-                <span className="text-snow/80">
-                  Blue Area, F-7 Markaz
-                  <br />
-                  Islamabad, Pakistan
-                </span>
+                <span className="text-snow/80">{address}</span>
               </li>
               <li>
                 <a
-                  href="tel:+923001234567"
+                  href={`tel:${phone.replace(/\s/g, '')}`}
                   className="flex items-center gap-3 text-snow/80 hover:text-accent transition-colors"
                 >
                   <Phone className="w-5 h-5 text-accent" />
-                  +92 300 1234567
+                  {phone}
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:info@industours.pk"
+                  href={`mailto:${email}`}
                   className="flex items-center gap-3 text-snow/80 hover:text-accent transition-colors"
                 >
                   <Mail className="w-5 h-5 text-accent" />
-                  info@industours.pk
+                  {email}
                 </a>
               </li>
             </ul>
@@ -136,12 +141,8 @@ export default function Footer() {
             © {new Date().getFullYear()} Indus Tours Pakistan. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            {supportLinks.slice(2).map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="text-snow/60 hover:text-accent transition-colors"
-              >
+            {supportLinks.map((link) => (
+              <Link key={link.path} to={link.path} className="text-snow/60 hover:text-accent transition-colors">
                 {link.name}
               </Link>
             ))}

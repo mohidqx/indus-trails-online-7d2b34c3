@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useSiteContent } from '@/hooks/useSiteContent';
 
 export default function Contact() {
   const { toast } = useToast();
+  const { data: content } = useSiteContent();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,6 +19,10 @@ export default function Contact() {
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const sitePhone = (content?.phone as string) || '+92 300 1234567';
+  const siteEmail = (content?.email as string) || 'info@industours.pk';
+  const siteAddress = (content?.address as string) || 'Blue Area, F-7 Markaz, Islamabad, Pakistan 44000';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,13 +49,11 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       {/* Hero */}
       <section className="relative pt-32 pb-20 bg-gradient-mountain">
         <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-6xl font-serif font-bold text-snow mb-6">
-            Contact Us
-          </h1>
+          <h1 className="text-5xl md:text-6xl font-serif font-bold text-snow mb-6">Contact Us</h1>
           <p className="text-xl text-snow/80 max-w-2xl mx-auto">
             Have questions? We'd love to hear from you. Send us a message!
           </p>
@@ -63,12 +67,10 @@ export default function Contact() {
             {/* Contact Info */}
             <div className="space-y-8">
               <div>
-                <h2 className="text-2xl font-serif font-bold text-foreground mb-6">
-                  Get In Touch
-                </h2>
+                <h2 className="text-2xl font-serif font-bold text-foreground mb-6">Get In Touch</h2>
                 <p className="text-muted-foreground">
-                  Whether you have questions about our tours, need help planning your trip, 
-                  or just want to say hello, we're here for you.
+                  Whether you have questions about our tours, need help planning your trip, or just
+                  want to say hello, we're here for you.
                 </p>
               </div>
 
@@ -79,10 +81,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">Office Address</h3>
-                    <p className="text-muted-foreground">
-                      Blue Area, F-7 Markaz<br />
-                      Islamabad, Pakistan 44000
-                    </p>
+                    <p className="text-muted-foreground">{siteAddress}</p>
                   </div>
                 </div>
 
@@ -93,12 +92,8 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-foreground">Phone</h3>
                     <p className="text-muted-foreground">
-                      <a href="tel:+923001234567" className="hover:text-primary transition-colors">
-                        +92 300 1234567
-                      </a>
-                      <br />
-                      <a href="tel:+925112345678" className="hover:text-primary transition-colors">
-                        +92 51 1234567
+                      <a href={`tel:${sitePhone.replace(/\s/g, '')}`} className="hover:text-primary transition-colors">
+                        {sitePhone}
                       </a>
                     </p>
                   </div>
@@ -111,12 +106,8 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-foreground">Email</h3>
                     <p className="text-muted-foreground">
-                      <a href="mailto:info@industours.pk" className="hover:text-primary transition-colors">
-                        info@industours.pk
-                      </a>
-                      <br />
-                      <a href="mailto:bookings@industours.pk" className="hover:text-primary transition-colors">
-                        bookings@industours.pk
+                      <a href={`mailto:${siteEmail}`} className="hover:text-primary transition-colors">
+                        {siteEmail}
                       </a>
                     </p>
                   </div>
@@ -129,7 +120,8 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-foreground">Office Hours</h3>
                     <p className="text-muted-foreground">
-                      Monday - Saturday: 9:00 AM - 7:00 PM<br />
+                      Monday - Saturday: 9:00 AM - 7:00 PM
+                      <br />
                       Sunday: 10:00 AM - 4:00 PM
                     </p>
                   </div>
@@ -140,16 +132,12 @@ export default function Contact() {
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <div className="bg-card rounded-3xl p-8 md:p-12 shadow-lg">
-                <h2 className="text-2xl font-serif font-bold text-foreground mb-6">
-                  Send Us a Message
-                </h2>
-                
+                <h2 className="text-2xl font-serif font-bold text-foreground mb-6">Send Us a Message</h2>
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Full Name *
-                      </label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
                       <Input
                         required
                         value={formData.name}
@@ -158,9 +146,7 @@ export default function Contact() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Email Address *
-                      </label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Email Address *</label>
                       <Input
                         type="email"
                         required
@@ -173,9 +159,7 @@ export default function Contact() {
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Phone Number
-                      </label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Phone Number</label>
                       <Input
                         type="tel"
                         value={formData.phone}
@@ -184,9 +168,7 @@ export default function Contact() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Subject *
-                      </label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Subject *</label>
                       <Input
                         required
                         value={formData.subject}
@@ -197,9 +179,7 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Message *
-                    </label>
+                    <label className="block text-sm font-medium text-foreground mb-2">Message *</label>
                     <Textarea
                       required
                       rows={5}
@@ -226,14 +206,16 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Map Placeholder */}
-      <section className="h-96 bg-muted flex items-center justify-center">
-        <div className="text-center">
-          <MapPin className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">
-            Interactive map will be displayed here
-          </p>
-        </div>
+      {/* Google Map Embed */}
+      <section className="h-96">
+        <iframe
+          title="Office Location"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26580.36685879695!2d73.0350991!3d33.7042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfbf4e5f6a52c5%3A0x5d0c7f8f5c12b61f!2sF-7%20Markaz%2C%20Islamabad%2C%20Islamabad%20Capital%20Territory%2C%20Pakistan!5e0!3m2!1sen!2s!4v1700000000000"
+          className="w-full h-full border-0"
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
       </section>
 
       <Footer />
