@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Users, Clock, Star, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { getTourImage } from '@/lib/tourImages';
 
 interface Tour {
   id: string;
@@ -41,8 +42,8 @@ export default function FeaturedTours() {
 
   if (isLoading) {
     return (
-      <section className="py-24 bg-secondary/30">
-        <div className="container mx-auto px-6 flex justify-center">
+      <section className="py-16 md:py-24 bg-secondary/30">
+        <div className="container mx-auto px-4 sm:px-6 flex justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       </section>
@@ -52,19 +53,19 @@ export default function FeaturedTours() {
   if (tours.length === 0) return null;
 
   return (
-    <section className="py-24 bg-secondary/30">
-      <div className="container mx-auto px-6">
+    <section className="py-16 md:py-24 bg-secondary/30">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-16">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6 mb-10 md:mb-16">
           <div className="max-w-2xl">
             <span className="inline-block px-4 py-1.5 rounded-full bg-gold-light text-gold text-sm font-medium mb-4">
               Featured Tours
             </span>
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-3 md:mb-4">
               Unforgettable
               <span className="text-gradient-gold"> Adventures</span>
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-base md:text-lg text-muted-foreground">
               Handcrafted journeys through Pakistan's most spectacular landscapes, led by
               experienced local guides.
             </p>
@@ -78,35 +79,29 @@ export default function FeaturedTours() {
         </div>
 
         {/* Tours Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {tours.map((tour, index) => (
             <div
               key={tour.id}
-              className="group bg-card rounded-3xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-500"
+              className="group bg-card rounded-2xl md:rounded-3xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-500"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {/* Image */}
               <div className="relative aspect-[4/3] overflow-hidden">
-                {tour.image_url ? (
-                  <img
-                    src={tour.image_url}
-                    alt={tour.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-muted flex items-center justify-center">
-                    <span className="text-muted-foreground">No image</span>
-                  </div>
-                )}
+                <img
+                  src={getTourImage(tour.title, tour.image_url)}
+                  alt={tour.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-mountain/60 to-transparent" />
 
                 {/* Badges */}
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <span className="px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-semibold">
+                <div className="absolute top-3 md:top-4 left-3 md:left-4 flex gap-2">
+                  <span className="px-2 md:px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-semibold">
                     Featured
                   </span>
                   {tour.discount_price && tour.discount_price < tour.price && (
-                    <span className="px-3 py-1 rounded-full bg-destructive text-destructive-foreground text-xs font-semibold">
+                    <span className="px-2 md:px-3 py-1 rounded-full bg-destructive text-destructive-foreground text-xs font-semibold">
                       {Math.round(((tour.price - tour.discount_price) / tour.price) * 100)}% OFF
                     </span>
                   )}
@@ -114,28 +109,28 @@ export default function FeaturedTours() {
               </div>
 
               {/* Content */}
-              <div className="p-6 space-y-4">
-                <h3 className="text-xl font-serif font-bold text-foreground group-hover:text-primary transition-colors">
+              <div className="p-4 md:p-6 space-y-3 md:space-y-4">
+                <h3 className="text-lg md:text-xl font-serif font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                   {tour.title}
                 </h3>
 
                 {/* Meta */}
-                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                <div className="flex flex-wrap gap-3 md:gap-4 text-xs md:text-sm text-muted-foreground">
                   {tour.duration && (
                     <span className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4" />
+                      <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       {tour.duration}
                     </span>
                   )}
                   {tour.max_group_size && (
                     <span className="flex items-center gap-1.5">
-                      <Users className="w-4 h-4" />
+                      <Users className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       Up to {tour.max_group_size}
                     </span>
                   )}
                   {tour.difficulty && (
                     <span className="flex items-center gap-1.5">
-                      <Star className="w-4 h-4" />
+                      <Star className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       {tour.difficulty}
                     </span>
                   )}
@@ -143,17 +138,17 @@ export default function FeaturedTours() {
 
                 {/* Highlights */}
                 {tour.includes && tour.includes.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 md:gap-2">
                     {tour.includes.slice(0, 3).map((item) => (
                       <span
                         key={item}
-                        className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs"
+                        className="px-2 md:px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs"
                       >
                         {item}
                       </span>
                     ))}
                     {tour.includes.length > 3 && (
-                      <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs">
+                      <span className="px-2 md:px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs">
                         +{tour.includes.length - 3} more
                       </span>
                     )}
@@ -161,14 +156,14 @@ export default function FeaturedTours() {
                 )}
 
                 {/* Price & CTA */}
-                <div className="flex items-center justify-between pt-4 border-t border-border">
+                <div className="flex items-center justify-between pt-3 md:pt-4 border-t border-border">
                   <div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-foreground">
+                      <span className="text-xl md:text-2xl font-bold text-foreground">
                         PKR {(tour.discount_price || tour.price).toLocaleString()}
                       </span>
                       {tour.discount_price && tour.discount_price < tour.price && (
-                        <span className="text-sm text-muted-foreground line-through">
+                        <span className="text-xs md:text-sm text-muted-foreground line-through">
                           {tour.price.toLocaleString()}
                         </span>
                       )}
