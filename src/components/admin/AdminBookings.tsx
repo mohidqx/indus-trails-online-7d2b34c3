@@ -54,9 +54,17 @@ export default function AdminBookings() {
       .select('*, tours(title)')
       .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      setBookings(data);
+    if (error) {
+      toast({
+        title: 'Unable to load bookings',
+        description: error.message,
+        variant: 'destructive',
+      });
+      setBookings([]);
+    } else {
+      setBookings(data || []);
     }
+
     setIsLoading(false);
   };
 
