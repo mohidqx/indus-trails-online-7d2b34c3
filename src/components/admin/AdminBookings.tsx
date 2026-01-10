@@ -16,6 +16,9 @@ interface Booking {
   customer_name: string;
   customer_email: string;
   customer_phone: string;
+  customer_nationality: string | null;
+  customer_cnic: string | null;
+  customer_address: string | null;
   travel_date: string;
   num_travelers: number;
   special_requests: string | null;
@@ -205,40 +208,104 @@ export default function AdminBookings() {
             <DialogTitle>Booking Details</DialogTitle>
           </DialogHeader>
           {selectedBooking && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Customer</p>
-                  <p className="font-medium">{selectedBooking.customer_name}</p>
+            <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+              {/* Customer Information */}
+              <div className="p-4 rounded-lg bg-muted/50">
+                <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                  👤 Customer Information
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Full Name</p>
+                    <p className="font-medium">{selectedBooking.customer_name}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Email</p>
+                    <p className="font-medium">{selectedBooking.customer_email}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Phone Number</p>
+                    <p className="font-medium">{selectedBooking.customer_phone}</p>
+                  </div>
+                  {selectedBooking.customer_nationality && (
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">Nationality</p>
+                      <p className="font-medium">{selectedBooking.customer_nationality}</p>
+                    </div>
+                  )}
+                  {selectedBooking.customer_cnic && (
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">CNIC</p>
+                      <p className="font-medium">{selectedBooking.customer_cnic}</p>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-medium">{selectedBooking.customer_email}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Phone</p>
-                  <p className="font-medium">{selectedBooking.customer_phone}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Travel Date</p>
-                  <p className="font-medium">{new Date(selectedBooking.travel_date).toLocaleDateString()}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Travelers</p>
-                  <p className="font-medium">{selectedBooking.num_travelers}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Amount</p>
-                  <p className="font-medium">PKR {Number(selectedBooking.total_price || 0).toLocaleString()}</p>
+                {selectedBooking.customer_address && (
+                  <div className="mt-3">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Full Address</p>
+                    <p className="font-medium">{selectedBooking.customer_address}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Tour Details */}
+              <div className="p-4 rounded-lg bg-muted/50">
+                <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                  🗺️ Tour Details
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Tour Package</p>
+                    <p className="font-medium">{selectedBooking.tours?.title || 'Custom Request'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Travel Date</p>
+                    <p className="font-medium">{new Date(selectedBooking.travel_date).toLocaleDateString('en-PK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Number of Travelers</p>
+                    <p className="font-medium">{selectedBooking.num_travelers} person(s)</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Amount</p>
+                    <p className="font-medium text-primary text-lg">PKR {Number(selectedBooking.total_price || 0).toLocaleString()}</p>
+                  </div>
                 </div>
               </div>
+
+              {/* Special Requests */}
               {selectedBooking.special_requests && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Special Requests</p>
-                  <p className="font-medium">{selectedBooking.special_requests}</p>
+                <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
+                  <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                    📝 Special Requests
+                  </h4>
+                  <p className="text-foreground">{selectedBooking.special_requests}</p>
                 </div>
               )}
-              <div className="flex gap-2 pt-4">
+
+              {/* Booking Meta */}
+              <div className="p-4 rounded-lg bg-muted/30 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Booking ID:</span>
+                  <span className="font-mono">{selectedBooking.id.slice(0, 8).toUpperCase()}</span>
+                </div>
+                <div className="flex justify-between mt-1">
+                  <span className="text-muted-foreground">Submitted:</span>
+                  <span>{new Date(selectedBooking.created_at).toLocaleString('en-PK')}</span>
+                </div>
+                <div className="flex justify-between mt-1">
+                  <span className="text-muted-foreground">Status:</span>
+                  <span className={`font-medium ${
+                    selectedBooking.status === 'confirmed' ? 'text-emerald-600' :
+                    selectedBooking.status === 'cancelled' ? 'text-destructive' :
+                    selectedBooking.status === 'completed' ? 'text-primary' :
+                    'text-accent'
+                  }`}>{selectedBooking.status?.toUpperCase()}</span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-2 border-t border-border">
                 {selectedBooking.status === 'pending' && (
                   <>
                     <Button onClick={() => { updateStatus(selectedBooking.id, 'confirmed'); setSelectedBooking(null); }}>
