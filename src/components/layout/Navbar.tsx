@@ -11,6 +11,7 @@ const navLinks = [
   { name: 'Destinations', path: '/destinations' },
   { name: 'Tours', path: '/tours' },
   { name: 'Vehicles', path: '/vehicles' },
+  { name: 'Hotels', path: '/hotels' },
   { name: 'Deals', path: '/deals' },
   { name: 'About', path: '/about' },
   { name: 'Contact', path: '/contact' },

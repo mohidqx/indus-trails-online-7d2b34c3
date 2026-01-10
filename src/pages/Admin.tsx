@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   MapPin, 
@@ -13,7 +13,9 @@ import {
   Bell,
   BarChart3,
   Loader2,
-  Menu
+  Menu,
+  Hotel,
+  Home
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -25,6 +27,7 @@ import AdminDashboard from '@/components/admin/AdminDashboard';
 import AdminBookings from '@/components/admin/AdminBookings';
 import AdminTours from '@/components/admin/AdminTours';
 import AdminVehicles from '@/components/admin/AdminVehicles';
+import AdminHotels from '@/components/admin/AdminHotels';
 import AdminDeals from '@/components/admin/AdminDeals';
 import AdminFeedback from '@/components/admin/AdminFeedback';
 import AdminContent from '@/components/admin/AdminContent';
@@ -35,6 +38,7 @@ const menuItems = [
   { id: 'bookings', icon: CalendarDays, label: 'Bookings' },
   { id: 'tours', icon: MapPin, label: 'Tours' },
   { id: 'vehicles', icon: Car, label: 'Vehicles' },
+  { id: 'hotels', icon: Hotel, label: 'Hotels' },
   { id: 'deals', icon: Tag, label: 'Deals & Offers' },
   { id: 'feedback', icon: MessageSquare, label: 'Feedback' },
   { id: 'content', icon: FileText, label: 'Content' },
@@ -73,6 +77,8 @@ export default function Admin() {
         return <AdminTours />;
       case 'vehicles':
         return <AdminVehicles />;
+      case 'hotels':
+        return <AdminHotels />;
       case 'deals':
         return <AdminDeals />;
       case 'feedback':
@@ -149,7 +155,17 @@ export default function Admin() {
         ))}
       </nav>
 
-      <div className="mt-8 pt-8 border-t border-border">
+      <div className="mt-8 pt-8 border-t border-border space-y-3">
+        <Button
+          variant="secondary"
+          className="w-full"
+          asChild
+        >
+          <Link to="/">
+            <Home className="w-4 h-4 mr-2" />
+            View Website
+          </Link>
+        </Button>
         <Button
           variant="outline"
           className="w-full"

@@ -234,6 +234,45 @@ export type Database = {
           },
         ]
       }
+      hotels: {
+        Row: {
+          amenities: string[] | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          location: string | null
+          name: string
+          star_rating: number | null
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location?: string | null
+          name: string
+          star_rating?: number | null
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location?: string | null
+          name?: string
+          star_rating?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -293,6 +332,7 @@ export type Database = {
           difficulty: string | null
           discount_price: number | null
           duration: string | null
+          hotel_id: string | null
           id: string
           image_url: string | null
           includes: string[] | null
@@ -310,6 +350,7 @@ export type Database = {
           difficulty?: string | null
           discount_price?: number | null
           duration?: string | null
+          hotel_id?: string | null
           id?: string
           image_url?: string | null
           includes?: string[] | null
@@ -327,6 +368,7 @@ export type Database = {
           difficulty?: string | null
           discount_price?: number | null
           duration?: string | null
+          hotel_id?: string | null
           id?: string
           image_url?: string | null
           includes?: string[] | null
@@ -343,6 +385,13 @@ export type Database = {
             columns: ["destination_id"]
             isOneToOne: false
             referencedRelation: "destinations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tours_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "hotels"
             referencedColumns: ["id"]
           },
         ]

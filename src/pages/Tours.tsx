@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Users, Clock, Star, Search, Loader2 } from 'lucide-react';
+import { Users, Clock, Star, Search, Loader2, Hotel } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { getTourImage } from '@/lib/tourImages';
+
+interface Hotel {
+  id: string;
+  name: string;
+  star_rating: number | null;
+}
 
 interface Tour {
   id: string;
@@ -20,6 +26,8 @@ interface Tour {
   includes: string[] | null;
   image_url: string | null;
   is_featured: boolean;
+  hotel_id: string | null;
+  hotels: Hotel | null;
 }
 
 export default function Tours() {
@@ -32,12 +40,12 @@ export default function Tours() {
     const fetchTours = async () => {
       const { data } = await supabase
         .from('tours')
-        .select('*')
+        .select('*, hotels(id, name, star_rating)')
         .eq('is_active', true)
         .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false });
       
-      if (data) setTours(data);
+      if (data) setTours(data as Tour[]);
       setIsLoading(false);
     };
     
@@ -173,6 +181,23 @@ export default function Tours() {
                         </span>
                       )}
                     </div>
+
+                    {/* Hotel Info */}
+                    {tour.hotels && (
+                      <div className="flex items-center gap-2 p-2 md:p-3 rounded-lg bg-primary/5 border border-primary/10">
+                        <Hotel className="w-4 h-4 text-primary flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium text-foreground truncate">Stay included: {tour.hotels.name}</p>
+                          {tour.hotels.star_rating && (
+                            <div className="flex items-center gap-0.5">
+                              {Array.from({ length: tour.hotels.star_rating }).map((_, i) => (
+                                <Star key={i} className="w-2.5 h-2.5 fill-accent text-accent" />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex items-center justify-between pt-3 md:pt-4 border-t border-border">
                       <div>
