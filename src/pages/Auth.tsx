@@ -8,6 +8,7 @@ import { Lock, Mail, User, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 import logo from '@/assets/indus-tours-logo.jpeg';
+import { useAuth } from '@/hooks/useAuth';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -15,6 +16,7 @@ const passwordSchema = z.string().min(6, 'Password must be at least 6 characters
 export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAdmin, isLoading: authLoading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -28,15 +30,38 @@ export default function Auth() {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        navigate('/admin');
+        // Check if user is admin and redirect accordingly
+        const { data } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+        
+        if (data) {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
-        navigate('/admin');
+        const { data } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+        
+        if (data) {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
       }
     });
 

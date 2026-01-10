@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, MapPin } from 'lucide-react';
+import { Menu, X, Phone, MapPin, User, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useSiteContent } from '@/hooks/useSiteContent';
+import { useAuth } from '@/hooks/useAuth';
 import logo from '@/assets/indus-tours-logo.jpeg';
 
 const navLinks = [
@@ -23,6 +24,7 @@ export default function Navbar() {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const { data: content } = useSiteContent();
+  const { user, isLoading: authLoading } = useAuth();
   
   const phone = (content?.phone as string) || '+92 300 1234567';
   const address = (content?.address as string) || 'Islamabad, Pakistan';
@@ -123,8 +125,29 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden lg:flex items-center gap-4">
+          {/* CTA Buttons */}
+          <div className="hidden lg:flex items-center gap-3">
+            {!authLoading && (
+              user ? (
+                <Button variant="ghost" asChild className={cn(
+                  isScrolled || !isHomePage ? 'text-foreground hover:bg-muted' : 'text-snow hover:bg-snow/10'
+                )}>
+                  <Link to="/dashboard" className="gap-2">
+                    <User className="w-4 h-4" />
+                    My Account
+                  </Link>
+                </Button>
+              ) : (
+                <Button variant="ghost" asChild className={cn(
+                  isScrolled || !isHomePage ? 'text-foreground hover:bg-muted' : 'text-snow hover:bg-snow/10'
+                )}>
+                  <Link to="/auth" className="gap-2">
+                    <LogIn className="w-4 h-4" />
+                    Login
+                  </Link>
+                </Button>
+              )
+            )}
             <Button variant={isScrolled || !isHomePage ? 'default' : 'hero'} asChild>
               <Link to="/booking">Book Now</Link>
             </Button>
@@ -164,11 +187,30 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
-          <Button variant="gold" className="mt-4" asChild>
-            <Link to="/booking" onClick={() => setIsMobileMenuOpen(false)}>
-              Book Your Adventure
-            </Link>
-          </Button>
+          <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
+            {!authLoading && (
+              user ? (
+                <Button variant="outline" asChild>
+                  <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="gap-2">
+                    <User className="w-4 h-4" />
+                    My Account
+                  </Link>
+                </Button>
+              ) : (
+                <Button variant="outline" asChild>
+                  <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="gap-2">
+                    <LogIn className="w-4 h-4" />
+                    Login / Sign Up
+                  </Link>
+                </Button>
+              )
+            )}
+            <Button variant="gold" asChild>
+              <Link to="/booking" onClick={() => setIsMobileMenuOpen(false)}>
+                Book Your Adventure
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </header>
