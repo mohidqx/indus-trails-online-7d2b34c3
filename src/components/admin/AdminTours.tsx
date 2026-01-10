@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, X, Hotel } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,6 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+
+interface HotelOption {
+  id: string;
+  name: string;
+  location: string | null;
+  star_rating: number | null;
+}
 
 interface Tour {
   id: string;
@@ -26,6 +33,8 @@ interface Tour {
   image_url: string | null;
   is_featured: boolean;
   is_active: boolean;
+  hotel_id: string | null;
+  hotels?: HotelOption | null;
 }
 
 const emptyTour = {
@@ -40,11 +49,13 @@ const emptyTour = {
   image_url: '',
   is_featured: false,
   is_active: true,
+  hotel_id: null as string | null,
 };
 
 export default function AdminTours() {
   const { toast } = useToast();
   const [tours, setTours] = useState<Tour[]>([]);
+  const [hotels, setHotels] = useState<HotelOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editingTour, setEditingTour] = useState<typeof emptyTour & { id?: string }>(emptyTour);
@@ -52,17 +63,27 @@ export default function AdminTours() {
 
   useEffect(() => {
     fetchTours();
+    fetchHotels();
   }, []);
+
+  const fetchHotels = async () => {
+    const { data } = await supabase
+      .from('hotels')
+      .select('id, name, location, star_rating')
+      .eq('is_active', true)
+      .order('name');
+    if (data) setHotels(data);
+  };
 
   const fetchTours = async () => {
     setIsLoading(true);
     const { data, error } = await supabase
       .from('tours')
-      .select('*')
+      .select('*, hotels(id, name, location, star_rating)')
       .order('created_at', { ascending: false });
 
     if (!error && data) {
-      setTours(data);
+      setTours(data as Tour[]);
     }
     setIsLoading(false);
   };
@@ -80,6 +101,7 @@ export default function AdminTours() {
       image_url: editingTour.image_url || null,
       is_featured: editingTour.is_featured,
       is_active: editingTour.is_active,
+      hotel_id: editingTour.hotel_id || null,
     };
 
     let error;
@@ -259,6 +281,21 @@ export default function AdminTours() {
                 value={editingTour.max_group_size || 10}
                 onChange={(e) => setEditingTour({ ...editingTour, max_group_size: Number(e.target.value) })}
               />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Partner Hotel (Stay Included)</label>
+              <select
+                value={editingTour.hotel_id || ''}
+                onChange={(e) => setEditingTour({ ...editingTour, hotel_id: e.target.value || null })}
+                className="w-full h-10 px-3 rounded-md border border-input bg-background"
+              >
+                <option value="">No hotel included</option>
+                {hotels.map((hotel) => (
+                  <option key={hotel.id} value={hotel.id}>
+                    {hotel.name} {hotel.location ? `- ${hotel.location}` : ''} {hotel.star_rating ? `(${hotel.star_rating}★)` : ''}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="text-sm font-medium">Image</label>
