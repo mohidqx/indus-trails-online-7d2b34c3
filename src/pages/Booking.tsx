@@ -63,30 +63,27 @@ export default function Booking() {
     setIsSubmitting(true);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const { error } = await supabase.from('bookings').insert({
-        user_id: user?.id || null,
+      const payload = {
         tour_id: formData.tour || null,
-        customer_name: formData.name,
-        customer_email: formData.email,
-        customer_phone: formData.phone,
-        customer_nationality: formData.nationality || null,
-        customer_cnic: isPakistani ? formData.cnic : null,
-        customer_address: formData.address || null,
         travel_date: formData.date,
-        num_travelers: parseInt(formData.travelers),
-        special_requests: formData.specialRequests || null,
-        total_price: totalPrice,
-        status: 'pending',
+        num_travelers: parseInt(formData.travelers || '1'),
+        customer_name: formData.name.trim(),
+        customer_email: formData.email.trim(),
+        customer_phone: formData.phone.trim(),
+        customer_nationality: formData.nationality.trim() || null,
+        customer_cnic: isPakistani ? (formData.cnic.trim() || null) : null,
+        customer_address: formData.address.trim() || null,
+        special_requests: formData.specialRequests.trim() || null,
+      };
+
+      const { error } = await supabase.functions.invoke('create-booking', {
+        body: payload,
       });
 
       if (error) {
         toast({
           title: 'Error',
-          description: 'Failed to submit booking. Please try again.',
+          description: error.message || 'Failed to submit booking. Please try again.',
           variant: 'destructive',
         });
         return;
@@ -98,7 +95,7 @@ export default function Booking() {
       });
 
       setStep(4);
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'An unexpected error occurred. Please try again.',

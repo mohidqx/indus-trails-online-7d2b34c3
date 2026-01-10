@@ -7,8 +7,10 @@ const quickLinks = [
   { name: 'Home', path: '/' },
   { name: 'Destinations', path: '/destinations' },
   { name: 'Tours', path: '/tours' },
+  { name: 'Hotels', path: '/hotels' },
   { name: 'Vehicles', path: '/vehicles' },
   { name: 'Deals', path: '/deals' },
+  { name: 'Booking', path: '/booking' },
 ];
 
 const supportLinks = [
