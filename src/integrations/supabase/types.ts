@@ -23,6 +23,7 @@ export type Database = {
           customer_name: string
           customer_nationality: string | null
           customer_phone: string
+          deal_id: string | null
           id: string
           num_travelers: number
           special_requests: string | null
@@ -42,6 +43,7 @@ export type Database = {
           customer_name: string
           customer_nationality?: string | null
           customer_phone: string
+          deal_id?: string | null
           id?: string
           num_travelers?: number
           special_requests?: string | null
@@ -61,6 +63,7 @@ export type Database = {
           customer_name?: string
           customer_nationality?: string | null
           customer_phone?: string
+          deal_id?: string | null
           id?: string
           num_travelers?: number
           special_requests?: string | null
@@ -73,6 +76,13 @@ export type Database = {
           vehicle_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_tour_id_fkey"
             columns: ["tour_id"]
