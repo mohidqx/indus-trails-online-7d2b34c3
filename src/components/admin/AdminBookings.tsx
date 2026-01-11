@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Check, X, Loader2, Eye, Search } from 'lucide-react';
+import { Check, X, Loader2, Eye, Search, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +10,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface Booking {
   id: string;
@@ -81,6 +92,20 @@ export default function AdminBookings() {
       toast({ title: 'Error', description: 'Failed to update status', variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: `Booking ${status}` });
+    }
+  };
+
+  const deleteBooking = async (id: string) => {
+    const { error } = await supabase
+      .from('bookings')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({ title: 'Error', description: 'Failed to delete booking', variant: 'destructive' });
+    } else {
+      toast({ title: 'Success', description: 'Booking deleted successfully' });
+      setSelectedBooking(null);
     }
   };
 
@@ -191,6 +216,27 @@ export default function AdminBookings() {
                             </Button>
                           </>
                         )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button size="icon" variant="ghost">
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Booking?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete the booking for {booking.customer_name}. This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteBooking(booking.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </td>
                   </tr>
@@ -305,22 +351,48 @@ export default function AdminBookings() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 pt-2 border-t border-border">
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
                 {selectedBooking.status === 'pending' && (
                   <>
                     <Button onClick={() => { updateStatus(selectedBooking.id, 'confirmed'); setSelectedBooking(null); }}>
                       <Check className="w-4 h-4 mr-2" /> Confirm
                     </Button>
-                    <Button variant="destructive" onClick={() => { updateStatus(selectedBooking.id, 'cancelled'); setSelectedBooking(null); }}>
-                      <X className="w-4 h-4 mr-2" /> Cancel
+                    <Button variant="outline" onClick={() => { updateStatus(selectedBooking.id, 'cancelled'); setSelectedBooking(null); }}>
+                      <X className="w-4 h-4 mr-2" /> Cancel Booking
                     </Button>
                   </>
                 )}
                 {selectedBooking.status === 'confirmed' && (
-                  <Button onClick={() => { updateStatus(selectedBooking.id, 'completed'); setSelectedBooking(null); }}>
-                    Mark as Completed
-                  </Button>
+                  <>
+                    <Button onClick={() => { updateStatus(selectedBooking.id, 'completed'); setSelectedBooking(null); }}>
+                      Mark as Completed
+                    </Button>
+                    <Button variant="outline" onClick={() => { updateStatus(selectedBooking.id, 'cancelled'); setSelectedBooking(null); }}>
+                      <X className="w-4 h-4 mr-2" /> Cancel Booking
+                    </Button>
+                  </>
                 )}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                      <Trash2 className="w-4 h-4 mr-2" /> Delete Booking
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Booking?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete the booking for {selectedBooking.customer_name}. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => deleteBooking(selectedBooking.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           )}
