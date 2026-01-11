@@ -15,11 +15,14 @@ import {
   Loader2,
   Menu,
   Hotel,
-  Home
+  Home,
+  Users,
+  Activity
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdminSession } from '@/hooks/useAdminSession';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 // Admin Components
@@ -32,6 +35,9 @@ import AdminDeals from '@/components/admin/AdminDeals';
 import AdminFeedback from '@/components/admin/AdminFeedback';
 import AdminContent from '@/components/admin/AdminContent';
 import AdminSettings from '@/components/admin/AdminSettings';
+import AdminUsers from '@/components/admin/AdminUsers';
+import AdminAnalytics from '@/components/admin/AdminAnalytics';
+import AdminActivityLogs from '@/components/admin/AdminActivityLogs';
 
 const menuItems = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -41,6 +47,9 @@ const menuItems = [
   { id: 'hotels', icon: Hotel, label: 'Hotels' },
   { id: 'deals', icon: Tag, label: 'Deals & Offers' },
   { id: 'feedback', icon: MessageSquare, label: 'Feedback' },
+  { id: 'users', icon: Users, label: 'Users' },
+  { id: 'analytics', icon: BarChart3, label: 'Analytics' },
+  { id: 'activity', icon: Activity, label: 'Activity Logs' },
   { id: 'content', icon: FileText, label: 'Content' },
   { id: 'settings', icon: Settings, label: 'Settings' },
 ];
@@ -51,6 +60,9 @@ export default function Admin() {
   const { user, isAdmin, isLoading: authLoading, signOut } = useAuth();
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Initialize admin session auto-logout
+  useAdminSession();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -83,6 +95,12 @@ export default function Admin() {
         return <AdminDeals />;
       case 'feedback':
         return <AdminFeedback />;
+      case 'users':
+        return <AdminUsers />;
+      case 'analytics':
+        return <AdminAnalytics />;
+      case 'activity':
+        return <AdminActivityLogs />;
       case 'content':
         return <AdminContent />;
       case 'settings':
