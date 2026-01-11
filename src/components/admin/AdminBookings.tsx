@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Check, X, Loader2, Eye, Search, Trash2, Download } from 'lucide-react';
+import { Check, X, Loader2, Eye, Search, Trash2, Download, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -42,7 +42,9 @@ interface Booking {
   status: string;
   total_price: number;
   created_at: string;
+  deal_id: string | null;
   tours?: { title: string } | null;
+  deals?: { title: string; discount_percent: number | null; code: string | null } | null;
 }
 
 export default function AdminBookings() {
@@ -71,7 +73,7 @@ export default function AdminBookings() {
     setIsLoading(true);
     const { data, error } = await supabase
       .from('bookings')
-      .select('*, tours(title)')
+      .select('*, tours(title), deals(title, discount_percent, code)')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -203,7 +205,7 @@ export default function AdminBookings() {
             <thead className="bg-muted/50">
               <tr>
                 <th className="text-left p-4 font-medium text-foreground">Customer</th>
-                <th className="text-left p-4 font-medium text-foreground">Tour</th>
+                <th className="text-left p-4 font-medium text-foreground">Tour / Deal</th>
                 <th className="text-left p-4 font-medium text-foreground">Date</th>
                 <th className="text-left p-4 font-medium text-foreground">Amount</th>
                 <th className="text-left p-4 font-medium text-foreground">Status</th>
@@ -227,7 +229,15 @@ export default function AdminBookings() {
                       </div>
                     </td>
                     <td className="p-4 text-foreground">
-                      {booking.tours?.title || 'Custom Request'}
+                      <div>
+                        <p>{booking.tours?.title || 'Custom Request'}</p>
+                        {booking.deals && (
+                          <span className="text-xs text-accent flex items-center gap-1 mt-1">
+                            <Tag className="w-3 h-3" />
+                            {booking.deals.title} ({booking.deals.discount_percent}% off)
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4 text-foreground">
                       {new Date(booking.travel_date).toLocaleDateString()}

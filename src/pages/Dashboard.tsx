@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   User, Calendar, MapPin, Loader2, LogOut, 
   Clock, CheckCircle, XCircle, AlertCircle,
-  Phone, Mail, Edit2, Save, X
+  Phone, Mail, Edit2, Save, X, Tag
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -34,6 +34,7 @@ interface Booking {
   created_at: string;
   special_requests: string | null;
   tours?: { title: string } | null;
+  deals?: { title: string; discount_percent: number | null } | null;
 }
 
 interface Profile {
@@ -47,17 +48,28 @@ interface BookingCardProps {
   getStatusColor: (status: string | null) => string;
   getStatusIcon: (status: string | null) => JSX.Element;
   onCancel: (id: string) => void;
+  onReschedule: (id: string, newDate: string) => void;
 }
 
-function BookingCard({ booking, getStatusColor, getStatusIcon, onCancel }: BookingCardProps) {
+function BookingCard({ booking, getStatusColor, getStatusIcon, onCancel, onReschedule }: BookingCardProps) {
+  const [isRescheduling, setIsRescheduling] = useState(false);
+  const [newDate, setNewDate] = useState(booking.travel_date);
   const canCancel = booking.status === 'pending' || booking.status === 'confirmed';
+  const canReschedule = booking.status === 'pending';
+  
+  const handleReschedule = () => {
+    if (newDate && newDate !== booking.travel_date) {
+      onReschedule(booking.id, newDate);
+      setIsRescheduling(false);
+    }
+  };
   
   return (
-    <div className="bg-card rounded-2xl p-6 shadow-card hover:shadow-lg transition-shadow">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-card hover:shadow-lg transition-shadow">
+      <div className="flex flex-col gap-4">
         <div className="space-y-2 flex-1">
           <div className="flex items-center gap-3 flex-wrap">
-            <h3 className="text-lg font-semibold text-foreground">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground">
               {booking.tours?.title || 'Custom Tour Request'}
             </h3>
             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(booking.status)}`}>
@@ -65,7 +77,13 @@ function BookingCard({ booking, getStatusColor, getStatusIcon, onCancel }: Booki
               {booking.status || 'pending'}
             </span>
           </div>
-          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+          {booking.deals && (
+            <div className="flex items-center gap-1 text-xs text-accent">
+              <Tag className="w-3 h-3" />
+              <span>{booking.deals.title} ({booking.deals.discount_percent}% discount applied)</span>
+            </div>
+          )}
+          <div className="flex flex-wrap gap-3 sm:gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
               {new Date(booking.travel_date).toLocaleDateString('en-PK', {
@@ -90,34 +108,63 @@ function BookingCard({ booking, getStatusColor, getStatusIcon, onCancel }: Booki
             </p>
           )}
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <p className="text-2xl font-bold text-primary">
-            PKR {Number(booking.total_price || 0).toLocaleString()}
-          </p>
-          <p className="text-xs text-muted-foreground">Total Amount</p>
-          {canCancel && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">
-                  <X className="w-4 h-4 mr-1" /> Cancel Booking
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Cancel this booking?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to cancel your booking for {booking.tours?.title || 'this tour'}? This action will notify the tour operator.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Keep Booking</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onCancel(booking.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Yes, Cancel
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-border">
+          <div>
+            <p className="text-xl sm:text-2xl font-bold text-primary">
+              PKR {Number(booking.total_price || 0).toLocaleString()}
+            </p>
+            <p className="text-xs text-muted-foreground">Total Amount</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {canReschedule && (
+              <>
+                {isRescheduling ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="date"
+                      value={newDate}
+                      onChange={(e) => setNewDate(e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
+                      className="w-auto h-8 text-sm"
+                    />
+                    <Button size="sm" onClick={handleReschedule}>
+                      <CheckCircle className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setIsRescheduling(false)}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button variant="outline" size="sm" onClick={() => setIsRescheduling(true)}>
+                    <Calendar className="w-4 h-4 mr-1" /> Reschedule
+                  </Button>
+                )}
+              </>
+            )}
+            {canCancel && !isRescheduling && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">
+                    <X className="w-4 h-4 mr-1" /> Cancel
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Cancel this booking?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to cancel your booking for {booking.tours?.title || 'this tour'}? This action will notify the tour operator.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Keep Booking</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => onCancel(booking.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Yes, Cancel
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -156,7 +203,7 @@ export default function Dashboard() {
     setIsLoadingBookings(true);
     const { data, error } = await supabase
       .from('bookings')
-      .select('id, travel_date, num_travelers, status, total_price, created_at, special_requests, tours(title)')
+      .select('id, travel_date, num_travelers, status, total_price, created_at, special_requests, tours(title), deals(title, discount_percent)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
@@ -225,6 +272,27 @@ export default function Dashboard() {
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const handleRescheduleBooking = async (id: string, newDate: string) => {
+    const { error } = await supabase
+      .from('bookings')
+      .update({ travel_date: newDate })
+      .eq('id', id);
+
+    if (error) {
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to reschedule booking', 
+        variant: 'destructive' 
+      });
+    } else {
+      toast({ 
+        title: 'Booking Rescheduled', 
+        description: `Your travel date has been updated to ${new Date(newDate).toLocaleDateString()}` 
+      });
+      fetchBookings();
+    }
   };
 
   const handleCancelBooking = async (id: string) => {
@@ -364,6 +432,7 @@ export default function Dashboard() {
                       getStatusColor={getStatusColor}
                       getStatusIcon={getStatusIcon}
                       onCancel={handleCancelBooking}
+                      onReschedule={handleRescheduleBooking}
                     />
                   ))}
                 </div>

@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Calendar, Users, Check, Loader2, Tag } from 'lucide-react';
+import { Calendar, Users, Check, Loader2, Tag, FileCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -44,6 +45,7 @@ export default function Booking() {
     cnic: '',
     address: '',
     specialRequests: '',
+    agreeTerms: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -466,6 +468,22 @@ export default function Booking() {
                     </div>
                   </div>
 
+                  {/* User Agreement */}
+                  <div className="p-4 sm:p-6 rounded-xl bg-muted/50 border border-border">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        id="terms"
+                        checked={formData.agreeTerms}
+                        onCheckedChange={(checked) => setFormData({ ...formData, agreeTerms: checked === true })}
+                        className="mt-1"
+                      />
+                      <label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer">
+                        <FileCheck className="w-4 h-4 inline mr-1" />
+                        I confirm that all information provided is accurate. I agree to the <span className="text-primary underline">terms and conditions</span>, <span className="text-primary underline">cancellation policy</span>, and understand that final pricing may vary based on tour availability and season.
+                      </label>
+                    </div>
+                  </div>
+
                   <div className="p-4 sm:p-6 rounded-xl bg-primary/10 border border-primary/20">
                     <div className="flex justify-between items-center">
                       <span className="text-foreground font-medium">Total Amount:</span>
@@ -477,7 +495,7 @@ export default function Booking() {
                     <Button variant="outline" size="lg" onClick={() => setStep(2)} className="order-2 sm:order-1">
                       Back
                     </Button>
-                    <Button variant="gold" size="lg" className="flex-1 order-1 sm:order-2" onClick={handleSubmit} disabled={isSubmitting}>
+                    <Button variant="gold" size="lg" className="flex-1 order-1 sm:order-2" onClick={handleSubmit} disabled={isSubmitting || !formData.agreeTerms}>
                       {isSubmitting ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
