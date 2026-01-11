@@ -2,3 +2,21 @@ project_id = "zzwlonwewysfhdkoyedf"
 
 [functions.create-booking]
 verify_jwt = false
+
+[functions.api-tours]
+verify_jwt = false
+
+[functions.api-deals]
+verify_jwt = false
+
+[functions.api-bookings]
+verify_jwt = false
+
+[functions.api-destinations]
+verify_jwt = false
+
+[functions.api-vehicles]
+verify_jwt = false
+
+[functions.api-stats]
+verify_jwt = false
