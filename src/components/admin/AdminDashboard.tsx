@@ -5,20 +5,22 @@ import { supabase } from '@/integrations/supabase/client';
 interface Stats {
   totalBookings: number;
   pendingBookings: number;
+  completedTrips: number;
   totalRevenue: number;
   avgRating: number;
   totalFeedback: number;
-  totalTours: number;
+  activeTours: number;
 }
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({
     totalBookings: 0,
     pendingBookings: 0,
+    completedTrips: 0,
     totalRevenue: 0,
     avgRating: 0,
     totalFeedback: 0,
-    totalTours: 0,
+    activeTours: 0,
   });
   const [recentBookings, setRecentBookings] = useState<any[]>([]);
   const [recentFeedback, setRecentFeedback] = useState<any[]>([]);
@@ -61,10 +63,15 @@ export default function AdminDashboard() {
         .select('*', { count: 'exact', head: true })
         .eq('status', 'pending');
 
+      const { count: completedCount } = await supabase
+        .from('bookings')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'completed');
+
       const { data: revenueData } = await supabase
         .from('bookings')
         .select('total_price')
-        .eq('status', 'confirmed');
+        .in('status', ['confirmed', 'completed']);
 
       const totalRevenue = revenueData?.reduce((sum, b) => sum + (Number(b.total_price) || 0), 0) || 0;
 
@@ -80,17 +87,19 @@ export default function AdminDashboard() {
         .from('feedback')
         .select('*', { count: 'exact', head: true });
 
-      const { count: tourCount } = await supabase
+      const { count: activeTourCount } = await supabase
         .from('tours')
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true })
+        .eq('is_active', true);
 
       setStats({
         totalBookings: bookingCount || 0,
         pendingBookings: pendingCount || 0,
+        completedTrips: completedCount || 0,
         totalRevenue,
         avgRating: Math.round(avgRating * 10) / 10,
         totalFeedback: feedbackCount || 0,
-        totalTours: tourCount || 0,
+        activeTours: activeTourCount || 0,
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -156,8 +165,11 @@ export default function AdminDashboard() {
               <BarChart3 className="w-6 h-6 text-accent" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-foreground">{stats.totalTours}</p>
+          <p className="text-2xl font-bold text-foreground">{stats.activeTours}</p>
           <p className="text-sm text-muted-foreground">Active Tours</p>
+          {stats.completedTrips > 0 && (
+            <p className="text-xs text-emerald mt-1">{stats.completedTrips} completed trips</p>
+          )}
         </div>
 
         <div className="bg-card rounded-2xl p-6 shadow-card">

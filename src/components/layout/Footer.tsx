@@ -5,18 +5,19 @@ import logo from '@/assets/indus-tours-logo.jpeg';
 
 const quickLinks = [
   { name: 'Home', path: '/' },
+  { name: 'About Us', path: '/about' },
   { name: 'Destinations', path: '/destinations' },
   { name: 'Tours', path: '/tours' },
   { name: 'Hotels', path: '/hotels' },
   { name: 'Vehicles', path: '/vehicles' },
   { name: 'Deals', path: '/deals' },
-  { name: 'Booking', path: '/booking' },
 ];
 
 const supportLinks = [
-  { name: 'About Us', path: '/about' },
+  { name: 'Book Now', path: '/booking' },
   { name: 'Contact', path: '/contact' },
   { name: 'Feedback', path: '/feedback' },
+  { name: 'My Account', path: '/dashboard' },
 ];
 
 const destinations = [

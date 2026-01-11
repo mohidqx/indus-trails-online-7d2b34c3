@@ -10,9 +10,20 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   User, Calendar, MapPin, Loader2, LogOut, 
   Clock, CheckCircle, XCircle, AlertCircle,
-  Phone, Mail, Edit2, Save
+  Phone, Mail, Edit2, Save, X
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface Booking {
   id: string;
@@ -29,6 +40,88 @@ interface Profile {
   full_name: string | null;
   phone: string | null;
   avatar_url: string | null;
+}
+
+interface BookingCardProps {
+  booking: Booking;
+  getStatusColor: (status: string | null) => string;
+  getStatusIcon: (status: string | null) => JSX.Element;
+  onCancel: (id: string) => void;
+}
+
+function BookingCard({ booking, getStatusColor, getStatusIcon, onCancel }: BookingCardProps) {
+  const canCancel = booking.status === 'pending' || booking.status === 'confirmed';
+  
+  return (
+    <div className="bg-card rounded-2xl p-6 shadow-card hover:shadow-lg transition-shadow">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-2 flex-1">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h3 className="text-lg font-semibold text-foreground">
+              {booking.tours?.title || 'Custom Tour Request'}
+            </h3>
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(booking.status)}`}>
+              {getStatusIcon(booking.status)}
+              {booking.status || 'pending'}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              {new Date(booking.travel_date).toLocaleDateString('en-PK', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </span>
+            <span className="flex items-center gap-1">
+              <User className="w-4 h-4" />
+              {booking.num_travelers} traveler(s)
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-4 h-4" />
+              Booked {new Date(booking.created_at).toLocaleDateString()}
+            </span>
+          </div>
+          {booking.special_requests && (
+            <p className="text-sm text-muted-foreground italic">
+              Note: {booking.special_requests}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <p className="text-2xl font-bold text-primary">
+            PKR {Number(booking.total_price || 0).toLocaleString()}
+          </p>
+          <p className="text-xs text-muted-foreground">Total Amount</p>
+          {canCancel && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">
+                  <X className="w-4 h-4 mr-1" /> Cancel Booking
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cancel this booking?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to cancel your booking for {booking.tours?.title || 'this tour'}? This action will notify the tour operator.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Keep Booking</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onCancel(booking.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Yes, Cancel
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function Dashboard() {
@@ -132,6 +225,27 @@ export default function Dashboard() {
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const handleCancelBooking = async (id: string) => {
+    const { error } = await supabase
+      .from('bookings')
+      .update({ status: 'cancelled' })
+      .eq('id', id);
+
+    if (error) {
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to cancel booking', 
+        variant: 'destructive' 
+      });
+    } else {
+      toast({ 
+        title: 'Booking Cancelled', 
+        description: 'Your booking has been cancelled successfully' 
+      });
+      fetchBookings();
+    }
   };
 
   const getStatusIcon = (status: string | null) => {
@@ -244,54 +358,13 @@ export default function Dashboard() {
               ) : (
                 <div className="grid gap-4">
                   {bookings.map((booking) => (
-                    <div 
+                    <BookingCard 
                       key={booking.id} 
-                      className="bg-card rounded-2xl p-6 shadow-card hover:shadow-lg transition-shadow"
-                    >
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-3">
-                            <h3 className="text-lg font-semibold text-foreground">
-                              {booking.tours?.title || 'Custom Tour Request'}
-                            </h3>
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(booking.status)}`}>
-                              {getStatusIcon(booking.status)}
-                              {booking.status || 'pending'}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              {new Date(booking.travel_date).toLocaleDateString('en-PK', {
-                                weekday: 'short',
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                              })}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <User className="w-4 h-4" />
-                              {booking.num_travelers} traveler(s)
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              Booked {new Date(booking.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
-                          {booking.special_requests && (
-                            <p className="text-sm text-muted-foreground italic">
-                              Note: {booking.special_requests}
-                            </p>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-primary">
-                            PKR {Number(booking.total_price || 0).toLocaleString()}
-                          </p>
-                          <p className="text-xs text-muted-foreground">Total Amount</p>
-                        </div>
-                      </div>
-                    </div>
+                      booking={booking} 
+                      getStatusColor={getStatusColor}
+                      getStatusIcon={getStatusIcon}
+                      onCancel={handleCancelBooking}
+                    />
                   ))}
                 </div>
               )}
