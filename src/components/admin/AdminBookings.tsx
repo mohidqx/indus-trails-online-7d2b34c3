@@ -577,10 +577,9 @@ export default function AdminBookings() {
                 </div>
               </div>
 
-              {/* Modal Actions */}
+{/* Modal Actions */}
               <div className="flex flex-wrap gap-2 pt-4 border-t">
                 <Button onClick={() => {
-                  // Ensure this function is defined in your component
                   if (typeof printBookingSlip === 'function') {
                     printBookingSlip(selectedBooking);
                   }
@@ -593,11 +592,13 @@ export default function AdminBookings() {
                 }}>
                   Edit
                 </Button>
-              </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
+           </div> {/* Closes Modal Actions div */}
+            </div> {/* Closes main space-y-4 div */}
+        </div> {/* This is the extra one you were missing! Closes the inner wrapper */}
+        )}
+   </DialogContent>
+ </Dialog>
+      
       {/* Edit Booking Modal */}
       <Dialog open={!!editingBooking} onOpenChange={() => setEditingBooking(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
