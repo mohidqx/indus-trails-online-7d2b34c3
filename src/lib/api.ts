@@ -70,10 +70,11 @@ export const dealsApi = {
 
 // Bookings API
 export const bookingsApi = {
-  getAll: (params?: { status?: string; userId?: string }) => {
+  getAll: (params?: { status?: string; userId?: string; includeDeleted?: boolean }) => {
     const query = new URLSearchParams();
     if (params?.status) query.append('status', params.status);
     if (params?.userId) query.append('user_id', params.userId);
+    if (params?.includeDeleted) query.append('include_deleted', 'true');
     return apiRequest(`api-bookings?${query}`);
   },
   getById: (id: string) => apiRequest(`api-bookings?id=${id}`),
@@ -81,6 +82,12 @@ export const bookingsApi = {
     apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ id, ...data }) }),
   delete: (id: string) => 
     apiRequest('api-bookings', { method: 'DELETE', body: JSON.stringify({ id }) }),
+  bulkUpdate: (ids: string[], data: Record<string, unknown>) =>
+    apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ ids, ...data, bulk: true }) }),
+  bulkDelete: (ids: string[]) =>
+    apiRequest('api-bookings', { method: 'DELETE', body: JSON.stringify({ ids, bulk: true }) }),
+  restore: (id: string) =>
+    apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ id, restore: true }) }),
 };
 
 // Destinations API
@@ -118,4 +125,16 @@ export const vehiclesApi = {
 // Stats API (Admin only)
 export const statsApi = {
   getDashboard: () => apiRequest('api-stats'),
+};
+
+// Users API (Admin only)
+export const usersApi = {
+  getAll: () => apiRequest('api-stats?type=users'),
+};
+
+// Activity Logs API
+export const activityLogsApi = {
+  getAll: () => apiRequest('api-stats?type=activity'),
+  log: (data: { action: string; entity_type: string; entity_id?: string; details?: Record<string, unknown> }) =>
+    apiRequest('api-stats', { method: 'POST', body: JSON.stringify({ type: 'activity', ...data }) }),
 };
