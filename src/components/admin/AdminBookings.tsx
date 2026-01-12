@@ -567,6 +567,20 @@ export default function AdminBookings() {
                     </div>
                   )}
                 </div>
+
+                  {selectedBooking.customer_cnic && (
+                    <div>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">CNIC</p>
+                      <p className="font-medium">{selectedBooking.customer_cnic}</p>
+                    </div>
+                  )}
+                </div>
+                {selectedBooking.customer_address && (
+                  <div className="mt-3">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Full Address</p>
+                    <p className="font-medium">{selectedBooking.customer_address}</p>
+                  </div>
+                )}
               </div>
 
               {/* Tour Details */}
@@ -578,8 +592,8 @@ export default function AdminBookings() {
                     <p className="font-medium">{selectedBooking.tours?.title || 'Custom Request'}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Travel Date</p>
-                    <p className="font-medium">{new Date(selectedBooking.travel_date).toLocaleDateString()}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Travel Date</p>
+                    <p className="font-medium">{new Date(selectedBooking.travel_date).toLocaleDateString('en-PK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Travelers</p>
@@ -591,7 +605,17 @@ export default function AdminBookings() {
                   </div>
                 </div>
               </div>
-
+              
+              {/* Special Requests */}
+              {selectedBooking.special_requests && (
+                <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
+                  <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                    📝 Special Requests
+                  </h4>
+                  <p className="text-foreground">{selectedBooking.special_requests}</p>
+                </div>
+              )}
+              
               {/* Actions */}
               <div className="flex flex-wrap gap-2 pt-2 border-t">
                 <Button onClick={() => printBookingSlip(selectedBooking)}>
