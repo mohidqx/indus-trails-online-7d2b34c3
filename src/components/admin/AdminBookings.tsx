@@ -527,7 +527,7 @@ export default function AdminBookings() {
         </TabsContent>
       </Tabs>
 
-  {/* Booking Details Modal */}
+{/* Booking Details Modal */}
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -545,7 +545,7 @@ export default function AdminBookings() {
                 />
               )}
 
-              {/* Customer Information */}
+              {/* Customer Info */}
               <div className="p-4 rounded-lg bg-muted/50">
                 <h4 className="font-semibold text-foreground mb-3">👤 Customer Information</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -557,30 +557,7 @@ export default function AdminBookings() {
                     <p className="text-muted-foreground">Email</p>
                     <p className="font-medium">{selectedBooking.customer_email}</p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground">Phone</p>
-                    <p className="font-medium">{selectedBooking.customer_phone}</p>
-                  </div>
-                  {selectedBooking.customer_nationality && (
-                    <div>
-                      <p className="text-muted-foreground">Nationality</p>
-                      <p className="font-medium">{selectedBooking.customer_nationality}</p>
-                    </div>
-                  )}
-                  {selectedBooking.customer_cnic && (
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide">CNIC</p>
-                      <p className="font-medium">{selectedBooking.customer_cnic}</p>
-                    </div>
-                  )}
                 </div>
-
-                {selectedBooking.customer_address && (
-                  <div className="mt-3 text-sm">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Full Address</p>
-                    <p className="font-medium">{selectedBooking.customer_address}</p>
-                  </div>
-                )}
               </div>
 
               {/* Tour Details */}
@@ -592,21 +569,6 @@ export default function AdminBookings() {
                     <p className="font-medium">{selectedBooking.tours?.title || 'Custom Request'}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Travel Date</p>
-                    <p className="font-medium">
-                      {new Date(selectedBooking.travel_date).toLocaleDateString('en-PK', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                      })}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Travelers</p>
-                    <p className="font-medium">{selectedBooking.num_travelers}</p>
-                  </div>
-                  <div>
                     <p className="text-muted-foreground">Total</p>
                     <p className="font-medium text-primary">
                       PKR {Number(selectedBooking.total_price || 0).toLocaleString()}
@@ -614,26 +576,22 @@ export default function AdminBookings() {
                   </div>
                 </div>
               </div>
-              
-              {/* Special Requests */}
-              {selectedBooking.special_requests && (
-                <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
-                  <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                    📝 Special Requests
-                  </h4>
-                  <p className="text-sm text-foreground">{selectedBooking.special_requests}</p>
-                </div>
-              )}
-            </div>
-          )}
-              
-              {/* Actions */}
-              <div className="flex flex-wrap gap-2 pt-2 border-t">
-                <Button onClick={() => printBookingSlip(selectedBooking)}>
-                  <Printer className="w-4 h-4 mr-2" /> Print Slip
+
+              {/* Modal Actions */}
+              <div className="flex flex-wrap gap-2 pt-4 border-t">
+                <Button onClick={() => {
+                  // Ensure this function is defined in your component
+                  if (typeof printBookingSlip === 'function') {
+                    printBookingSlip(selectedBooking);
+                  }
+                }}>
+                  Print Slip
                 </Button>
-                <Button variant="outline" onClick={() => { setEditingBooking(selectedBooking); setSelectedBooking(null); }}>
-                  <Edit className="w-4 h-4 mr-2" /> Edit
+                <Button variant="outline" onClick={() => {
+                  setEditingBooking(selectedBooking);
+                  setSelectedBooking(null);
+                }}>
+                  Edit
                 </Button>
               </div>
             </div>
