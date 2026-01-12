@@ -594,7 +594,6 @@ export default function AdminBookings() {
                   Edit
                 </Button>
               </div>
-            </div>
           )}
         </DialogContent>
       </Dialog>
