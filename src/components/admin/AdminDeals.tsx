@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { dealsApi } from '@/lib/api';
 import ImageUpload from '@/components/common/ImageUpload';
 import {
   Dialog,
@@ -51,13 +51,12 @@ export default function AdminDeals() {
 
   const fetchDeals = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from('deals')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { data, error } = await dealsApi.getAll();
 
     if (!error && data) {
-      setDeals(data);
+      setDeals(data as Deal[]);
+    } else if (error) {
+      toast({ title: 'Error', description: error, variant: 'destructive' });
     }
     setIsLoading(false);
   };
@@ -75,15 +74,15 @@ export default function AdminDeals() {
       image_url: editingDeal.image_url || null,
     };
 
-    let error;
+    let result;
     if (editingDeal.id) {
-      ({ error } = await supabase.from('deals').update(dealData).eq('id', editingDeal.id));
+      result = await dealsApi.update(editingDeal.id, dealData);
     } else {
-      ({ error } = await supabase.from('deals').insert(dealData));
+      result = await dealsApi.create(dealData);
     }
 
-    if (error) {
-      toast({ title: 'Error', description: 'Failed to save deal', variant: 'destructive' });
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: `Deal ${editingDeal.id ? 'updated' : 'created'}` });
       setIsEditing(false);
@@ -95,10 +94,10 @@ export default function AdminDeals() {
   const deleteDeal = async (id: string) => {
     if (!confirm('Are you sure you want to delete this deal?')) return;
 
-    const { error } = await supabase.from('deals').delete().eq('id', id);
+    const { error } = await dealsApi.delete(id);
 
     if (error) {
-      toast({ title: 'Error', description: 'Failed to delete deal', variant: 'destructive' });
+      toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: 'Deal deleted' });
       fetchDeals();
@@ -125,47 +124,59 @@ export default function AdminDeals() {
       {/* Deals Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {deals.map((deal) => (
-          <div key={deal.id} className="bg-card rounded-2xl p-6 shadow-card">
-            <div className="flex items-start justify-between gap-2 mb-4">
-              <div>
-                <h3 className="font-semibold text-foreground">{deal.title}</h3>
-                {deal.code && <p className="text-sm text-primary font-mono">Code: {deal.code}</p>}
+          <div key={deal.id} className="bg-card rounded-2xl overflow-hidden shadow-card">
+            {deal.image_url ? (
+              <div className="aspect-video bg-muted">
+                <img src={deal.image_url} alt={deal.title} className="w-full h-full object-cover" />
               </div>
-              <div className="flex gap-1">
-                <Button size="icon" variant="ghost" onClick={() => { setEditingDeal(deal); setIsEditing(true); }}>
-                  <Pencil className="w-4 h-4" />
-                </Button>
-                <Button size="icon" variant="ghost" onClick={() => deleteDeal(deal.id)}>
-                  <Trash2 className="w-4 h-4 text-destructive" />
-                </Button>
+            ) : (
+              <div className="aspect-video bg-muted flex flex-col items-center justify-center text-muted-foreground">
+                <ImageIcon className="w-8 h-8 mb-1" />
+                <span className="text-sm">No image</span>
               </div>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{deal.description}</p>
-            <div className="flex flex-wrap gap-2">
-              {deal.discount_percent && (
-                <span className="px-2 py-1 rounded bg-destructive/10 text-destructive text-sm font-semibold">
-                  {deal.discount_percent}% OFF
-                </span>
-              )}
-              <span className={`px-2 py-1 rounded text-sm ${deal.is_active ? 'bg-emerald/10 text-emerald' : 'bg-muted text-muted-foreground'}`}>
-                {deal.is_active ? 'Active' : 'Inactive'}
-              </span>
-              {deal.is_popup && (
-                <span className="px-2 py-1 rounded bg-accent/10 text-accent text-sm">Popup</span>
-              )}
-            </div>
-            {deal.valid_until && (
-              <p className="text-xs text-muted-foreground mt-3">
-                Valid until: {new Date(deal.valid_until).toLocaleDateString()}
-              </p>
             )}
+            <div className="p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h3 className="font-semibold text-foreground">{deal.title}</h3>
+                  {deal.code && <p className="text-sm text-primary font-mono">Code: {deal.code}</p>}
+                </div>
+                <div className="flex gap-1">
+                  <Button size="icon" variant="ghost" onClick={() => { setEditingDeal(deal); setIsEditing(true); }}>
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => deleteDeal(deal.id)}>
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground line-clamp-2">{deal.description}</p>
+              <div className="flex flex-wrap gap-2">
+                {deal.discount_percent && (
+                  <span className="px-2 py-1 rounded bg-destructive/10 text-destructive text-sm font-semibold">
+                    {deal.discount_percent}% OFF
+                  </span>
+                )}
+                <span className={`px-2 py-1 rounded text-sm ${deal.is_active ? 'bg-emerald-500/10 text-emerald-600' : 'bg-muted text-muted-foreground'}`}>
+                  {deal.is_active ? 'Active' : 'Inactive'}
+                </span>
+                {deal.is_popup && (
+                  <span className="px-2 py-1 rounded bg-accent/10 text-accent text-sm">Popup</span>
+                )}
+              </div>
+              {deal.valid_until && (
+                <p className="text-xs text-muted-foreground">
+                  Valid until: {new Date(deal.valid_until).toLocaleDateString()}
+                </p>
+              )}
+            </div>
           </div>
         ))}
       </div>
 
       {/* Edit Modal */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingDeal.id ? 'Edit Deal' : 'Add New Deal'}</DialogTitle>
           </DialogHeader>

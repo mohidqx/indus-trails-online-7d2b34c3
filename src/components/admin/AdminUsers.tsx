@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Search, Shield, User, Mail, Calendar } from 'lucide-react';
+import { Loader2, Search, Shield, User, Mail, Calendar, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { usersApi } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Table,
@@ -14,22 +15,20 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 
-interface UserProfile {
+interface UserData {
   id: string;
+  email: string;
   full_name: string | null;
   phone: string | null;
+  avatar_url: string | null;
   created_at: string;
-}
-
-interface UserRole {
-  user_id: string;
+  last_sign_in_at: string | null;
   role: 'admin' | 'user';
 }
 
 export default function AdminUsers() {
   const { toast } = useToast();
-  const [profiles, setProfiles] = useState<UserProfile[]>([]);
-  const [roles, setRoles] = useState<UserRole[]>([]);
+  const [users, setUsers] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
 
@@ -40,13 +39,13 @@ export default function AdminUsers() {
   const fetchData = async () => {
     setIsLoading(true);
     
-    const [profilesRes, rolesRes] = await Promise.all([
-      supabase.from('profiles').select('*').order('created_at', { ascending: false }),
-      supabase.from('user_roles').select('user_id, role'),
-    ]);
-
-    if (!profilesRes.error) setProfiles(profilesRes.data || []);
-    if (!rolesRes.error) setRoles(rolesRes.data || []);
+    const { data, error } = await usersApi.getAll();
+    
+    if (!error && data) {
+      setUsers(data as UserData[]);
+    } else if (error) {
+      toast({ title: 'Error', description: error, variant: 'destructive' });
+    }
     
     setIsLoading(false);
   };
@@ -81,13 +80,10 @@ export default function AdminUsers() {
     }
   };
 
-  const isUserAdmin = (userId: string) => {
-    return roles.some(r => r.user_id === userId && r.role === 'admin');
-  };
-
-  const filteredProfiles = profiles.filter(p => 
-    p.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    p.phone?.includes(search)
+  const filteredUsers = users.filter(u => 
+    u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+    u.email?.toLowerCase().includes(search.toLowerCase()) ||
+    u.phone?.includes(search)
   );
 
   if (isLoading) {
@@ -111,9 +107,15 @@ export default function AdminUsers() {
             className="pl-10"
           />
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <User className="w-4 h-4" />
-          {profiles.length} registered users
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <User className="w-4 h-4" />
+            {users.length} registered users
+          </div>
+          <Button variant="outline" size="sm" onClick={fetchData}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
         </div>
       </div>
 
@@ -123,36 +125,48 @@ export default function AdminUsers() {
           <TableHeader>
             <TableRow>
               <TableHead>User</TableHead>
+              <TableHead>Email</TableHead>
               <TableHead>Phone</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Joined</TableHead>
+              <TableHead>Last Login</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProfiles.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
                   No users found
                 </TableCell>
               </TableRow>
             ) : (
-              filteredProfiles.map((profile) => {
-                const isAdmin = isUserAdmin(profile.id);
+              filteredUsers.map((user) => {
+                const isAdmin = user.role === 'admin';
                 return (
-                  <TableRow key={profile.id}>
+                  <TableRow key={user.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <User className="w-5 h-5 text-primary" />
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                          {user.avatar_url ? (
+                            <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <User className="w-5 h-5 text-primary" />
+                          )}
                         </div>
                         <div>
-                          <p className="font-medium">{profile.full_name || 'Unnamed User'}</p>
-                          <p className="text-xs text-muted-foreground font-mono">{profile.id.slice(0, 8)}...</p>
+                          <p className="font-medium">{user.full_name || 'Unnamed User'}</p>
+                          <p className="text-xs text-muted-foreground font-mono">{user.id.slice(0, 8)}...</p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{profile.phone || '-'}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm">
+                        <Mail className="w-3 h-3 text-muted-foreground" />
+                        {user.email}
+                      </div>
+                    </TableCell>
+                    <TableCell>{user.phone || '-'}</TableCell>
                     <TableCell>
                       <Badge variant={isAdmin ? 'default' : 'secondary'}>
                         {isAdmin ? (
@@ -165,14 +179,23 @@ export default function AdminUsers() {
                     <TableCell>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Calendar className="w-3 h-3" />
-                        {new Date(profile.created_at).toLocaleDateString()}
+                        {new Date(user.created_at).toLocaleDateString()}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      {user.last_sign_in_at ? (
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(user.last_sign_in_at).toLocaleDateString()}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">Never</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Button
                         variant={isAdmin ? 'destructive' : 'outline'}
                         size="sm"
-                        onClick={() => toggleAdminRole(profile.id, isAdmin)}
+                        onClick={() => toggleAdminRole(user.id, isAdmin)}
                       >
                         {isAdmin ? 'Remove Admin' : 'Make Admin'}
                       </Button>
