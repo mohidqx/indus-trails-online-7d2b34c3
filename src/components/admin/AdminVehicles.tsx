@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, X, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { vehiclesApi } from '@/lib/api';
 import ImageUpload from '@/components/common/ImageUpload';
 import {
   Dialog,
@@ -47,13 +47,12 @@ export default function AdminVehicles() {
 
   const fetchVehicles = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from('vehicles')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { data, error } = await vehiclesApi.getAll();
 
     if (!error && data) {
-      setVehicles(data);
+      setVehicles(data as Vehicle[]);
+    } else if (error) {
+      toast({ title: 'Error', description: error, variant: 'destructive' });
     }
     setIsLoading(false);
   };
@@ -69,15 +68,15 @@ export default function AdminVehicles() {
       is_available: editingVehicle.is_available,
     };
 
-    let error;
+    let result;
     if (editingVehicle.id) {
-      ({ error } = await supabase.from('vehicles').update(vehicleData).eq('id', editingVehicle.id));
+      result = await vehiclesApi.update(editingVehicle.id, vehicleData);
     } else {
-      ({ error } = await supabase.from('vehicles').insert(vehicleData));
+      result = await vehiclesApi.create(vehicleData);
     }
 
-    if (error) {
-      toast({ title: 'Error', description: 'Failed to save vehicle', variant: 'destructive' });
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: `Vehicle ${editingVehicle.id ? 'updated' : 'created'}` });
       setIsEditing(false);
@@ -89,10 +88,10 @@ export default function AdminVehicles() {
   const deleteVehicle = async (id: string) => {
     if (!confirm('Are you sure you want to delete this vehicle?')) return;
 
-    const { error } = await supabase.from('vehicles').delete().eq('id', id);
+    const { error } = await vehiclesApi.delete(id);
 
     if (error) {
-      toast({ title: 'Error', description: 'Failed to delete vehicle', variant: 'destructive' });
+      toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: 'Vehicle deleted' });
       fetchVehicles();
@@ -141,7 +140,10 @@ export default function AdminVehicles() {
               {vehicle.image_url ? (
                 <img src={vehicle.image_url} alt={vehicle.name} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-muted-foreground">No image</span>
+                <div className="flex flex-col items-center text-muted-foreground">
+                  <ImageIcon className="w-8 h-8 mb-1" />
+                  <span className="text-sm">No image</span>
+                </div>
               )}
             </div>
             <div className="p-4 space-y-3">
@@ -161,7 +163,7 @@ export default function AdminVehicles() {
               </div>
               <div className="flex flex-wrap gap-2 text-sm">
                 <span className="px-2 py-1 rounded bg-muted">{vehicle.capacity} passengers</span>
-                <span className={`px-2 py-1 rounded ${vehicle.is_available ? 'bg-emerald/10 text-emerald' : 'bg-destructive/10 text-destructive'}`}>
+                <span className={`px-2 py-1 rounded ${vehicle.is_available ? 'bg-emerald-500/10 text-emerald-600' : 'bg-destructive/10 text-destructive'}`}>
                   {vehicle.is_available ? 'Available' : 'Unavailable'}
                 </span>
               </div>
@@ -175,7 +177,7 @@ export default function AdminVehicles() {
 
       {/* Edit Modal */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingVehicle.id ? 'Edit Vehicle' : 'Add New Vehicle'}</DialogTitle>
           </DialogHeader>

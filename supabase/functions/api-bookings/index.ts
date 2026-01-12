@@ -21,6 +21,11 @@ serve(async (req) => {
     const id = url.searchParams.get("id");
     const status = url.searchParams.get("status");
     const userId = url.searchParams.get("user_id");
+    const includeDeleted = url.searchParams.get("include_deleted") === "true";
+
+    // Get IP and user agent for logging
+    const ipAddress = req.headers.get("x-forwarded-for") || req.headers.get("cf-connecting-ip") || "unknown";
+    const userAgent = req.headers.get("user-agent") || "unknown";
 
     // All booking operations require auth
     const authHeader = req.headers.get("Authorization");
@@ -53,8 +58,26 @@ serve(async (req) => {
 
     const isAdmin = !!role;
 
+    // Log activity helper
+    const logActivity = async (action: string, entityId?: string, details?: Record<string, unknown>) => {
+      await db.from("activity_logs").insert({
+        user_id: user.id,
+        ip_address: ipAddress,
+        user_agent: userAgent,
+        action,
+        entity_type: "booking",
+        entity_id: entityId,
+        details,
+      });
+    };
+
     if (req.method === "GET") {
-      let query = db.from("bookings").select("*, tours(title), deals(title, discount_percent, code)");
+      let query = db.from("bookings").select("*, tours(title, image_url), deals(title, discount_percent, code)");
+      
+      // Filter deleted bookings unless explicitly requested
+      if (!includeDeleted) {
+        query = query.or("is_deleted.is.null,is_deleted.eq.false");
+      }
       
       if (id) {
         query = query.eq("id", id);
@@ -81,6 +104,57 @@ serve(async (req) => {
 
     if (req.method === "PUT") {
       const body = await req.json();
+      
+      // Handle bulk update
+      if (body.bulk && body.ids) {
+        if (!isAdmin) {
+          return new Response(JSON.stringify({ error: "Admin access required" }), {
+            status: 403,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          });
+        }
+
+        const { ids, bulk, ...updates } = body;
+        const { data, error } = await db
+          .from("bookings")
+          .update({ ...updates, updated_at: new Date().toISOString() })
+          .in("id", ids)
+          .select();
+
+        if (error) throw error;
+
+        await logActivity("bulk_update", undefined, { ids, updates });
+
+        return new Response(JSON.stringify({ data }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+
+      // Handle restore
+      if (body.restore && body.id) {
+        if (!isAdmin) {
+          return new Response(JSON.stringify({ error: "Admin access required" }), {
+            status: 403,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          });
+        }
+
+        const { data, error } = await db
+          .from("bookings")
+          .update({ is_deleted: false, deleted_at: null, deleted_by: null, updated_at: new Date().toISOString() })
+          .eq("id", body.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        await logActivity("restore", body.id, { restored: true });
+
+        return new Response(JSON.stringify({ data }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+
       const { id: bookingId, ...updates } = body;
 
       // Check permission
@@ -123,6 +197,9 @@ serve(async (req) => {
         .single();
 
       if (error) throw error;
+
+      await logActivity("update", bookingId, updates);
+
       return new Response(JSON.stringify({ data }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -137,8 +214,43 @@ serve(async (req) => {
       }
 
       const body = await req.json();
-      const { error } = await db.from("bookings").delete().eq("id", body.id);
+
+      // Handle bulk delete (soft delete)
+      if (body.bulk && body.ids) {
+        const { error } = await db
+          .from("bookings")
+          .update({ 
+            is_deleted: true, 
+            deleted_at: new Date().toISOString(),
+            deleted_by: user.id,
+            updated_at: new Date().toISOString()
+          })
+          .in("id", body.ids);
+
+        if (error) throw error;
+
+        await logActivity("bulk_delete", undefined, { ids: body.ids });
+
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+
+      // Soft delete single booking
+      const { error } = await db
+        .from("bookings")
+        .update({ 
+          is_deleted: true, 
+          deleted_at: new Date().toISOString(),
+          deleted_by: user.id,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", body.id);
+
       if (error) throw error;
+
+      await logActivity("delete", body.id, { soft_deleted: true });
+
       return new Response(JSON.stringify({ success: true }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });

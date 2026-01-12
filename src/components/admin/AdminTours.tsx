@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2, X, Hotel } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, X, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { toursApi } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
 import ImageUpload from '@/components/common/ImageUpload';
 import {
@@ -77,13 +78,12 @@ export default function AdminTours() {
 
   const fetchTours = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
-      .from('tours')
-      .select('*, hotels(id, name, location, star_rating)')
-      .order('created_at', { ascending: false });
+    const { data, error } = await toursApi.getAll();
 
     if (!error && data) {
       setTours(data as Tour[]);
+    } else if (error) {
+      toast({ title: 'Error', description: error, variant: 'destructive' });
     }
     setIsLoading(false);
   };
@@ -104,15 +104,15 @@ export default function AdminTours() {
       hotel_id: editingTour.hotel_id || null,
     };
 
-    let error;
+    let result;
     if (editingTour.id) {
-      ({ error } = await supabase.from('tours').update(tourData).eq('id', editingTour.id));
+      result = await toursApi.update(editingTour.id, tourData);
     } else {
-      ({ error } = await supabase.from('tours').insert(tourData));
+      result = await toursApi.create(tourData);
     }
 
-    if (error) {
-      toast({ title: 'Error', description: 'Failed to save tour', variant: 'destructive' });
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: `Tour ${editingTour.id ? 'updated' : 'created'}` });
       setIsEditing(false);
@@ -124,10 +124,10 @@ export default function AdminTours() {
   const deleteTour = async (id: string) => {
     if (!confirm('Are you sure you want to delete this tour?')) return;
 
-    const { error } = await supabase.from('tours').delete().eq('id', id);
+    const { error } = await toursApi.delete(id);
 
     if (error) {
-      toast({ title: 'Error', description: 'Failed to delete tour', variant: 'destructive' });
+      toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: 'Tour deleted' });
       fetchTours();
@@ -172,11 +172,14 @@ export default function AdminTours() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tours.map((tour) => (
           <div key={tour.id} className="bg-card rounded-2xl overflow-hidden shadow-card">
-            <div className="aspect-video bg-muted flex items-center justify-center">
+            <div className="aspect-video bg-muted flex items-center justify-center relative">
               {tour.image_url ? (
                 <img src={tour.image_url} alt={tour.title} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-muted-foreground">No image</span>
+                <div className="flex flex-col items-center text-muted-foreground">
+                  <ImageIcon className="w-8 h-8 mb-1" />
+                  <span className="text-sm">No image</span>
+                </div>
               )}
             </div>
             <div className="p-4 space-y-3">

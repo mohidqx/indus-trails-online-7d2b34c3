@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           created_at: string
@@ -24,8 +60,13 @@ export type Database = {
           customer_nationality: string | null
           customer_phone: string
           deal_id: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          discount_applied: number | null
           id: string
+          is_deleted: boolean | null
           num_travelers: number
+          original_price: number | null
           special_requests: string | null
           status: string | null
           total_price: number | null
@@ -44,8 +85,13 @@ export type Database = {
           customer_nationality?: string | null
           customer_phone: string
           deal_id?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          discount_applied?: number | null
           id?: string
+          is_deleted?: boolean | null
           num_travelers?: number
+          original_price?: number | null
           special_requests?: string | null
           status?: string | null
           total_price?: number | null
@@ -64,8 +110,13 @@ export type Database = {
           customer_nationality?: string | null
           customer_phone?: string
           deal_id?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          discount_applied?: number | null
           id?: string
+          is_deleted?: boolean | null
           num_travelers?: number
+          original_price?: number | null
           special_requests?: string | null
           status?: string | null
           total_price?: number | null
