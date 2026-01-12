@@ -545,7 +545,7 @@ export default function AdminBookings() {
                 />
               )}
 
-              {/* Customer Info */}
+              {/* Customer Information */}
               <div className="p-4 rounded-lg bg-muted/50">
                 <h4 className="font-semibold text-foreground mb-3">👤 Customer Information</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -577,7 +577,7 @@ export default function AdminBookings() {
                 </div>
               </div>
 
-{/* Modal Actions */}
+              {/* Modal Actions */}
               <div className="flex flex-wrap gap-2 pt-4 border-t">
                 <Button onClick={() => {
                   if (typeof printBookingSlip === 'function') {
@@ -592,12 +592,11 @@ export default function AdminBookings() {
                 }}>
                   Edit
                 </Button>
-           </div> {/* Closes Modal Actions div */}
-            </div> {/* Closes main space-y-4 div */}
-        </div> {/* This is the extra one you were missing! Closes the inner wrapper */}
-        )}
-   </DialogContent>
- </Dialog>
+              </div>
+            </div> // This correctly closes the main space-y-4 div
+          )}
+        </DialogContent>
+      </Dialog>
       
       {/* Edit Booking Modal */}
       <Dialog open={!!editingBooking} onOpenChange={() => setEditingBooking(null)}>
