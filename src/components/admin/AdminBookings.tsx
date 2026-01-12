@@ -527,12 +527,13 @@ export default function AdminBookings() {
         </TabsContent>
       </Tabs>
 
-      {/* Booking Details Modal */}
+  {/* Booking Details Modal */}
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Booking Details</DialogTitle>
           </DialogHeader>
+          
           {selectedBooking && (
             <div className="space-y-4">
               {/* Tour Image */}
@@ -566,8 +567,6 @@ export default function AdminBookings() {
                       <p className="font-medium">{selectedBooking.customer_nationality}</p>
                     </div>
                   )}
-                </div>
-
                   {selectedBooking.customer_cnic && (
                     <div>
                       <p className="text-xs text-muted-foreground uppercase tracking-wide">CNIC</p>
@@ -575,8 +574,9 @@ export default function AdminBookings() {
                     </div>
                   )}
                 </div>
+
                 {selectedBooking.customer_address && (
-                  <div className="mt-3">
+                  <div className="mt-3 text-sm">
                     <p className="text-xs text-muted-foreground uppercase tracking-wide">Full Address</p>
                     <p className="font-medium">{selectedBooking.customer_address}</p>
                   </div>
@@ -593,7 +593,14 @@ export default function AdminBookings() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground uppercase tracking-wide">Travel Date</p>
-                    <p className="font-medium">{new Date(selectedBooking.travel_date).toLocaleDateString('en-PK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    <p className="font-medium">
+                      {new Date(selectedBooking.travel_date).toLocaleDateString('en-PK', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Travelers</p>
@@ -601,7 +608,9 @@ export default function AdminBookings() {
                   </div>
                   <div>
                     <p className="text-muted-foreground">Total</p>
-                    <p className="font-medium text-primary">PKR {Number(selectedBooking.total_price || 0).toLocaleString()}</p>
+                    <p className="font-medium text-primary">
+                      PKR {Number(selectedBooking.total_price || 0).toLocaleString()}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -612,9 +621,11 @@ export default function AdminBookings() {
                   <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
                     📝 Special Requests
                   </h4>
-                  <p className="text-foreground">{selectedBooking.special_requests}</p>
+                  <p className="text-sm text-foreground">{selectedBooking.special_requests}</p>
                 </div>
               )}
+            </div>
+          )}
               
               {/* Actions */}
               <div className="flex flex-wrap gap-2 pt-2 border-t">
