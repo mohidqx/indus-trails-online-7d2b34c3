@@ -244,6 +244,7 @@ export default function AdminBookings() {
           <div class="row"><span class="label">Phone:</span><span class="value">${booking.customer_phone}</span></div>
           ${booking.customer_nationality ? `<div class="row"><span class="label">Nationality:</span><span class="value">${booking.customer_nationality}</span></div>` : ''}
           ${booking.customer_cnic ? `<div class="row"><span class="label">CNIC:</span><span class="value">${booking.customer_cnic}</span></div>` : ''}
+          ${booking.customer_address ? `<div class="row"><span class="label">Address:</span><span class="value">${booking.customer_address}</span></div>` : ''}
         </div>
 
         <div class="section">
@@ -267,7 +268,7 @@ export default function AdminBookings() {
 
         <div class="footer">
           <p>Thank you for booking with Indus Tours!</p>
-          <p>Contact: info@industours.pk | +92 300 1234567</p>
+          <p>Contact: info@industours.pk | +92 311 8088007</p>
         </div>
       </body>
       </html>
