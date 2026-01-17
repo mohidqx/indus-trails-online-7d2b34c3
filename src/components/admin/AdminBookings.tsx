@@ -624,13 +624,18 @@ export default function AdminBookings() {
                 </Button>
               </div>
 
-              {/* Booking Meta Section */}
-              <div className="p-4 rounded-lg bg-muted/30 text-sm mt-4">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Booking ID:</span>
-                  <span className="font-mono">{selectedBooking.id.slice(0, 8).toUpperCase()}</span>
-                </div>
-              </div>
+{/* Booking Meta Section */}
+<div className="p-4 rounded-lg bg-muted/30 text-sm mt-4">
+  <div className="flex justify-between">
+    <span className="text-muted-foreground">Booking ID:</span>
+    <span className="font-mono">{selectedBooking.id.slice(0, 8).toUpperCase()}</span>
+  </div>
+  
+  <div className="flex justify-between mt-1">
+    <span className="text-muted-foreground">Submitted:</span>
+    <span>{new Date(selectedBooking.created_at).toLocaleString('en-PK')}</span>
+  </div>
+</div>
             </div>
           )}
         </DialogContent>
