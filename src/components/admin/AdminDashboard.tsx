@@ -58,7 +58,44 @@ export default function AdminDashboard() {
       // Fetch stats from API
       const { data: apiStats } = await statsApi.getDashboard();
       if (apiStats) {
-        setStats(apiStats as Stats);
+        // Cast to proper type and transform flat API response to nested Stats structure
+        const s = apiStats as Record<string, any>;
+        const transformedStats: Stats = {
+          bookings: {
+            total: s.totalBookings || 0,
+            pending: s.pendingBookings || 0,
+            confirmed: s.confirmedBookings || 0,
+            completed: s.completedBookings || 0,
+            cancelled: s.cancelledBookings || 0,
+            recent: (Object.values(s.bookingsByDate || {}) as number[]).reduce((a, b) => a + b, 0),
+          },
+          revenue: {
+            total: s.totalRevenue || 0,
+            monthly: s.totalRevenue || 0, // Use total as monthly for now
+            average: s.totalBookings > 0 ? Math.round(s.totalRevenue / s.totalBookings) : 0,
+          },
+          tours: {
+            total: s.totalTours || 0,
+            active: s.activeTours || 0,
+          },
+          deals: {
+            total: s.totalDeals || 0,
+            active: s.activeDeals || 0,
+          },
+          vehicles: {
+            total: s.totalVehicles || 0,
+            available: s.availableVehicles || 0,
+          },
+          feedback: {
+            total: s.totalFeedback || 0,
+            approved: s.approvedFeedback || 0,
+            averageRating: s.avgRating || 0,
+          },
+          users: {
+            total: s.totalUsers || 0,
+          },
+        };
+        setStats(transformedStats);
       }
 
       // Fetch recent bookings
