@@ -612,27 +612,28 @@ export default function AdminBookings() {
             </div>
           )}
 
-              {/* Actions */}
-              <div className="flex flex-wrap gap-2 pt-2 border-t">
-                <Button onClick={() => printBookingSlip(selectedBooking)}>
-                  <Printer className="w-4 h-4 mr-2" /> Print Slip
-                </Button>
-                <Button variant="outline" onClick={() => { setEditingBooking(selectedBooking); setSelectedBooking(null); }}>
-                  <Edit className="w-4 h-4 mr-2" /> Edit
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+{/* Actions */}
+    <div className="flex flex-wrap gap-2 pt-2 border-t">
+      <Button onClick={() => printBookingSlip(selectedBooking)}>
+        <Printer className="w-4 h-4 mr-2" /> Print Slip
+      </Button>
+      <Button variant="outline" onClick={() => { 
+        setEditingBooking(selectedBooking); 
+        setSelectedBooking(null); 
+      }}>
+        <Edit className="w-4 h-4 mr-2" /> Edit
+      </Button>
+    </div>
 
-    
-              {/* Booking Meta */}
-              <div className="p-4 rounded-lg bg-muted/30 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Booking ID:</span>
-                  <span className="font-mono">{selectedBooking.id.slice(0, 8).toUpperCase()}</span>
-                  
+    {/* Booking Meta */}
+    <div className="p-4 rounded-lg bg-muted/30 text-sm">
+      <div className="flex justify-between">
+        <span className="text-muted-foreground">Booking ID:</span>
+        <span className="font-mono">{selectedBooking.id.slice(0, 8).toUpperCase()}</span>
+      </div>
+    </div>
+  </>
+)}              
       {/* Edit Booking Modal */}
       <Dialog open={!!editingBooking} onOpenChange={() => setEditingBooking(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
