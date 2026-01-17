@@ -560,6 +560,14 @@ export default function AdminBookings() {
                     <p className="text-muted-foreground">Phone</p>
                     <p className="font-medium">{selectedBooking.customer_phone}</p>
                   </div>
+                  <div>
+                    <p className="text-muted-foreground"> Address</p>
+                    <p clasName="font-medium">{selectedBooking.customer_address}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground"> CNIC </p>
+                    <p clasName="font-medium">{selectedBooking.customer_cnic}</p>
+                  </div>
                   {selectedBooking.customer_nationality && (
                     <div>
                       <p className="text-muted-foreground">Nationality</p>
