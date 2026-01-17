@@ -600,6 +600,18 @@ export default function AdminBookings() {
                 </div>
               </div>
 
+              {/* Special Requests */}
+              {selectedBooking.special_requests && (
+                <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
+                  <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                    📝 Special Requests
+                  </h4>
+                  <p className="text-sm text-foreground">{selectedBooking.special_requests}</p>
+                </div>
+              )}
+            </div>
+          )}
+
               {/* Actions */}
               <div className="flex flex-wrap gap-2 pt-2 border-t">
                 <Button onClick={() => printBookingSlip(selectedBooking)}>
@@ -614,6 +626,13 @@ export default function AdminBookings() {
         </DialogContent>
       </Dialog>
 
+    
+              {/* Booking Meta */}
+              <div className="p-4 rounded-lg bg-muted/30 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Booking ID:</span>
+                  <span className="font-mono">{selectedBooking.id.slice(0, 8).toUpperCase()}</span>
+                  
       {/* Edit Booking Modal */}
       <Dialog open={!!editingBooking} onOpenChange={() => setEditingBooking(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
