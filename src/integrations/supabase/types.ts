@@ -519,7 +519,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      feedback_public: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          is_featured: boolean | null
+          message: string | null
+          name: string | null
+          rating: number | null
+          tour_name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          is_featured?: boolean | null
+          message?: string | null
+          name?: string | null
+          rating?: number | null
+          tour_name?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          is_featured?: boolean | null
+          message?: string | null
+          name?: string | null
+          rating?: number | null
+          tour_name?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {

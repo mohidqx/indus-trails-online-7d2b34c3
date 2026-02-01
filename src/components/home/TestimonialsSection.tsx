@@ -6,11 +6,11 @@ import { supabase } from '@/integrations/supabase/client';
 interface Feedback {
   id: string;
   name: string;
-  email: string;
   message: string;
   rating: number;
   tour_name: string | null;
   is_featured: boolean;
+  created_at: string;
 }
 
 export default function TestimonialsSection() {
@@ -20,10 +20,10 @@ export default function TestimonialsSection() {
 
   useEffect(() => {
     const fetchTestimonials = async () => {
+      // Use the secure public view that excludes email addresses
       const { data } = await supabase
-        .from('feedback')
+        .from('feedback_public')
         .select('*')
-        .eq('is_approved', true)
         .eq('is_featured', true)
         .order('created_at', { ascending: false })
         .limit(10);
