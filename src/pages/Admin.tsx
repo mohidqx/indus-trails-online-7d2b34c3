@@ -3,7 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, MapPin, CalendarDays, Car, Tag, MessageSquare, Settings,
   LogOut, FileText, Bell, BarChart3, Loader2, Menu, Hotel, Home, Users, Activity, Eye,
-  ChevronRight, Zap, Search, Mail, MessageCircle, Shield, Server, FileCheck, Monitor
+  ChevronRight, Zap, Search, Mail, MessageCircle, Shield, Server, FileCheck, Monitor,
+  Skull, Ban
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -34,6 +35,7 @@ import AdminSecurityDashboard from '@/components/admin/AdminSecurityDashboard';
 import AdminSystemHealth from '@/components/admin/AdminSystemHealth';
 import AdminUserAnalytics from '@/components/admin/AdminUserAnalytics';
 import AdminAuditTrail from '@/components/admin/AdminAuditTrail';
+import AdminSiteControl from '@/components/admin/AdminSiteControl';
 import { logAdminAction } from '@/lib/activityLogger';
 
 const menuItems = [
@@ -55,13 +57,14 @@ const menuItems = [
   { id: 'security', icon: Shield, label: 'Security Threats', group: 'Security' },
   { id: 'audit-trail', icon: FileCheck, label: 'Audit Trail', group: 'Security' },
   { id: 'system-health', icon: Server, label: 'System Health', group: 'Security' },
+  { id: 'god-mode', icon: Skull, label: 'God Mode', group: 'Control' },
   { id: 'content', icon: FileText, label: 'Content Editor', group: 'System' },
   { id: 'seo', icon: Search, label: 'SEO Settings', group: 'System' },
   { id: 'email-templates', icon: Mail, label: 'Email Templates', group: 'System' },
   { id: 'settings', icon: Settings, label: 'Settings', group: 'System' },
 ];
 
-const groups = ['Overview', 'Manage', 'Engagement', 'Intelligence', 'Security', 'System'];
+const groups = ['Overview', 'Manage', 'Engagement', 'Intelligence', 'Security', 'Control', 'System'];
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -109,6 +112,8 @@ export default function Admin() {
       case 'activity': return <AdminActivityLogs />;
       case 'security': return <AdminSecurityDashboard />;
       case 'audit-trail': return <AdminAuditTrail />;
+      case 'system-health': return <AdminSystemHealth />;
+      case 'god-mode': return <AdminSiteControl />;
       case 'system-health': return <AdminSystemHealth />;
       case 'content': return <AdminContent />;
       case 'seo': return <AdminSEO />;
@@ -245,7 +250,7 @@ export default function Admin() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-xl lg:text-2xl font-serif font-bold text-foreground capitalize">
-              {activeMenu === 'content' ? 'Content Editor' : activeMenu === 'activity' ? 'Activity Logs' : activeMenu === 'visitors' ? 'Visitor Logs' : activeMenu === 'seo' ? 'SEO Settings' : activeMenu === 'email-templates' ? 'Email Templates' : activeMenu === 'notifications' ? 'Notifications' : activeMenu === 'contact' ? 'Contact Messages' : activeMenu}
+              {activeMenu === 'content' ? 'Content Editor' : activeMenu === 'activity' ? 'Activity Logs' : activeMenu === 'visitors' ? 'Visitor Logs' : activeMenu === 'seo' ? 'SEO Settings' : activeMenu === 'email-templates' ? 'Email Templates' : activeMenu === 'notifications' ? 'Notifications' : activeMenu === 'contact' ? 'Contact Messages' : activeMenu === 'god-mode' ? '☠️ God Mode' : activeMenu}
             </h1>
             <p className="text-[11px] text-muted-foreground mt-0.5 font-mono">{user.email}</p>
           </div>

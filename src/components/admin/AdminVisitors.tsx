@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Monitor, Smartphone, Tablet, Globe, Clock, MousePointer, Eye, RefreshCw, Cpu, ChevronDown, ChevronUp, Search, Wifi, WifiOff, Download, Filter, TrendingUp, MapPin, Battery, Gauge, Zap, Activity } from 'lucide-react';
+import { Loader2, Monitor, Smartphone, Tablet, Globe, Clock, MousePointer, Eye, RefreshCw, Cpu, ChevronDown, ChevronUp, Search, Wifi, WifiOff, Download, Filter, TrendingUp, MapPin, Battery, Gauge, Zap, Activity, Ban, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -147,6 +147,19 @@ export default function AdminVisitors() {
     uniqueCountries: new Set(visitors.map(v => v.country).filter(Boolean)).size,
   };
 
+  const blockIP = async (ip: string) => {
+    const { error } = await supabase.from('banned_ips').insert({
+      ip_address: ip,
+      reason: 'Blocked from visitor logs',
+      is_active: true,
+    });
+    if (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: '🚫 IP Blocked', description: `${ip} has been blacklisted` });
+    }
+  };
+
   const exportCSV = () => {
     const headers = ['Date', 'Browser', 'OS', 'Device', 'IP', 'Country', 'City', 'Screen', 'Time on Page', 'Max Scroll', 'Connection', 'Battery', 'Page Load', 'Entry URL'];
     const rows = filtered.map(v => [
@@ -250,6 +263,19 @@ export default function AdminVisitors() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {v.ip_address && (
+                      <Button 
+                        variant="ghost" size="sm" 
+                        className="h-6 w-6 p-0 text-red-400 hover:text-red-300 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          blockIP(v.ip_address!);
+                        }}
+                        title="Block this IP"
+                      >
+                        <Ban className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
                     {v.battery_level != null && (
                       <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                         <Battery className="w-3.5 h-3.5" /> {v.battery_level}%
