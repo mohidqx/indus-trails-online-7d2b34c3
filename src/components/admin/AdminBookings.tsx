@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { logAdminAction } from '@/lib/activityLogger';
+import logo from '@/assets/indus-tours-logo.jpeg';
 import { Check, X, Loader2, Eye, Search, Trash2, Download, Tag, Printer, Edit, Undo, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -173,6 +174,8 @@ export default function AdminBookings() {
   };
 
   const printBookingSlip = (booking: Booking) => {
+    // Convert logo to base64 for the print window
+    const logoUrl = new URL(logo, window.location.origin).href;
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
     const content = `
@@ -182,23 +185,27 @@ export default function AdminBookings() {
         <title>Booking Slip - ${booking.id.slice(0, 8).toUpperCase()}</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
-          .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-          .logo { font-size: 24px; font-weight: bold; color: #1e40af; }
+          .header { text-align: center; border-bottom: 2px solid #1a5c3a; padding-bottom: 15px; margin-bottom: 20px; }
+          .header img { width: 80px; height: 80px; object-fit: contain; border-radius: 12px; margin-bottom: 8px; }
+          .header h1 { font-size: 22px; font-weight: bold; color: #1a5c3a; margin: 4px 0; }
+          .header p { color: #666; font-size: 13px; margin: 2px 0; }
           .section { margin-bottom: 20px; }
           .section-title { font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
           .row { display: flex; justify-content: space-between; margin-bottom: 5px; }
           .label { color: #666; }
           .value { font-weight: 500; }
-          .total { font-size: 20px; color: #1e40af; text-align: right; margin-top: 20px; }
-          .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #666; }
+          .total { font-size: 20px; color: #1a5c3a; text-align: right; margin-top: 20px; padding-top: 10px; border-top: 2px solid #1a5c3a; }
+          .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 15px; }
           .deal { background: #fef2f2; padding: 8px 12px; border-radius: 6px; margin: 10px 0; }
-          @media print { body { print-color-adjust: exact; } }
+          @media print { body { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
         </style>
       </head>
       <body>
         <div class="header">
-          <div class="logo">Indus Tours</div>
-          <p>Booking Confirmation</p>
+          <img src="${logoUrl}" alt="Indus Tours Logo" />
+          <h1>Indus Tours</h1>
+          <p>Booking Confirmation Slip</p>
+          <p style="font-size:11px; color:#999;">Ref: ${booking.id.slice(0, 8).toUpperCase()}</p>
         </div>
         <div class="section">
           <div class="section-title">Booking Information</div>
@@ -229,7 +236,7 @@ export default function AdminBookings() {
         ` : ''}
         <div class="total">Total Amount: PKR ${Number(booking.total_price || 0).toLocaleString()}</div>
         <div class="footer">
-          <p>Thank you for booking with Indus Tours!</p>
+          <p><strong>Thank you for booking with Indus Tours!</strong></p>
           <p>Contact: info@industours.pk | +92 300 1234567</p>
         </div>
       </body>
@@ -237,7 +244,8 @@ export default function AdminBookings() {
     `;
     printWindow.document.write(content);
     printWindow.document.close();
-    printWindow.print();
+    // Wait for logo to load before printing
+    printWindow.onload = () => printWindow.print();
   };
 
   const filteredBookings = bookings.filter(b => {
@@ -492,7 +500,7 @@ export default function AdminBookings() {
 
       {/* Booking Details Modal - Full metadata */}
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto sm:max-h-[90vh] w-[calc(100vw-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle>Booking Details</DialogTitle>
           </DialogHeader>
@@ -612,7 +620,7 @@ export default function AdminBookings() {
 
       {/* Edit Booking Modal - Full fields */}
       <Dialog open={!!editingBooking} onOpenChange={() => setEditingBooking(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto sm:max-h-[90vh] w-[calc(100vw-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle>Edit Booking</DialogTitle>
           </DialogHeader>
