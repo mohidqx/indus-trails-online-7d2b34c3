@@ -82,6 +82,13 @@ export default function Tours() {
         </div>
       </section>
 
+      {/* Comparison Tool */}
+      <section className="py-4 border-b border-border/50">
+        <div className="container mx-auto px-4 sm:px-6">
+          <TourComparison />
+        </div>
+      </section>
+
       {/* Filters */}
       <section className="py-6 md:py-8 border-b border-border/50">
         <div className="container mx-auto px-4 sm:px-6">
