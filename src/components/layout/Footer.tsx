@@ -13,6 +13,8 @@ const quickLinks = [
   { name: 'Hotels', path: '/hotels' },
   { name: 'Vehicles', path: '/vehicles' },
   { name: 'Deals', path: '/deals' },
+  { name: 'Blog', path: '/blog' },
+  { name: 'Gallery', path: '/gallery' },
 ];
 
 const supportLinks = [
