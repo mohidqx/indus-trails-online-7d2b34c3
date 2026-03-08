@@ -277,7 +277,7 @@ export default function Auth() {
               </div>
             </form>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5" autoComplete="on">
               {!isLogin && (
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
