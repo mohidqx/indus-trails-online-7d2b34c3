@@ -118,6 +118,9 @@
 }
 
 @layer components {
+  /* ═══════════════════════════════════════
+     GRADIENT TEXT
+     ═══════════════════════════════════════ */
   .text-gradient-gold {
     background: var(--gradient-gold);
     -webkit-background-clip: text;
@@ -130,16 +133,26 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* ═══════════════════════════════════════
+     BACKGROUNDS
+     ═══════════════════════════════════════ */
   .bg-gradient-hero { background: var(--gradient-hero); }
   .bg-gradient-mountain { background: var(--gradient-mountain); }
   .bg-gradient-premium { background: var(--gradient-premium); }
 
+  /* ═══════════════════════════════════════
+     SHADOWS
+     ═══════════════════════════════════════ */
   .shadow-card { box-shadow: var(--shadow-md); }
   .shadow-card-hover { box-shadow: var(--shadow-lg); }
   .shadow-gold { box-shadow: var(--shadow-gold); }
   .shadow-teal { box-shadow: var(--shadow-teal); }
   .shadow-premium { box-shadow: var(--shadow-premium); }
 
+  /* ═══════════════════════════════════════
+     GLASS EFFECTS
+     ═══════════════════════════════════════ */
   .glass {
     background: hsl(var(--background) / 0.7);
     backdrop-filter: blur(12px);
@@ -155,7 +168,16 @@
     backdrop-filter: blur(24px) saturate(1.5);
     border: 1px solid hsl(0 0% 100% / 0.08);
   }
+  .glass-card {
+    background: hsl(var(--card) / 0.85);
+    backdrop-filter: blur(16px) saturate(1.2);
+    border: 1px solid hsl(var(--border) / 0.4);
+    box-shadow: 0 8px 32px hsl(220 20% 15% / 0.08), 0 1px 0 hsl(0 0% 100% / 0.5) inset;
+  }
 
+  /* ═══════════════════════════════════════
+     SECTION STYLING
+     ═══════════════════════════════════════ */
   .section-divider { position: relative; }
   .section-divider::after {
     content: '';
@@ -166,12 +188,42 @@
     border-radius: 2px;
   }
 
+  /* ═══════════════════════════════════════
+     PREMIUM CARDS
+     ═══════════════════════════════════════ */
   .premium-card {
     transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   }
   .premium-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-premium);
+  }
+
+  .ultra-card {
+    position: relative;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    overflow: hidden;
+  }
+  .ultra-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.15), transparent 50%, hsl(var(--accent) / 0.1));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .ultra-card:hover::before {
+    opacity: 1;
+  }
+  .ultra-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 20px 50px hsl(220 20% 15% / 0.15), 0 0 0 1px hsl(var(--primary) / 0.08);
   }
 
   .shimmer-border { position: relative; overflow: hidden; }
@@ -185,6 +237,62 @@
     -webkit-mask-composite: xor;
     mask-composite: exclude;
   }
+
+  /* ═══════════════════════════════════════
+     PREMIUM BADGE
+     ═══════════════════════════════════════ */
+  .premium-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    border: 1px solid hsl(var(--primary) / 0.15);
+    background: hsl(var(--primary) / 0.06);
+    color: hsl(var(--primary));
+    backdrop-filter: blur(8px);
+  }
+
+  /* ═══════════════════════════════════════
+     PAGE HERO SECTIONS
+     ═══════════════════════════════════════ */
+  .page-hero {
+    position: relative;
+    padding-top: 8rem;
+    padding-bottom: 5rem;
+    background: var(--gradient-mountain);
+    overflow: hidden;
+  }
+  .page-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(to top, hsl(var(--background)), transparent);
+    pointer-events: none;
+  }
+
+  /* ═══════════════════════════════════════
+     DIVIDER LINE
+     ═══════════════════════════════════════ */
+  .gold-divider {
+    width: 60px;
+    height: 3px;
+    background: var(--gradient-gold);
+    border-radius: 3px;
+  }
+
+  /* ═══════════════════════════════════════
+     INPUT FOCUS RING
+     ═══════════════════════════════════════ */
+  .premium-input:focus-within {
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1), 0 0 20px hsl(var(--primary) / 0.05);
+  }
 }
 
 @layer utilities {
@@ -193,22 +301,36 @@
   .animate-fade-up { animation: fadeUp 0.8s ease-out forwards; }
   .animate-scale-in { animation: scaleIn 0.5s ease-out forwards; }
   .animate-slide-left { animation: slideLeft 0.6s ease-out forwards; }
+  .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
   .animate-pulse-soft { animation: pulseSoft 3s ease-in-out infinite; }
   .animate-glow { animation: glow 3s ease-in-out infinite; }
+  .animate-shimmer { animation: shimmer 2s ease-in-out infinite; }
+  .animate-count-up { animation: countUp 1s ease-out forwards; }
 
   @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
   @keyframes slideLeft { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes pulseSoft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
   @keyframes glow { 0%, 100% { box-shadow: 0 0 20px hsl(38 85% 55% / 0.2); } 50% { box-shadow: 0 0 40px hsl(38 85% 55% / 0.4); } }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   .delay-100 { animation-delay: 100ms; }
   .delay-200 { animation-delay: 200ms; }
   .delay-300 { animation-delay: 300ms; }
   .delay-400 { animation-delay: 400ms; }
   .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
+  .delay-700 { animation-delay: 700ms; }
 }
 
 /* ═══════════════════════════════════════════════
@@ -251,14 +373,12 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-/* Admin premium card styling */
 .admin-dark [class*="shadow-card"] {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), 
               0 1px 0 rgba(255, 255, 255, 0.02) inset,
               0 -1px 0 rgba(0, 0, 0, 0.3) inset;
 }
 
-/* Admin glass cards */
 .admin-glass {
   background: linear-gradient(145deg, rgba(15, 20, 40, 0.6), rgba(8, 12, 25, 0.8));
   backdrop-filter: blur(20px) saturate(1.2);
@@ -267,7 +387,6 @@
               0 1px 0 rgba(255, 255, 255, 0.03) inset;
 }
 
-/* Premium stat card glow */
 .admin-stat-card {
   position: relative;
   overflow: hidden;
@@ -291,7 +410,6 @@
               0 1px 0 rgba(255, 255, 255, 0.05) inset;
 }
 
-/* Premium table rows */
 .admin-dark table tbody tr {
   transition: background-color 0.2s ease;
 }
@@ -299,7 +417,6 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
-/* Scrollbar styling for admin */
 .admin-dark ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -315,14 +432,12 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* Admin nav item active glow */
 .admin-nav-active {
   background: linear-gradient(135deg, rgba(45, 212, 191, 0.12), rgba(45, 212, 191, 0.04));
   border-left: 2px solid hsl(175 55% 45%);
   box-shadow: 0 0 20px rgba(45, 212, 191, 0.08);
 }
 
-/* Premium input focus in admin */
 .admin-dark input:focus,
 .admin-dark textarea:focus,
 .admin-dark select:focus {
@@ -331,7 +446,6 @@
               0 0 20px hsl(175 55% 40% / 0.05);
 }
 
-/* Badge glow effects */
 .admin-badge-glow {
   box-shadow: 0 0 12px currentColor;
 }
