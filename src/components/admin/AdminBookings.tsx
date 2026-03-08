@@ -118,6 +118,7 @@ export default function AdminBookings() {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: 'Booking moved to archive' });
+      logAdminAction('delete', 'booking', id, { soft_deleted: true });
       setSelectedBooking(null);
       fetchBookings();
     }
