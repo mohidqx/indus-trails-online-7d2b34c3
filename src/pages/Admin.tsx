@@ -113,6 +113,8 @@ export default function Admin() {
       case 'security': return <AdminSecurityDashboard />;
       case 'audit-trail': return <AdminAuditTrail />;
       case 'system-health': return <AdminSystemHealth />;
+      case 'god-mode': return <AdminSiteControl />;
+      case 'system-health': return <AdminSystemHealth />;
       case 'content': return <AdminContent />;
       case 'seo': return <AdminSEO />;
       case 'email-templates': return <AdminEmailTemplates />;
