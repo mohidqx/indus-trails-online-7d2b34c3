@@ -73,6 +73,8 @@ const App = () => (
             <VisitorTracker />
             <AnimatedRoutes />
             <WhatsAppButton />
+            <AIChatbot />
+            <LiveBookingTicker />
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
