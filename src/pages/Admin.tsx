@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, MapPin, CalendarDays, Car, Tag, MessageSquare, Settings,
-  LogOut, FileText, Bell, BarChart3, Loader2, Menu, Hotel, Home, Users, Activity, Eye
+  LogOut, FileText, Bell, BarChart3, Loader2, Menu, Hotel, Home, Users, Activity, Eye,
+  ChevronRight, Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -24,23 +25,27 @@ import AdminUsers from '@/components/admin/AdminUsers';
 import AdminAnalytics from '@/components/admin/AdminAnalytics';
 import AdminActivityLogs from '@/components/admin/AdminActivityLogs';
 import AdminVisitors from '@/components/admin/AdminVisitors';
+import AdminDestinations from '@/components/admin/AdminDestinations';
 import { logAdminAction } from '@/lib/activityLogger';
 
 const menuItems = [
-  { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { id: 'bookings', icon: CalendarDays, label: 'Bookings' },
-  { id: 'tours', icon: MapPin, label: 'Tours' },
-  { id: 'vehicles', icon: Car, label: 'Vehicles' },
-  { id: 'hotels', icon: Hotel, label: 'Hotels' },
-  { id: 'deals', icon: Tag, label: 'Deals & Offers' },
-  { id: 'feedback', icon: MessageSquare, label: 'Feedback' },
-  { id: 'users', icon: Users, label: 'Users' },
-  { id: 'visitors', icon: Eye, label: 'Visitor Logs' },
-  { id: 'analytics', icon: BarChart3, label: 'Analytics' },
-  { id: 'activity', icon: Activity, label: 'Activity Logs' },
-  { id: 'content', icon: FileText, label: 'Content' },
-  { id: 'settings', icon: Settings, label: 'Settings' },
+  { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', group: 'Overview' },
+  { id: 'bookings', icon: CalendarDays, label: 'Bookings', group: 'Overview' },
+  { id: 'tours', icon: MapPin, label: 'Tours', group: 'Manage' },
+  { id: 'destinations', icon: MapPin, label: 'Destinations', group: 'Manage' },
+  { id: 'vehicles', icon: Car, label: 'Vehicles', group: 'Manage' },
+  { id: 'hotels', icon: Hotel, label: 'Hotels', group: 'Manage' },
+  { id: 'deals', icon: Tag, label: 'Deals & Offers', group: 'Manage' },
+  { id: 'feedback', icon: MessageSquare, label: 'Feedback', group: 'Engagement' },
+  { id: 'users', icon: Users, label: 'Users', group: 'Engagement' },
+  { id: 'visitors', icon: Eye, label: 'Visitor Logs', group: 'Intelligence' },
+  { id: 'analytics', icon: BarChart3, label: 'Analytics', group: 'Intelligence' },
+  { id: 'activity', icon: Activity, label: 'Activity Logs', group: 'Intelligence' },
+  { id: 'content', icon: FileText, label: 'Content', group: 'System' },
+  { id: 'settings', icon: Settings, label: 'Settings', group: 'System' },
 ];
+
+const groups = ['Overview', 'Manage', 'Engagement', 'Intelligence', 'System'];
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -74,6 +79,7 @@ export default function Admin() {
       case 'dashboard': return <AdminDashboard />;
       case 'bookings': return <AdminBookings />;
       case 'tours': return <AdminTours />;
+      case 'destinations': return <AdminDestinations />;
       case 'vehicles': return <AdminVehicles />;
       case 'hotels': return <AdminHotels />;
       case 'deals': return <AdminDeals />;
@@ -90,10 +96,13 @@ export default function Admin() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+      <div className="min-h-screen bg-[#030508] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
-          <p className="text-sm text-gray-400">Loading admin panel...</p>
+          <div className="relative">
+            <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
+            <div className="absolute inset-0 w-10 h-10 mx-auto rounded-full bg-primary/10 animate-ping" />
+          </div>
+          <p className="text-sm text-gray-500">Loading admin panel...</p>
         </div>
       </div>
     );
@@ -103,14 +112,14 @@ export default function Admin() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center p-6">
-        <div className="bg-[#111827] rounded-3xl p-8 md:p-12 shadow-xl text-center max-w-md border border-white/10">
+      <div className="min-h-screen bg-[#030508] flex items-center justify-center p-6">
+        <div className="admin-glass rounded-3xl p-8 md:p-12 text-center max-w-md">
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center">
             <BarChart3 className="w-8 h-8 text-red-400" />
           </div>
           <h1 className="text-2xl font-serif font-bold text-white mb-4">Access Denied</h1>
           <p className="text-gray-400 mb-6">You don't have admin permissions.</p>
-          <Button variant="outline" onClick={() => navigate('/')} className="border-white/20 text-white hover:bg-white/10">Return to Home</Button>
+          <Button variant="outline" onClick={() => navigate('/')} className="border-white/10 text-white hover:bg-white/5">Return to Home</Button>
         </div>
       </div>
     );
@@ -119,42 +128,57 @@ export default function Admin() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="flex items-center gap-3 mb-6 px-2">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-emerald-400 flex items-center justify-center text-white font-bold shadow-lg shadow-primary/30">
+      <div className="flex items-center gap-3 mb-6 px-2 pt-1">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-emerald-400 flex items-center justify-center text-white font-bold shadow-lg shadow-primary/20 relative">
           IT
+          <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#060a16] animate-pulse" />
         </div>
         <div>
-          <h2 className="font-semibold text-white text-sm">Indus Tours</h2>
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider">Admin Panel</p>
+          <h2 className="font-semibold text-white text-sm tracking-wide">Indus Tours</h2>
+          <div className="flex items-center gap-1.5">
+            <Zap className="w-2.5 h-2.5 text-primary" />
+            <p className="text-[9px] text-primary uppercase tracking-[0.2em] font-medium">Admin Panel</p>
+          </div>
         </div>
       </div>
 
-      {/* Nav */}
-      <nav className="space-y-0.5 flex-1 overflow-y-auto">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => { setActiveMenu(item.id); setMobileMenuOpen(false); }}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-sm transition-all duration-200 ${
-              activeMenu === item.id
-                ? 'bg-gradient-to-r from-primary/20 to-primary/5 text-primary border-l-2 border-primary font-medium'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
-            }`}
-          >
-            <item.icon className="w-4 h-4 flex-shrink-0" />
-            <span>{item.label}</span>
-          </button>
-        ))}
+      {/* Nav Groups */}
+      <nav className="flex-1 overflow-y-auto space-y-4 pr-1">
+        {groups.map(group => {
+          const items = menuItems.filter(i => i.group === group);
+          return (
+            <div key={group}>
+              <p className="text-[9px] uppercase tracking-[0.2em] text-gray-600 font-semibold px-3 mb-1.5">{group}</p>
+              <div className="space-y-0.5">
+                {items.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => { setActiveMenu(item.id); setMobileMenuOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-[13px] transition-all duration-200 group ${
+                      activeMenu === item.id
+                        ? 'admin-nav-active text-primary font-medium'
+                        : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.02]'
+                    }`}
+                  >
+                    <item.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${activeMenu === item.id ? 'text-primary' : 'text-gray-600 group-hover:text-gray-400'}`} />
+                    <span className="flex-1">{item.label}</span>
+                    {activeMenu === item.id && <ChevronRight className="w-3 h-3 text-primary/50" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </nav>
 
       {/* Bottom */}
-      <div className="pt-4 border-t border-white/10 space-y-1">
-        <Button variant="ghost" className="w-full justify-start text-sm h-9 text-gray-400 hover:text-white hover:bg-white/5" asChild>
+      <div className="pt-4 border-t border-white/[0.04] space-y-0.5">
+        <Button variant="ghost" className="w-full justify-start text-[13px] h-9 text-gray-500 hover:text-white hover:bg-white/[0.03]" asChild>
           <Link to="/">
             <Home className="w-4 h-4 mr-2" /> View Website
           </Link>
         </Button>
-        <Button variant="ghost" className="w-full justify-start text-sm h-9 text-gray-400 hover:text-red-400 hover:bg-red-500/10" onClick={handleLogout}>
+        <Button variant="ghost" className="w-full justify-start text-[13px] h-9 text-gray-500 hover:text-red-400 hover:bg-red-500/[0.06]" onClick={handleLogout}>
           <LogOut className="w-4 h-4 mr-2" /> Logout
         </Button>
       </div>
@@ -176,16 +200,16 @@ export default function Admin() {
           </div>
           <div>
             <span className="font-semibold text-white text-sm">Admin</span>
-            <span className="text-xs text-gray-400 ml-2 capitalize">{activeMenu}</span>
+            <span className="text-xs text-gray-500 ml-2 capitalize">{activeMenu}</span>
           </div>
         </div>
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-300 hover:text-white hover:bg-white/10">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/5">
               <Menu className="w-5 h-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-56 p-3 admin-sidebar border-r-white/10">
+          <SheetContent side="left" className="w-56 p-3 admin-sidebar border-r-white/[0.04]">
             <SidebarContent />
           </SheetContent>
         </Sheet>
@@ -199,11 +223,11 @@ export default function Admin() {
             <h1 className="text-xl lg:text-2xl font-serif font-bold text-foreground capitalize">
               {activeMenu === 'content' ? 'Content Management' : activeMenu === 'activity' ? 'Activity Logs' : activeMenu === 'visitors' ? 'Visitor Logs' : activeMenu}
             </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">{user.email}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5 font-mono">{user.email}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] px-2 py-0.5 hidden sm:flex border-emerald-500/30 text-emerald-400">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span>
+            <Badge variant="outline" className="text-[10px] px-2.5 py-0.5 hidden sm:flex border-emerald-500/20 text-emerald-400 bg-emerald-500/[0.05]">
+              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full mr-1.5 animate-pulse" />
               Online
             </Badge>
           </div>

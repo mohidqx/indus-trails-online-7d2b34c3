@@ -80,8 +80,9 @@ export const bookingsApi = {
   getById: (id: string) => apiRequest(`api-bookings?id=${id}`),
   update: (id: string, data: Record<string, unknown>) => 
     apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ id, ...data }) }),
-  delete: (id: string) => 
-    apiRequest(`api-bookings?id=${id}`, { method: 'DELETE' }),
+  // Use PUT with soft-delete flag instead of DELETE to avoid browser body stripping issues
+  delete: (id: string) =>
+    apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ id, is_deleted: true, deleted_at: new Date().toISOString() }) }),
   bulkUpdate: (ids: string[], data: Record<string, unknown>) =>
     apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ ids, ...data, bulk: true }) }),
   bulkDelete: (ids: string[]) =>
