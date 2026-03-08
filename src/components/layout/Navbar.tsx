@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, MapPin, User, LogIn, ChevronRight } from 'lucide-react';
+import { Menu, X, Phone, MapPin, User, LogIn, ChevronRight, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useSiteContent } from '@/hooks/useSiteContent';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/hooks/useTheme';
 import logo from '@/assets/indus-tours-logo.jpeg';
 
 const navLinks = [
@@ -25,6 +26,7 @@ export default function Navbar() {
   const isHomePage = location.pathname === '/';
   const { data: content } = useSiteContent();
   const { user, isLoading: authLoading } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const phone = (content?.phone as string) || '+92 300 1234567';
   const address = (content?.address as string) || 'Islamabad, Pakistan';
@@ -128,7 +130,17 @@ export default function Navbar() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className={cn(
+                'p-2.5 rounded-xl transition-all duration-500',
+                scrolledOrNotHome ? 'text-foreground hover:bg-muted' : 'text-snow/70 hover:bg-snow/10'
+              )}
+              aria-label="Toggle dark mode"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
             {!authLoading && (
               user ? (
                 <Button variant="ghost" asChild className={cn(
@@ -194,6 +206,15 @@ export default function Navbar() {
             </Link>
           ))}
           <div className="flex flex-col gap-2.5 mt-4 pt-4 border-t border-border/30">
+            <button
+              onClick={toggleTheme}
+              className="py-3 px-4 rounded-xl font-medium text-base flex items-center justify-between text-foreground hover:bg-muted/50 transition-all duration-300"
+            >
+              <span className="flex items-center gap-2">
+                {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              </span>
+            </button>
             {!authLoading && (
               user ? (
                 <Button variant="outline" asChild className="rounded-xl border-primary/20">
