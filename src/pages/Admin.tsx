@@ -41,10 +41,13 @@ const menuItems = [
   { id: 'deals', icon: Tag, label: 'Deals & Offers', group: 'Manage' },
   { id: 'feedback', icon: MessageSquare, label: 'Feedback', group: 'Engagement' },
   { id: 'users', icon: Users, label: 'Users', group: 'Engagement' },
+  { id: 'notifications', icon: Bell, label: 'Notifications', group: 'Engagement' },
   { id: 'visitors', icon: Eye, label: 'Visitor Logs', group: 'Intelligence' },
   { id: 'analytics', icon: BarChart3, label: 'Analytics', group: 'Intelligence' },
   { id: 'activity', icon: Activity, label: 'Activity Logs', group: 'Intelligence' },
-  { id: 'content', icon: FileText, label: 'Content', group: 'System' },
+  { id: 'content', icon: FileText, label: 'Content Editor', group: 'System' },
+  { id: 'seo', icon: Search, label: 'SEO Settings', group: 'System' },
+  { id: 'email-templates', icon: Mail, label: 'Email Templates', group: 'System' },
   { id: 'settings', icon: Settings, label: 'Settings', group: 'System' },
 ];
 
