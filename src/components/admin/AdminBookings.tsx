@@ -500,7 +500,7 @@ export default function AdminBookings() {
 
       {/* Booking Details Modal - Full metadata */}
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto sm:max-h-[90vh] w-[calc(100vw-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle>Booking Details</DialogTitle>
           </DialogHeader>
