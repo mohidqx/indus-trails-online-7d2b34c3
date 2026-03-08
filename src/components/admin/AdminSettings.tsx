@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Lock, Loader2, Shield, Database, Globe, Zap, Server, HardDrive, Key } from 'lucide-react';
+import { User, Lock, Loader2, Shield, Database, Globe, Zap, Server, HardDrive, Key, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
