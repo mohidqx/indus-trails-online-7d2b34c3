@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ArrowRight, Heart, Sparkles } from 'lucide-react';
 import { useSiteContent } from '@/hooks/useSiteContent';
