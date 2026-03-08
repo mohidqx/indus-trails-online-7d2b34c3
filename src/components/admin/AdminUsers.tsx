@@ -1,19 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Search, Shield, User, Mail, Calendar, RefreshCw } from 'lucide-react';
+import { Loader2, Search, Shield, User, Mail, Calendar, RefreshCw, MoreVertical, UserPlus, UserMinus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { usersApi } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface UserData {
   id: string;
@@ -32,180 +29,143 @@ export default function AdminUsers() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const fetchData = async () => {
     setIsLoading(true);
-    
     const { data, error } = await usersApi.getAll();
-    
-    if (!error && data) {
-      setUsers(data as UserData[]);
-    } else if (error) {
-      toast({ title: 'Error', description: error, variant: 'destructive' });
-    }
-    
+    if (!error && data) setUsers(data as UserData[]);
+    else if (error) toast({ title: 'Error', description: error, variant: 'destructive' });
     setIsLoading(false);
   };
 
   const toggleAdminRole = async (userId: string, currentlyAdmin: boolean) => {
     if (currentlyAdmin) {
-      // Remove admin role
-      const { error } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', userId)
-        .eq('role', 'admin');
-
-      if (error) {
-        toast({ title: 'Error', description: 'Failed to remove admin role', variant: 'destructive' });
-      } else {
-        toast({ title: 'Success', description: 'Admin role removed' });
-        fetchData();
-      }
+      const { error } = await supabase.from('user_roles').delete().eq('user_id', userId).eq('role', 'admin');
+      if (error) toast({ title: 'Error', description: 'Failed to remove admin role', variant: 'destructive' });
+      else { toast({ title: 'Success', description: 'Admin role removed' }); fetchData(); }
     } else {
-      // Add admin role
-      const { error } = await supabase
-        .from('user_roles')
-        .insert({ user_id: userId, role: 'admin' });
-
-      if (error) {
-        toast({ title: 'Error', description: 'Failed to add admin role', variant: 'destructive' });
-      } else {
-        toast({ title: 'Success', description: 'Admin role added' });
-        fetchData();
-      }
+      const { error } = await supabase.from('user_roles').insert({ user_id: userId, role: 'admin' });
+      if (error) toast({ title: 'Error', description: 'Failed to add admin role', variant: 'destructive' });
+      else { toast({ title: 'Success', description: 'Admin role added' }); fetchData(); }
     }
   };
 
-  const filteredUsers = users.filter(u => 
+  const filteredUsers = users.filter(u =>
     u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
     u.email?.toLowerCase().includes(search.toLowerCase()) ||
     u.phone?.includes(search)
   );
 
+  const adminCount = users.filter(u => u.role === 'admin').length;
+
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search users..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <User className="w-4 h-4" />
-            {users.length} registered users
-          </div>
-          <Button variant="outline" size="sm" onClick={fetchData}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
+    <div className="space-y-4">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-3 gap-3">
+        <Card className="border-0 shadow-card bg-gradient-to-br from-primary/5 to-primary/10">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-foreground">{users.length}</p>
+            <p className="text-xs text-muted-foreground">Total Users</p>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-card bg-gradient-to-br from-accent/5 to-accent/10">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-foreground">{adminCount}</p>
+            <p className="text-xs text-muted-foreground">Admins</p>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-card bg-gradient-to-br from-emerald-500/5 to-emerald-500/10">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-foreground">{users.length - adminCount}</p>
+            <p className="text-xs text-muted-foreground">Regular Users</p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-card rounded-2xl shadow-card overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead>Last Login</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUsers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                  No users found
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredUsers.map((user) => {
-                const isAdmin = user.role === 'admin';
-                return (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                          {user.avatar_url ? (
-                            <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            <User className="w-5 h-5 text-primary" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium">{user.full_name || 'Unnamed User'}</p>
-                          <p className="text-xs text-muted-foreground font-mono">{user.id.slice(0, 8)}...</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-sm">
-                        <Mail className="w-3 h-3 text-muted-foreground" />
-                        {user.email}
-                      </div>
-                    </TableCell>
-                    <TableCell>{user.phone || '-'}</TableCell>
-                    <TableCell>
-                      <Badge variant={isAdmin ? 'default' : 'secondary'}>
-                        {isAdmin ? (
-                          <><Shield className="w-3 h-3 mr-1" /> Admin</>
-                        ) : (
-                          <><User className="w-3 h-3 mr-1" /> User</>
-                        )}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(user.created_at).toLocaleDateString()}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {user.last_sign_in_at ? (
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(user.last_sign_in_at).toLocaleDateString()}
-                        </span>
+      {/* Search & Actions */}
+      <div className="flex gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input placeholder="Search users by name, email, or phone..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 h-9" />
+        </div>
+        <Button variant="outline" size="sm" onClick={fetchData} className="h-9 gap-1.5">
+          <RefreshCw className="w-3.5 h-3.5" /> Refresh
+        </Button>
+      </div>
+
+      {/* User Cards */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {filteredUsers.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-muted-foreground">No users found</div>
+        ) : (
+          filteredUsers.map((user) => {
+            const isAdmin = user.role === 'admin';
+            return (
+              <Card key={user.id} className="border-0 shadow-card hover:shadow-lg transition-shadow group">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {user.avatar_url ? (
+                        <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-sm text-muted-foreground">Never</span>
+                        <span className="text-sm font-bold text-primary">
+                          {(user.full_name || user.email)?.[0]?.toUpperCase()}
+                        </span>
                       )}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant={isAdmin ? 'destructive' : 'outline'}
-                        size="sm"
-                        onClick={() => toggleAdminRole(user.id, isAdmin)}
-                      >
-                        {isAdmin ? 'Remove Admin' : 'Make Admin'}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-sm text-foreground truncate">{user.full_name || 'Unnamed'}</p>
+                        <Badge variant={isAdmin ? 'default' : 'secondary'} className="text-[10px] h-5 flex-shrink-0">
+                          {isAdmin ? <><Shield className="w-3 h-3 mr-0.5" /> Admin</> : 'User'}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">{user.email}</p>
+                      {user.phone && <p className="text-xs text-muted-foreground">{user.phone}</p>}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                    <div className="text-[11px] text-muted-foreground space-y-0.5">
+                      <p className="flex items-center gap-1"><Calendar className="w-3 h-3" /> Joined {new Date(user.created_at).toLocaleDateString()}</p>
+                      {user.last_sign_in_at && (
+                        <p>Last login: {new Date(user.last_sign_in_at).toLocaleDateString()}</p>
+                      )}
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant={isAdmin ? 'destructive' : 'outline'} size="sm" className="text-xs h-7 gap-1">
+                          {isAdmin ? <><UserMinus className="w-3 h-3" /> Remove</> : <><UserPlus className="w-3 h-3" /> Make Admin</>}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{isAdmin ? 'Remove Admin Role?' : 'Grant Admin Role?'}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {isAdmin
+                              ? `This will remove admin privileges from ${user.full_name || user.email}.`
+                              : `This will grant full admin access to ${user.full_name || user.email}.`
+                            }
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => toggleAdminRole(user.id, isAdmin)}>
+                            {isAdmin ? 'Remove' : 'Grant'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
+        )}
       </div>
     </div>
   );
