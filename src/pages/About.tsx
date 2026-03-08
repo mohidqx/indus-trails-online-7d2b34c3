@@ -10,10 +10,11 @@ export default function About() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-32 overflow-hidden">
+      <section className="relative pt-36 sm:pt-40 pb-16 sm:pb-32 overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImage} alt="Northern Pakistan" className="w-full h-full object-cover" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-hero" />
+          <div className="absolute inset-0 bg-gradient-to-t from-mountain/90 via-mountain/40 to-mountain/60" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--accent)/0.1),transparent_60%)]" />
         </div>
         <div className="relative container mx-auto px-4 sm:px-6 text-center animate-fade-up">
