@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, useRef, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -12,37 +12,105 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const detectBrowser = () => {
+  const ua = navigator.userAgent;
+  if (ua.includes('Firefox')) return 'Firefox';
+  if (ua.includes('Edg')) return 'Edge';
+  if (ua.includes('Chrome')) return 'Chrome';
+  if (ua.includes('Safari')) return 'Safari';
+  return 'Other';
+};
+
+const detectOS = () => {
+  const ua = navigator.userAgent;
+  if (ua.includes('Windows')) return 'Windows';
+  if (ua.includes('Mac')) return 'macOS';
+  if (ua.includes('Linux')) return 'Linux';
+  if (ua.includes('Android')) return 'Android';
+  if (/iPhone|iPad/.test(ua)) return 'iOS';
+  return 'Other';
+};
+
+const detectDeviceType = () => {
+  const ua = navigator.userAgent.toLowerCase();
+  if (/mobile|android|iphone|ipod/.test(ua)) return 'mobile';
+  if (/tablet|ipad/.test(ua)) return 'tablet';
+  return 'desktop';
+};
+
+const recordUserSession = async (userId: string) => {
+  try {
+    await supabase.from('user_sessions').insert({
+      user_id: userId,
+      ip_address: null, // resolved server-side if needed
+      user_agent: navigator.userAgent,
+      browser: detectBrowser(),
+      os: detectOS(),
+      device_type: detectDeviceType(),
+      is_active: true,
+    });
+  } catch (e) {
+    console.error('Failed to record session:', e);
+  }
+};
+
+const endUserSession = async (userId: string) => {
+  try {
+    await supabase
+      .from('user_sessions')
+      .update({ is_active: false, ended_at: new Date().toISOString() })
+      .eq('user_id', userId)
+      .eq('is_active', true);
+  } catch (e) {
+    console.error('Failed to end session:', e);
+  }
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const sessionRecordedRef = useRef(false);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+      (event, currentSession) => {
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
         
-        // Defer admin check with setTimeout to avoid deadlock
-        if (session?.user) {
+        if (currentSession?.user) {
           setTimeout(() => {
-            checkAdminRole(session.user.id);
+            checkAdminRole(currentSession.user.id);
           }, 0);
+
+          // Record session on sign in
+          if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && !sessionRecordedRef.current) {
+            sessionRecordedRef.current = true;
+            setTimeout(() => recordUserSession(currentSession.user.id), 0);
+          }
         } else {
           setIsAdmin(false);
+          sessionRecordedRef.current = false;
+        }
+
+        // End session on sign out
+        if (event === 'SIGNED_OUT' && user) {
+          setTimeout(() => endUserSession(user.id), 0);
         }
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
+      setSession(existingSession);
+      setUser(existingSession?.user ?? null);
       
-      if (session?.user) {
-        checkAdminRole(session.user.id);
+      if (existingSession?.user) {
+        checkAdminRole(existingSession.user.id);
+        if (!sessionRecordedRef.current) {
+          sessionRecordedRef.current = true;
+          recordUserSession(existingSession.user.id);
+        }
       }
       setIsLoading(false);
     });
