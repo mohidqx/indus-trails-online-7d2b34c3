@@ -28,7 +28,6 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     toast({
@@ -46,96 +45,69 @@ export default function Contact() {
     setIsSubmitting(false);
   };
 
+  const contactInfo = [
+    { icon: MapPin, title: 'Office Address', value: siteAddress },
+    { icon: Phone, title: 'Phone', value: sitePhone, href: `tel:${sitePhone.replace(/\s/g, '')}` },
+    { icon: Mail, title: 'Email', value: siteEmail, href: `mailto:${siteEmail}` },
+    { icon: Clock, title: 'Office Hours', value: 'Monday - Saturday: 9:00 AM - 7:00 PM\nSunday: 10:00 AM - 4:00 PM' },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-32 pb-20 bg-gradient-mountain">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-6xl font-serif font-bold text-snow mb-6">Contact Us</h1>
-          <p className="text-xl text-snow/80 max-w-2xl mx-auto">
+      <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-20 bg-gradient-mountain">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 sm:mb-6">Contact Us</h1>
+          <p className="text-base sm:text-xl text-snow/80 max-w-2xl mx-auto">
             Have questions? We'd love to hear from you. Send us a message!
           </p>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-3 gap-12">
+      <section className="py-12 sm:py-20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-3 gap-8 md:gap-12">
             {/* Contact Info */}
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               <div>
-                <h2 className="text-2xl font-serif font-bold text-foreground mb-6">Get In Touch</h2>
-                <p className="text-muted-foreground">
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground mb-4 sm:mb-6">Get In Touch</h2>
+                <p className="text-sm sm:text-base text-muted-foreground">
                   Whether you have questions about our tours, need help planning your trip, or just
                   want to say hello, we're here for you.
                 </p>
               </div>
 
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-primary" />
+              <div className="space-y-4 sm:space-y-6">
+                {contactInfo.map(({ icon: Icon, title, value, href }) => (
+                  <div key={title} className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground text-sm sm:text-base">{title}</h3>
+                      {href ? (
+                        <a href={href} className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">
+                          {value}
+                        </a>
+                      ) : (
+                        <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-line">{value}</p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">Office Address</h3>
-                    <p className="text-muted-foreground">{siteAddress}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">Phone</h3>
-                    <p className="text-muted-foreground">
-                      <a href={`tel:${sitePhone.replace(/\s/g, '')}`} className="hover:text-primary transition-colors">
-                        {sitePhone}
-                      </a>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">Email</h3>
-                    <p className="text-muted-foreground">
-                      <a href={`mailto:${siteEmail}`} className="hover:text-primary transition-colors">
-                        {siteEmail}
-                      </a>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">Office Hours</h3>
-                    <p className="text-muted-foreground">
-                      Monday - Saturday: 9:00 AM - 7:00 PM
-                      <br />
-                      Sunday: 10:00 AM - 4:00 PM
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <div className="bg-card rounded-3xl p-8 md:p-12 shadow-lg">
-                <h2 className="text-2xl font-serif font-bold text-foreground mb-6">Send Us a Message</h2>
+              <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg">
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground mb-4 sm:mb-6">Send Us a Message</h2>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                  <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
                       <Input
@@ -157,7 +129,7 @@ export default function Contact() {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Phone Number</label>
                       <Input
@@ -189,7 +161,7 @@ export default function Contact() {
                     />
                   </div>
 
-                  <Button type="submit" variant="gold" size="lg" disabled={isSubmitting}>
+                  <Button type="submit" variant="gold" size="lg" disabled={isSubmitting} className="w-full sm:w-auto">
                     {isSubmitting ? (
                       'Sending...'
                     ) : (
@@ -207,7 +179,7 @@ export default function Contact() {
       </section>
 
       {/* Google Map Embed */}
-      <section className="h-96">
+      <section className="h-64 sm:h-80 md:h-96">
         <iframe
           title="Office Location"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26580.36685879695!2d73.0350991!3d33.7042!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfbf4e5f6a52c5%3A0x5d0c7f8f5c12b61f!2sF-7%20Markaz%2C%20Islamabad%2C%20Islamabad%20Capital%20Territory%2C%20Pakistan!5e0!3m2!1sen!2s!4v1700000000000"

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Star, Send, MessageSquare, Loader2 } from 'lucide-react';
@@ -8,8 +8,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
+interface TourOption {
+  id: string;
+  title: string;
+}
+
 export default function Feedback() {
   const { toast } = useToast();
+  const [tours, setTours] = useState<TourOption[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,6 +25,18 @@ export default function Feedback() {
   });
   const [hoveredRating, setHoveredRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      const { data } = await supabase
+        .from('tours')
+        .select('id, title')
+        .eq('is_active', true)
+        .order('title');
+      if (data) setTours(data);
+    };
+    fetchTours();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +78,7 @@ export default function Feedback() {
         rating: 0,
         feedback: '',
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'An unexpected error occurred. Please try again.',
@@ -74,40 +92,40 @@ export default function Feedback() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       {/* Hero */}
-      <section className="relative pt-32 pb-20 bg-gradient-mountain">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-6xl font-serif font-bold text-snow mb-6">
+      <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-20 bg-gradient-mountain">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 sm:mb-6">
             Share Your Experience
           </h1>
-          <p className="text-xl text-snow/80 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-snow/80 max-w-2xl mx-auto">
             Your feedback helps us improve and inspires future travelers
           </p>
         </div>
       </section>
 
       {/* Feedback Form */}
-      <section className="py-20">
-        <div className="container mx-auto px-6">
+      <section className="py-12 sm:py-20">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-2xl mx-auto">
-            <div className="bg-card rounded-3xl p-8 md:p-12 shadow-lg">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <MessageSquare className="w-6 h-6 text-primary" />
+            <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg">
+              <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-serif font-bold text-foreground">
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground">
                     Leave Feedback
                   </h2>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Tell us about your experience
                   </p>
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
                       Your Name *
@@ -140,14 +158,14 @@ export default function Feedback() {
                   <select
                     value={formData.tour}
                     onChange={(e) => setFormData({ ...formData, tour: e.target.value })}
-                    className="w-full h-11 px-4 rounded-lg border border-input bg-background text-foreground"
+                    className="w-full h-11 px-4 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm sm:text-base"
                   >
                     <option value="">Select a tour...</option>
-                    <option value="Hunza Valley Explorer">Hunza Valley Explorer</option>
-                    <option value="Fairy Meadows Trek">Fairy Meadows Trek</option>
-                    <option value="Skardu & Deosai Adventure">Skardu & Deosai Adventure</option>
-                    <option value="Swat Valley Retreat">Swat Valley Retreat</option>
-                    <option value="Complete North Pakistan">Complete North Pakistan</option>
+                    {tours.map((tour) => (
+                      <option key={tour.id} value={tour.title}>
+                        {tour.title}
+                      </option>
+                    ))}
                     <option value="Other">Other</option>
                   </select>
                 </div>
@@ -167,7 +185,7 @@ export default function Feedback() {
                         className="p-1 transition-transform hover:scale-110"
                       >
                         <Star
-                          className={`w-10 h-10 transition-colors ${
+                          className={`w-8 h-8 sm:w-10 sm:h-10 transition-colors ${
                             star <= (hoveredRating || formData.rating)
                               ? 'fill-accent text-accent'
                               : 'text-muted-foreground'

@@ -20,7 +20,6 @@ interface Deal {
   tours?: { title: string; image_url: string | null } | null;
 }
 
-// Fallback images for deals without images
 const fallbackImages = [
   'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=800',
   'https://images.unsplash.com/photo-1566837945700-30057527ade0?w=800',
@@ -39,11 +38,11 @@ export default function Deals() {
         .select('*, tours(title, image_url)')
         .eq('is_active', true)
         .order('discount_percent', { ascending: false });
-      
+
       if (data) setDeals(data);
       setIsLoading(false);
     };
-    
+
     fetchDeals();
   }, []);
 
@@ -58,9 +57,9 @@ export default function Deals() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       {/* Hero */}
-      <section className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 bg-gradient-to-r from-primary to-emerald">
+      <section className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 bg-gradient-mountain">
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-accent/20 text-accent text-xs sm:text-sm font-medium mb-4 sm:mb-6">
             <Sparkles className="w-4 h-4" />
@@ -116,7 +115,7 @@ export default function Deals() {
                       <p className="text-muted-foreground mb-4 sm:mb-6 text-sm sm:text-base">
                         {featuredDeal.description}
                       </p>
-                      
+
                       <div className="flex flex-wrap gap-3 sm:gap-4 mb-4 sm:mb-6">
                         {featuredDeal.code && (
                           <div className="flex items-center gap-2 text-muted-foreground">
@@ -147,70 +146,72 @@ export default function Deals() {
           )}
 
           {/* All Deals */}
-          <section className="py-8 sm:py-16">
-            <div className="container mx-auto px-4 sm:px-6">
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-foreground mb-6 sm:mb-8 text-center no-select">
-                All Current Offers
-              </h2>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-                {deals.map((deal, index) => (
-                  <div
-                    key={deal.id}
-                    className="group bg-card rounded-2xl sm:rounded-3xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-500"
-                  >
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <img
-                        src={getDealImage(deal, index)}
-                        alt={deal.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        onError={(e) => {
-                          e.currentTarget.src = fallbackImages[index % fallbackImages.length];
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-mountain/60 to-transparent" />
-                      
-                      <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
-                        <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-destructive text-destructive-foreground font-bold text-sm">
-                          {deal.discount_percent}% OFF
-                        </span>
+          {deals.length > 1 && (
+            <section className="py-8 sm:py-16">
+              <div className="container mx-auto px-4 sm:px-6">
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-foreground mb-6 sm:mb-8 text-center no-select">
+                  All Current Offers
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                  {deals.slice(1).map((deal, index) => (
+                    <div
+                      key={deal.id}
+                      className="group bg-card rounded-2xl sm:rounded-3xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-500"
+                    >
+                      <div className="relative aspect-[4/3] overflow-hidden">
+                        <img
+                          src={getDealImage(deal, index + 1)}
+                          alt={deal.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          onError={(e) => {
+                            e.currentTarget.src = fallbackImages[(index + 1) % fallbackImages.length];
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-mountain/60 to-transparent" />
+
+                        <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
+                          <span className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-destructive text-destructive-foreground font-bold text-sm">
+                            {deal.discount_percent}% OFF
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                        <h3 className="text-lg sm:text-xl font-serif font-bold text-foreground no-select">
+                          {deal.title}
+                        </h3>
+
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {deal.description}
+                        </p>
+
+                        <div className="flex items-center flex-wrap gap-2 sm:gap-4 text-sm text-muted-foreground">
+                          {deal.code && (
+                            <span className="font-mono bg-primary/10 px-2 py-1 rounded text-primary font-bold text-xs">
+                              {deal.code}
+                            </span>
+                          )}
+                          {deal.valid_until && (
+                            <span className="flex items-center gap-1 text-xs sm:text-sm">
+                              <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                              {new Date(deal.valid_until).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="pt-3 sm:pt-4 border-t border-border">
+                          <Button variant="default" size="sm" asChild className="w-full">
+                            <Link to={`/booking?deal=${deal.id}`}>Claim Deal</Link>
+                          </Button>
+                        </div>
                       </div>
                     </div>
-
-                    <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                      <h3 className="text-lg sm:text-xl font-serif font-bold text-foreground no-select">
-                        {deal.title}
-                      </h3>
-                      
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {deal.description}
-                      </p>
-
-                      <div className="flex items-center flex-wrap gap-2 sm:gap-4 text-sm text-muted-foreground">
-                        {deal.code && (
-                          <span className="font-mono bg-primary/10 px-2 py-1 rounded text-primary font-bold text-xs">
-                            {deal.code}
-                          </span>
-                        )}
-                        {deal.valid_until && (
-                          <span className="flex items-center gap-1 text-xs sm:text-sm">
-                            <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
-                            {new Date(deal.valid_until).toLocaleDateString()}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="pt-3 sm:pt-4 border-t border-border">
-                        <Button variant="default" size="sm" asChild className="w-full">
-                          <Link to={`/booking?deal=${deal.id}`}>Claim Deal</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
         </>
       )}
 
