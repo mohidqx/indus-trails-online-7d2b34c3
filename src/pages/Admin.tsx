@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -38,6 +38,7 @@ import AdminSettings from '@/components/admin/AdminSettings';
 import AdminUsers from '@/components/admin/AdminUsers';
 import AdminAnalytics from '@/components/admin/AdminAnalytics';
 import AdminActivityLogs from '@/components/admin/AdminActivityLogs';
+import { logAdminAction } from '@/lib/activityLogger';
 
 const menuItems = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -64,6 +65,12 @@ export default function Admin() {
   // Initialize admin session auto-logout
   useAdminSession();
 
+  // Log admin page visits
+  useEffect(() => {
+    if (user && isAdmin) {
+      logAdminAction('page_visit', 'admin', undefined, { section: activeMenu });
+    }
+  }, [activeMenu, user, isAdmin]);
   useEffect(() => {
     if (!authLoading && !user) {
       navigate('/auth');

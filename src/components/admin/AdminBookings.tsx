@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { logAdminAction } from '@/lib/activityLogger';
 import { Check, X, Loader2, Eye, Search, Trash2, Download, Tag, Printer, Edit, Undo, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -82,6 +83,7 @@ export default function AdminBookings() {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: `Booking ${status}` });
+      logAdminAction('update', 'booking', id, { status });
       fetchBookings();
     }
   };
@@ -116,6 +118,7 @@ export default function AdminBookings() {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: 'Booking moved to archive' });
+      logAdminAction('delete', 'booking', id, { soft_deleted: true });
       setSelectedBooking(null);
       fetchBookings();
     }
