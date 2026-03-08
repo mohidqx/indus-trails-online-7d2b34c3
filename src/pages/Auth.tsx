@@ -277,7 +277,7 @@ export default function Auth() {
               </div>
             </form>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5" autoComplete="on">
               {!isLogin && (
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
@@ -289,6 +289,7 @@ export default function Auth() {
                       onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                       placeholder="John Doe"
                       className="pl-10"
+                      autoComplete="name"
                       required={!isLogin}
                     />
                   </div>
@@ -301,6 +302,7 @@ export default function Auth() {
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     type="email"
+                    name="email"
                     value={formData.email}
                     onChange={(e) => {
                       setFormData({ ...formData, email: e.target.value });
@@ -308,6 +310,7 @@ export default function Auth() {
                     }}
                     placeholder="you@example.com"
                     className="pl-10"
+                    autoComplete="email"
                     required
                   />
                 </div>
@@ -320,6 +323,7 @@ export default function Auth() {
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     type={showPassword ? 'text' : 'password'}
+                    name="password"
                     value={formData.password}
                     onChange={(e) => {
                       setFormData({ ...formData, password: e.target.value });
@@ -327,6 +331,7 @@ export default function Auth() {
                     }}
                     placeholder="••••••••"
                     className="pl-10 pr-10"
+                    autoComplete={isLogin ? 'current-password' : 'new-password'}
                     required
                   />
                   <button
