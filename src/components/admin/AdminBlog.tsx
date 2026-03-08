@@ -102,7 +102,7 @@ export default function AdminBlog() {
               </select>
               <input value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} placeholder="Tags (comma separated)" className="bg-muted rounded-lg px-4 py-2 text-sm outline-none" />
             </div>
-            <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} label="Cover Image" />
+            <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <input type="checkbox" checked={form.is_published} onChange={e => setForm({ ...form, is_published: e.target.checked })} className="rounded" />

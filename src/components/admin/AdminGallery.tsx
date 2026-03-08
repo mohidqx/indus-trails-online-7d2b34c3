@@ -85,7 +85,7 @@ export default function AdminGallery() {
               </select>
               <input value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="Location" className="bg-muted rounded-lg px-4 py-2 text-sm outline-none" />
             </div>
-            <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} label="Photo" />
+            <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
             <button onClick={uploadPhoto} className="bg-primary text-primary-foreground px-6 py-2 rounded-lg text-sm font-medium">Upload</button>
           </CardContent>
         </Card>
