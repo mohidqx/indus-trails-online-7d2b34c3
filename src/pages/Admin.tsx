@@ -29,6 +29,7 @@ import AdminDestinations from '@/components/admin/AdminDestinations';
 import AdminSEO from '@/components/admin/AdminSEO';
 import AdminEmailTemplates from '@/components/admin/AdminEmailTemplates';
 import AdminNotifications from '@/components/admin/AdminNotifications';
+import AdminContactMessages from '@/components/admin/AdminContactMessages';
 import { logAdminAction } from '@/lib/activityLogger';
 
 const menuItems = [
