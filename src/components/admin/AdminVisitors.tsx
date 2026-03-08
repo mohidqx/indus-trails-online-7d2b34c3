@@ -250,6 +250,19 @@ export default function AdminVisitors() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {v.ip_address && (
+                      <Button 
+                        variant="ghost" size="sm" 
+                        className="h-6 w-6 p-0 text-red-400 hover:text-red-300 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          blockIP(v.ip_address!);
+                        }}
+                        title="Block this IP"
+                      >
+                        <Ban className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
                     {v.battery_level != null && (
                       <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                         <Battery className="w-3.5 h-3.5" /> {v.battery_level}%
