@@ -12,6 +12,7 @@ export default function AdminSettings() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [passwords, setPasswords] = useState({ new: '', confirm: '' });
 
   const changePassword = async () => {
