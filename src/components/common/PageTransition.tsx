@@ -39,6 +39,10 @@ export default function PageTransition({ children }: PageTransitionProps) {
       animate="animate"
       exit="exit"
       variants={pageVariants}
+      style={{ position: 'relative' }}
+      onAnimationStart={(definition) => {
+        // No-op, just ensure proper lifecycle
+      }}
     >
       {children}
     </motion.div>
