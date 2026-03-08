@@ -23,5 +23,8 @@ verify_jwt = false
 
 verify_jwt = false
 
+[functions.api-export]
+verify_jwt = false
+
 [functions.ai-chatbot]
 verify_jwt = false
