@@ -42,7 +42,7 @@ export default function Vehicles() {
       <Navbar />
       
       {/* Hero */}
-      <section className="relative pt-28 md:pt-32 pb-16 md:pb-20 bg-gradient-mountain">
+      <section className="relative pt-36 sm:pt-40 pb-16 md:pb-20 bg-gradient-mountain">
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 md:mb-6">
             Our Fleet

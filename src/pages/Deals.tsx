@@ -59,7 +59,7 @@ export default function Deals() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 bg-gradient-mountain">
+      <section className="relative pt-36 sm:pt-40 pb-12 sm:pb-20 bg-gradient-mountain">
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-accent/20 text-accent text-xs sm:text-sm font-medium mb-4 sm:mb-6">
             <Sparkles className="w-4 h-4" />

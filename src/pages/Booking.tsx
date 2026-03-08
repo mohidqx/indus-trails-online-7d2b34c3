@@ -190,7 +190,7 @@ export default function Booking() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-24 sm:pt-32 pb-12 sm:pb-20 bg-gradient-mountain">
+      <section className="relative pt-36 sm:pt-40 pb-12 sm:pb-20 bg-gradient-mountain">
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 sm:mb-6">
             {selectedDeal ? 'Claim Your Deal' : 'Book Your Adventure'}
