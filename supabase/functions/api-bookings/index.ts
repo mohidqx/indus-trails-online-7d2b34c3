@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.89.0";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
 };
 
 serve(async (req) => {
@@ -67,7 +68,7 @@ serve(async (req) => {
       });
     };
 
-    // Safe JSON body parser - returns empty object if no body
+    // Safe JSON body parser
     const safeParseBody = async (): Promise<Record<string, unknown>> => {
       try {
         const text = await req.text();
@@ -85,12 +86,8 @@ serve(async (req) => {
         query = query.or("is_deleted.is.null,is_deleted.eq.false");
       }
       
-      if (id) {
-        query = query.eq("id", id);
-      }
-      if (status) {
-        query = query.eq("status", status);
-      }
+      if (id) query = query.eq("id", id);
+      if (status) query = query.eq("status", status);
       
       if (!isAdmin) {
         query = query.eq("user_id", user.id);
@@ -99,7 +96,6 @@ serve(async (req) => {
       }
       
       const { data, error } = await query.order("created_at", { ascending: false });
-
       if (error) throw error;
 
       return new Response(JSON.stringify({ data }), {
@@ -110,51 +106,39 @@ serve(async (req) => {
     if (req.method === "PUT") {
       const body = await safeParseBody();
       
-      // Handle bulk update
       if (body.bulk && body.ids) {
         if (!isAdmin) {
           return new Response(JSON.stringify({ error: "Admin access required" }), {
-            status: 403,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
+            status: 403, headers: { "Content-Type": "application/json", ...corsHeaders },
           });
         }
-
         const { ids, bulk, ...updates } = body;
         const { data, error } = await db
           .from("bookings")
           .update({ ...updates, updated_at: new Date().toISOString() })
           .in("id", ids as string[])
           .select();
-
         if (error) throw error;
-
         await logActivity("bulk_update", undefined, { ids, updates });
-
         return new Response(JSON.stringify({ data }), {
           headers: { "Content-Type": "application/json", ...corsHeaders },
         });
       }
 
-      // Handle restore
       if (body.restore && body.id) {
         if (!isAdmin) {
           return new Response(JSON.stringify({ error: "Admin access required" }), {
-            status: 403,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
+            status: 403, headers: { "Content-Type": "application/json", ...corsHeaders },
           });
         }
-
         const { data, error } = await db
           .from("bookings")
           .update({ is_deleted: false, deleted_at: null, deleted_by: null, updated_at: new Date().toISOString() })
           .eq("id", body.id as string)
           .select()
           .single();
-
         if (error) throw error;
-
         await logActivity("restore", body.id as string, { restored: true });
-
         return new Response(JSON.stringify({ data }), {
           headers: { "Content-Type": "application/json", ...corsHeaders },
         });
@@ -171,23 +155,19 @@ serve(async (req) => {
 
         if (!booking || booking.user_id !== user.id) {
           return new Response(JSON.stringify({ error: "Forbidden" }), {
-            status: 403,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
+            status: 403, headers: { "Content-Type": "application/json", ...corsHeaders },
           });
         }
 
         if (booking.status !== "pending") {
           return new Response(JSON.stringify({ error: "Can only modify pending bookings" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
+            status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
           });
         }
 
         const allowedFields = ["travel_date", "status"];
         for (const key of Object.keys(updates)) {
-          if (!allowedFields.includes(key)) {
-            delete updates[key];
-          }
+          if (!allowedFields.includes(key)) delete updates[key];
         }
       }
 
@@ -197,11 +177,8 @@ serve(async (req) => {
         .eq("id", bookingId as string)
         .select()
         .single();
-
       if (error) throw error;
-
       await logActivity("update", bookingId as string, updates);
-
       return new Response(JSON.stringify({ data }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -210,20 +187,48 @@ serve(async (req) => {
     if (req.method === "DELETE") {
       if (!isAdmin) {
         return new Response(JSON.stringify({ error: "Admin access required" }), {
-          status: 403,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          status: 403, headers: { "Content-Type": "application/json", ...corsHeaders },
         });
       }
 
-      // Support both body and query param for ID
-      const body = await safeParseBody();
-      const deleteId = (body.id as string) || id;
-      const bulkIds = body.ids as string[] | undefined;
-      const isBulk = body.bulk as boolean | undefined;
+      // Use query param ID for single delete
+      const deleteId = id;
+      
+      // Try to parse body for bulk operations
+      let bulkIds: string[] | undefined;
+      let isBulk = false;
+      try {
+        const text = await req.text();
+        if (text && text.trim()) {
+          const body = JSON.parse(text);
+          bulkIds = body.ids as string[];
+          isBulk = !!body.bulk;
+          // Also support body id as fallback
+          if (!deleteId && body.id) {
+            const fallbackId = body.id as string;
+            const { data, error } = await db
+              .from("bookings")
+              .update({ 
+                is_deleted: true, 
+                deleted_at: new Date().toISOString(),
+                deleted_by: user.id,
+                updated_at: new Date().toISOString()
+              })
+              .eq("id", fallbackId)
+              .select()
+              .single();
+            if (error) throw error;
+            await logActivity("delete", fallbackId, { soft_deleted: true });
+            return new Response(JSON.stringify({ data }), {
+              headers: { "Content-Type": "application/json", ...corsHeaders },
+            });
+          }
+        }
+      } catch { /* no body is fine for single delete via query param */ }
 
-      // Handle bulk delete (soft delete)
-      if (isBulk && bulkIds) {
-        const { error } = await db
+      // Handle bulk delete
+      if (isBulk && bulkIds && bulkIds.length > 0) {
+        const { data, error } = await db
           .from("bookings")
           .update({ 
             is_deleted: true, 
@@ -231,26 +236,23 @@ serve(async (req) => {
             deleted_by: user.id,
             updated_at: new Date().toISOString()
           })
-          .in("id", bulkIds);
-
+          .in("id", bulkIds)
+          .select();
         if (error) throw error;
-
         await logActivity("bulk_delete", undefined, { ids: bulkIds });
-
-        return new Response(JSON.stringify({ success: true }), {
+        return new Response(JSON.stringify({ data }), {
           headers: { "Content-Type": "application/json", ...corsHeaders },
         });
       }
 
-      // Soft delete single booking
+      // Single delete via query param
       if (!deleteId) {
         return new Response(JSON.stringify({ error: "Missing booking ID" }), {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
         });
       }
 
-      const { error } = await db
+      const { data, error } = await db
         .from("bookings")
         .update({ 
           is_deleted: true, 
@@ -258,28 +260,25 @@ serve(async (req) => {
           deleted_by: user.id,
           updated_at: new Date().toISOString()
         })
-        .eq("id", deleteId);
-
+        .eq("id", deleteId)
+        .select()
+        .single();
       if (error) throw error;
-
       await logActivity("delete", deleteId, { soft_deleted: true });
-
-      return new Response(JSON.stringify({ success: true }), {
+      return new Response(JSON.stringify({ data }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      status: 405, headers: { "Content-Type": "application/json", ...corsHeaders },
     });
 
   } catch (err) {
     console.error("api-bookings error:", err);
     const message = err instanceof Error ? err.message : "Unknown error";
     return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      status: 500, headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 });
