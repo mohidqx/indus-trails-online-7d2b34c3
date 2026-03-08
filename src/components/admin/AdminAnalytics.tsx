@@ -16,6 +16,7 @@ interface Booking {
   total_price: number;
   original_price: number | null;
   discount_applied: number | null;
+  deal_id: string | null;
   status: string;
   created_at: string;
   tours?: { title: string; image_url: string | null } | null;
