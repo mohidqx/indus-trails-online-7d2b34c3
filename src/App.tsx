@@ -23,6 +23,11 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function VisitorTracker() {
+  useVisitorTracking();
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
