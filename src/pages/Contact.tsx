@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useSiteContent } from '@/hooks/useSiteContent';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Contact() {
   const { toast } = useToast();
@@ -23,9 +24,21 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    toast({ title: 'Message Sent!', description: 'We will get back to you within 24 hours.' });
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+
+    const { error } = await supabase.from('contact_messages').insert([{
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || null,
+      subject: formData.subject,
+      message: formData.message,
+    }] as any);
+
+    if (error) {
+      toast({ title: 'Error', description: 'Failed to send message. Please try again.', variant: 'destructive' });
+    } else {
+      toast({ title: 'Message Sent!', description: 'We will get back to you within 24 hours.' });
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    }
     setIsSubmitting(false);
   };
 

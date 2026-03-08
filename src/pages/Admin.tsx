@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, MapPin, CalendarDays, Car, Tag, MessageSquare, Settings,
   LogOut, FileText, Bell, BarChart3, Loader2, Menu, Hotel, Home, Users, Activity, Eye,
-  ChevronRight, Zap, Search, Mail
+  ChevronRight, Zap, Search, Mail, MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -29,6 +29,7 @@ import AdminDestinations from '@/components/admin/AdminDestinations';
 import AdminSEO from '@/components/admin/AdminSEO';
 import AdminEmailTemplates from '@/components/admin/AdminEmailTemplates';
 import AdminNotifications from '@/components/admin/AdminNotifications';
+import AdminContactMessages from '@/components/admin/AdminContactMessages';
 import { logAdminAction } from '@/lib/activityLogger';
 
 const menuItems = [
@@ -40,6 +41,7 @@ const menuItems = [
   { id: 'hotels', icon: Hotel, label: 'Hotels', group: 'Manage' },
   { id: 'deals', icon: Tag, label: 'Deals & Offers', group: 'Manage' },
   { id: 'feedback', icon: MessageSquare, label: 'Feedback', group: 'Engagement' },
+  { id: 'contact', icon: MessageCircle, label: 'Contact Messages', group: 'Engagement' },
   { id: 'users', icon: Users, label: 'Users', group: 'Engagement' },
   { id: 'notifications', icon: Bell, label: 'Notifications', group: 'Engagement' },
   { id: 'visitors', icon: Eye, label: 'Visitor Logs', group: 'Intelligence' },
@@ -90,6 +92,7 @@ export default function Admin() {
       case 'hotels': return <AdminHotels />;
       case 'deals': return <AdminDeals />;
       case 'feedback': return <AdminFeedback />;
+      case 'contact': return <AdminContactMessages />;
       case 'users': return <AdminUsers />;
       case 'notifications': return <AdminNotifications />;
       case 'visitors': return <AdminVisitors />;
@@ -230,7 +233,7 @@ export default function Admin() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-xl lg:text-2xl font-serif font-bold text-foreground capitalize">
-              {activeMenu === 'content' ? 'Content Editor' : activeMenu === 'activity' ? 'Activity Logs' : activeMenu === 'visitors' ? 'Visitor Logs' : activeMenu === 'seo' ? 'SEO Settings' : activeMenu === 'email-templates' ? 'Email Templates' : activeMenu === 'notifications' ? 'Notifications' : activeMenu}
+              {activeMenu === 'content' ? 'Content Editor' : activeMenu === 'activity' ? 'Activity Logs' : activeMenu === 'visitors' ? 'Visitor Logs' : activeMenu === 'seo' ? 'SEO Settings' : activeMenu === 'email-templates' ? 'Email Templates' : activeMenu === 'notifications' ? 'Notifications' : activeMenu === 'contact' ? 'Contact Messages' : activeMenu}
             </h1>
             <p className="text-[11px] text-muted-foreground mt-0.5 font-mono">{user.email}</p>
           </div>

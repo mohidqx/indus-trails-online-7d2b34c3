@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Clock, Star, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { Users, Clock, Star, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { getTourImage } from '@/lib/tourImages';
+import { CardSkeleton } from '@/components/common/LoadingSkeleton';
 
 interface Tour {
   id: string;
@@ -40,9 +41,14 @@ export default function FeaturedTours() {
 
   if (isLoading) {
     return (
-      <section className="py-20 md:py-28 bg-secondary/20">
-        <div className="container mx-auto px-4 sm:px-6 flex justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <section className="py-20 md:py-32 bg-secondary/20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-14 space-y-4">
+            <div className="h-6 w-36 mx-auto rounded-full bg-muted animate-pulse" />
+            <div className="h-12 w-[60%] mx-auto rounded bg-muted animate-pulse" />
+            <div className="h-5 w-[40%] mx-auto rounded bg-muted animate-pulse" />
+          </div>
+          <CardSkeleton count={3} />
         </div>
       </section>
     );
@@ -105,7 +111,6 @@ export default function FeaturedTours() {
                   )}
                 </div>
 
-                {/* Price overlay on image */}
                 <div className="absolute bottom-3 right-3">
                   <div className="glass-premium rounded-xl px-4 py-2 text-snow">
                     <span className="text-lg font-bold">PKR {(tour.discount_price || tour.price).toLocaleString()}</span>

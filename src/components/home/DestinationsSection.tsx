@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, MapPin, Loader2, Compass } from 'lucide-react';
+import { ArrowRight, MapPin, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { getDestinationImage } from '@/lib/destinationImages';
+import { CardSkeleton } from '@/components/common/LoadingSkeleton';
 
 interface Destination {
   id: string;
@@ -34,9 +35,14 @@ export default function DestinationsSection() {
 
   if (isLoading) {
     return (
-      <section className="py-20 md:py-28 bg-background">
-        <div className="container mx-auto px-4 sm:px-6 flex justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <section className="py-20 md:py-32 bg-background">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-14 space-y-4">
+            <div className="h-6 w-40 mx-auto rounded-full bg-muted animate-pulse" />
+            <div className="h-12 w-[55%] mx-auto rounded bg-muted animate-pulse" />
+            <div className="h-5 w-[40%] mx-auto rounded bg-muted animate-pulse" />
+          </div>
+          <CardSkeleton count={4} aspect="aspect-[3/4]" />
         </div>
       </section>
     );
