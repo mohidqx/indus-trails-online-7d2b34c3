@@ -38,6 +38,7 @@ import AdminSettings from '@/components/admin/AdminSettings';
 import AdminUsers from '@/components/admin/AdminUsers';
 import AdminAnalytics from '@/components/admin/AdminAnalytics';
 import AdminActivityLogs from '@/components/admin/AdminActivityLogs';
+import { logAdminAction } from '@/lib/activityLogger';
 
 const menuItems = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
