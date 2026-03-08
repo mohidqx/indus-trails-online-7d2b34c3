@@ -522,15 +522,21 @@ export type Database = {
           all_languages: string[] | null
           available_height: number | null
           available_width: number | null
+          battery_charging: boolean | null
+          battery_level: number | null
           browser: string | null
           browser_version: string | null
           city: string | null
           color_depth: number | null
+          connection_type: string | null
           cookies_enabled: boolean | null
           country: string | null
           cpu_cores: number | null
           created_at: string
+          device_memory: number | null
           device_type: string | null
+          dom_load_time: number | null
+          downlink: number | null
           entry_url: string | null
           gpu_renderer: string | null
           gpu_vendor: string | null
@@ -544,6 +550,7 @@ export type Database = {
           online: boolean | null
           orientation: string | null
           os: string | null
+          page_load_time: number | null
           pdf_viewer: boolean | null
           pixel_ratio: number | null
           platform: string | null
@@ -565,15 +572,21 @@ export type Database = {
           all_languages?: string[] | null
           available_height?: number | null
           available_width?: number | null
+          battery_charging?: boolean | null
+          battery_level?: number | null
           browser?: string | null
           browser_version?: string | null
           city?: string | null
           color_depth?: number | null
+          connection_type?: string | null
           cookies_enabled?: boolean | null
           country?: string | null
           cpu_cores?: number | null
           created_at?: string
+          device_memory?: number | null
           device_type?: string | null
+          dom_load_time?: number | null
+          downlink?: number | null
           entry_url?: string | null
           gpu_renderer?: string | null
           gpu_vendor?: string | null
@@ -587,6 +600,7 @@ export type Database = {
           online?: boolean | null
           orientation?: string | null
           os?: string | null
+          page_load_time?: number | null
           pdf_viewer?: boolean | null
           pixel_ratio?: number | null
           platform?: string | null
@@ -608,15 +622,21 @@ export type Database = {
           all_languages?: string[] | null
           available_height?: number | null
           available_width?: number | null
+          battery_charging?: boolean | null
+          battery_level?: number | null
           browser?: string | null
           browser_version?: string | null
           city?: string | null
           color_depth?: number | null
+          connection_type?: string | null
           cookies_enabled?: boolean | null
           country?: string | null
           cpu_cores?: number | null
           created_at?: string
+          device_memory?: number | null
           device_type?: string | null
+          dom_load_time?: number | null
+          downlink?: number | null
           entry_url?: string | null
           gpu_renderer?: string | null
           gpu_vendor?: string | null
@@ -630,6 +650,7 @@ export type Database = {
           online?: boolean | null
           orientation?: string | null
           os?: string | null
+          page_load_time?: number | null
           pdf_viewer?: boolean | null
           pixel_ratio?: number | null
           platform?: string | null
