@@ -12,3 +12,8 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /auth
+Disallow: /dashboard
+
+Sitemap: https://industours.lovable.app/sitemap.xml
