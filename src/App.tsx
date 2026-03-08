@@ -74,7 +74,7 @@ const App = () => (
             <AnimatedRoutes />
             <WhatsAppButton />
             <AIChatbot />
-            <LiveBookingTicker />
+            
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
