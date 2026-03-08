@@ -54,7 +54,7 @@ export default function Blog() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="max-w-4xl mx-auto px-4 pt-24 pb-16">
+        <div className="max-w-4xl mx-auto px-4 pt-32 pb-16">
           <button onClick={() => setSelectedPost(null)} className="text-primary text-sm mb-6 hover:underline">← Back to Blog</button>
           {selectedPost.image_url && (
             <img src={selectedPost.image_url} alt={selectedPost.title} className="w-full h-64 md:h-96 object-cover rounded-2xl mb-6" />
@@ -84,7 +84,7 @@ export default function Blog() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 pt-24 pb-16">
+      <div className="max-w-7xl mx-auto px-4 pt-32 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
