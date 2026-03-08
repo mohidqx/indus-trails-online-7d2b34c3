@@ -185,7 +185,6 @@ export default function Booking() {
                 {selectedDeal.code && <span className="font-mono">• Code: {selectedDeal.code}</span>}
               </div>
             )}
-          </motion.div>
         </div>
       </section>
 

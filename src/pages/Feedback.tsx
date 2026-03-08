@@ -81,7 +81,7 @@ export default function Feedback() {
               Your feedback helps us improve and inspires future travelers
             </p>
             <div className="gold-divider mx-auto mt-6" />
-          </motion.div>
+          
         </div>
       </section>
 
