@@ -278,3 +278,34 @@
   .delay-400 { animation-delay: 400ms; }
   .delay-500 { animation-delay: 500ms; }
 }
+
+/* Dark Admin Panel Theme */
+.admin-dark {
+  background: linear-gradient(135deg, #0a0e1a 0%, #0f1629 50%, #0a1020 100%);
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+.admin-dark *:not(input):not(textarea):not(select) {
+  --card: 220 25% 10%;
+  --card-foreground: 220 10% 90%;
+  --popover: 220 25% 10%;
+  --popover-foreground: 220 10% 90%;
+  --background: 225 25% 7%;
+  --foreground: 220 10% 90%;
+  --muted: 220 20% 14%;
+  --muted-foreground: 220 10% 55%;
+  --border: 220 15% 18%;
+  --input: 220 15% 18%;
+}
+
+.admin-sidebar {
+  background: linear-gradient(180deg, #0c1122 0%, #0a0e1a 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.admin-header {
+  background: rgba(10, 14, 26, 0.9);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
