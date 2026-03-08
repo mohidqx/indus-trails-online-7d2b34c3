@@ -134,9 +134,12 @@ export default function Blog() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map(post => (
-              <article
+            {filtered.map((post, index) => (
+              <motion.article
                 key={post.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
                 onClick={() => setSelectedPost(post)}
                 className="group cursor-pointer bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-all hover:shadow-lg"
               >
