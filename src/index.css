@@ -343,6 +343,11 @@
     background: var(--gradient-mountain);
     overflow: hidden;
   }
+  @media (min-width: 640px) {
+    .page-hero {
+      padding-top: 10rem;
+    }
+  }
   .page-hero::after {
     content: '';
     position: absolute;

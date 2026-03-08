@@ -155,7 +155,7 @@ export default function TestimonialsSection() {
                 exit="exit"
                 className="space-y-6"
               >
-                <motion.div variants={childFade} className="flex gap-1.5">
+                <div className="flex gap-1.5">
                   {[...Array(current.rating)].map((_, i) => (
                     <motion.div
                       key={i}
@@ -166,26 +166,28 @@ export default function TestimonialsSection() {
                       <Star className="w-5 h-5 fill-accent text-accent drop-shadow-sm" />
                     </motion.div>
                   ))}
-                </motion.div>
+                </div>
 
                 <motion.p
-                  variants={childFade}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: 'easeOut', delay: 0.15 }}
                   className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-foreground leading-relaxed font-serif italic"
                 >
                   "{current.message}"
                 </motion.p>
 
                 <motion.div
-                  variants={childFade}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: 'easeOut', delay: 0.25 }}
                   className="flex items-center gap-4 pt-6 border-t border-border/30"
                 >
-                  <motion.div
+                  <div
                     className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-bold text-lg shadow-teal ring-2 ring-primary/20"
-                    whileHover={{ scale: 1.1, rotate: 3 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
                   >
                     {getInitials(current.name)}
-                  </motion.div>
+                  </div>
                   <div>
                     <h4 className="font-semibold text-foreground text-base sm:text-lg">
                       {current.name}

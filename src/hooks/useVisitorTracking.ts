@@ -187,14 +187,15 @@ export function useVisitorTracking() {
     // Track sections viewed
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting && entry.target.id) {
-          metricsRef.current.sections.add(entry.target.id);
+        if (entry.isIntersecting) {
+          const id = entry.target.id || entry.target.getAttribute('data-section') || entry.target.tagName;
+          if (id) metricsRef.current.sections.add(id);
         }
       });
     }, { threshold: 0.3 });
 
     setTimeout(() => {
-      document.querySelectorAll('section[id], [data-section]').forEach(el => observer.observe(el));
+      document.querySelectorAll('section, [data-section]').forEach(el => observer.observe(el));
     }, 1000);
 
     document.addEventListener('mousemove', onMouseMove, { passive: true });
