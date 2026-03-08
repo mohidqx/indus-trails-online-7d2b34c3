@@ -31,7 +31,8 @@ export default function Booking() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const dealId = searchParams.get('deal');
-  
+  const tourIdParam = searchParams.get('tour');
+
   const [step, setStep] = useState(1);
   const [tours, setTours] = useState<Tour[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -58,6 +59,17 @@ export default function Booking() {
     fetchDeals();
   }, []);
 
+  // Pre-select tour from URL param
+  useEffect(() => {
+    if (tourIdParam && tours.length > 0) {
+      const tour = tours.find(t => t.id === tourIdParam);
+      if (tour) {
+        setFormData(prev => ({ ...prev, tour: tourIdParam }));
+      }
+    }
+  }, [tourIdParam, tours]);
+
+  // Pre-select deal from URL param
   useEffect(() => {
     if (dealId && deals.length > 0) {
       const deal = deals.find(d => d.id === dealId);
@@ -94,7 +106,7 @@ export default function Booking() {
   const applyDealCode = () => {
     const code = formData.dealCode.trim().toUpperCase();
     if (!code) return;
-    
+
     const deal = deals.find(d => d.code?.toUpperCase() === code);
     if (deal) {
       setSelectedDeal(deal);
@@ -226,7 +238,7 @@ export default function Booking() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-3xl mx-auto">
             {step === 1 && (
-              <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg">
+              <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg animate-fade-up">
                 <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground mb-4 sm:mb-6">Select Your Tour</h2>
 
                 {isLoadingTours ? (
@@ -240,7 +252,7 @@ export default function Booking() {
                       <select
                         value={formData.tour}
                         onChange={(e) => setFormData({ ...formData, tour: e.target.value })}
-                        className="w-full h-11 px-3 sm:px-4 rounded-lg border border-input bg-background text-foreground text-sm sm:text-base"
+                        className="w-full h-11 px-3 sm:px-4 rounded-lg border border-input bg-background text-foreground text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-ring"
                         required
                       >
                         <option value="">Select a tour...</option>
@@ -349,7 +361,7 @@ export default function Booking() {
                         <Input
                           type="number"
                           min="1"
-                          max="20"
+                          max="50"
                           value={formData.travelers}
                           onChange={(e) => setFormData({ ...formData, travelers: e.target.value })}
                           required
@@ -391,7 +403,7 @@ export default function Booking() {
             )}
 
             {step === 2 && (
-              <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg">
+              <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg animate-fade-up">
                 <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground mb-4 sm:mb-6">Your Details</h2>
 
                 <form className="space-y-4 sm:space-y-6">
@@ -498,7 +510,7 @@ export default function Booking() {
             )}
 
             {step === 3 && (
-              <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg">
+              <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg animate-fade-up">
                 <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground mb-4 sm:mb-6">Review Your Booking</h2>
 
                 <div className="space-y-4 sm:space-y-6">
@@ -514,7 +526,7 @@ export default function Booking() {
                       </p>
                     </div>
                   )}
-                  
+
                   <div className="p-4 sm:p-6 rounded-xl bg-secondary">
                     <h3 className="font-semibold text-foreground mb-3 sm:mb-4">Tour Details</h3>
                     <div className="space-y-2 text-sm">
@@ -524,11 +536,15 @@ export default function Booking() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Date:</span>
-                        <span className="text-foreground">{formData.date}</span>
+                        <span className="text-foreground">
+                          {formData.date ? new Date(formData.date).toLocaleDateString('en-PK', {
+                            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                          }) : '—'}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Travelers:</span>
-                        <span className="text-foreground">{formData.travelers}</span>
+                        <span className="text-foreground">{formData.travelers} person(s)</span>
                       </div>
                     </div>
                   </div>
@@ -617,7 +633,7 @@ export default function Booking() {
             )}
 
             {step === 4 && (
-              <div className="bg-card rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-lg text-center">
+              <div className="bg-card rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-lg text-center animate-scale-in">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-6 rounded-full bg-emerald/20 flex items-center justify-center">
                   <Check className="w-8 h-8 sm:w-10 sm:h-10 text-emerald" />
                 </div>

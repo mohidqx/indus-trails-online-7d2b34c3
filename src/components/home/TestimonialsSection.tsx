@@ -20,18 +20,17 @@ export default function TestimonialsSection() {
 
   useEffect(() => {
     const fetchTestimonials = async () => {
-      // Use the secure public view that excludes email addresses
       const { data } = await supabase
         .from('feedback_public')
         .select('*')
         .eq('is_featured', true)
         .order('created_at', { ascending: false })
         .limit(10);
-      
-      if (data && data.length > 0) setTestimonials(data);
+
+      if (data && data.length > 0) setTestimonials(data as Feedback[]);
       setIsLoading(false);
     };
-    
+
     fetchTestimonials();
   }, []);
 
@@ -45,8 +44,8 @@ export default function TestimonialsSection() {
 
   if (isLoading) {
     return (
-      <section className="py-24 bg-secondary/30 overflow-hidden">
-        <div className="container mx-auto px-6 flex justify-center">
+      <section className="py-16 md:py-24 bg-secondary/30 overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6 flex justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       </section>
@@ -60,18 +59,18 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="py-24 bg-secondary/30 overflow-hidden">
-      <div className="container mx-auto px-6">
+    <section className="py-16 md:py-24 bg-secondary/30 overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
           <span className="inline-block px-4 py-1.5 rounded-full bg-gold-light text-gold text-sm font-medium mb-4">
             Testimonials
           </span>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 md:mb-6">
             What Our Travelers
             <span className="text-gradient-gold"> Say</span>
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base md:text-lg text-muted-foreground px-4">
             Real stories from real travelers who experienced the magic of Pakistan's north with us.
           </p>
         </div>
@@ -79,33 +78,33 @@ export default function TestimonialsSection() {
         {/* Testimonials Carousel */}
         <div className="relative max-w-4xl mx-auto">
           {/* Main Card */}
-          <div className="relative bg-card rounded-3xl p-8 md:p-12 shadow-lg">
-            <Quote className="absolute top-8 right-8 w-16 h-16 text-primary/10" />
+          <div className="relative bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg">
+            <Quote className="absolute top-6 right-6 sm:top-8 sm:right-8 w-12 h-12 sm:w-16 sm:h-16 text-primary/10" />
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Stars */}
               <div className="flex gap-1">
                 {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-accent text-accent" />
+                  <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 fill-accent text-accent" />
                 ))}
               </div>
 
               {/* Text */}
-              <p className="text-xl md:text-2xl text-foreground leading-relaxed font-serif italic">
+              <p className="text-lg sm:text-xl md:text-2xl text-foreground leading-relaxed font-serif italic">
                 "{testimonials[currentIndex].message}"
               </p>
 
               {/* Author */}
-              <div className="flex items-center gap-4 pt-4">
-                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
+              <div className="flex items-center gap-3 sm:gap-4 pt-4">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-base sm:text-lg">
                   {getInitials(testimonials[currentIndex].name)}
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground">
+                  <h4 className="font-semibold text-foreground text-sm sm:text-base">
                     {testimonials[currentIndex].name}
                   </h4>
                   {testimonials[currentIndex].tour_name && (
-                    <p className="text-sm text-primary font-medium mt-1">
+                    <p className="text-xs sm:text-sm text-primary font-medium mt-1">
                       {testimonials[currentIndex].tour_name}
                     </p>
                   )}
@@ -115,7 +114,7 @@ export default function TestimonialsSection() {
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-center gap-4 mt-8">
+          <div className="flex items-center justify-center gap-4 mt-6 sm:mt-8">
             <Button variant="outline" size="icon" onClick={prev} className="rounded-full">
               <ChevronLeft className="w-5 h-5" />
             </Button>
@@ -126,8 +125,8 @@ export default function TestimonialsSection() {
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all ${
-                    index === currentIndex ? 'w-8 bg-primary' : 'bg-muted-foreground/30'
+                  className={`h-2.5 rounded-full transition-all ${
+                    index === currentIndex ? 'w-8 bg-primary' : 'w-2.5 bg-muted-foreground/30'
                   }`}
                 />
               ))}
