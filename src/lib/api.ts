@@ -48,7 +48,7 @@ export const toursApi = {
   update: (id: string, data: Record<string, unknown>) => 
     apiRequest('api-tours', { method: 'PUT', body: JSON.stringify({ id, ...data }) }),
   delete: (id: string) => 
-    apiRequest('api-tours', { method: 'DELETE', body: JSON.stringify({ id }) }),
+    apiRequest(`api-tours?id=${id}`, { method: 'DELETE' }),
 };
 
 // Deals API
@@ -65,7 +65,7 @@ export const dealsApi = {
   update: (id: string, data: Record<string, unknown>) => 
     apiRequest('api-deals', { method: 'PUT', body: JSON.stringify({ id, ...data }) }),
   delete: (id: string) => 
-    apiRequest('api-deals', { method: 'DELETE', body: JSON.stringify({ id }) }),
+    apiRequest(`api-deals?id=${id}`, { method: 'DELETE' }),
 };
 
 // Bookings API
@@ -81,7 +81,7 @@ export const bookingsApi = {
   update: (id: string, data: Record<string, unknown>) => 
     apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ id, ...data }) }),
   delete: (id: string) => 
-    apiRequest('api-bookings', { method: 'DELETE', body: JSON.stringify({ id }) }),
+    apiRequest(`api-bookings?id=${id}`, { method: 'DELETE' }),
   bulkUpdate: (ids: string[], data: Record<string, unknown>) =>
     apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ ids, ...data, bulk: true }) }),
   bulkDelete: (ids: string[]) =>
@@ -103,7 +103,7 @@ export const destinationsApi = {
   update: (id: string, data: Record<string, unknown>) => 
     apiRequest('api-destinations', { method: 'PUT', body: JSON.stringify({ id, ...data }) }),
   delete: (id: string) => 
-    apiRequest('api-destinations', { method: 'DELETE', body: JSON.stringify({ id }) }),
+    apiRequest(`api-destinations?id=${id}`, { method: 'DELETE' }),
 };
 
 // Vehicles API
@@ -119,7 +119,7 @@ export const vehiclesApi = {
   update: (id: string, data: Record<string, unknown>) => 
     apiRequest('api-vehicles', { method: 'PUT', body: JSON.stringify({ id, ...data }) }),
   delete: (id: string) => 
-    apiRequest('api-vehicles', { method: 'DELETE', body: JSON.stringify({ id }) }),
+    apiRequest(`api-vehicles?id=${id}`, { method: 'DELETE' }),
 };
 
 // Stats API (Admin only)
