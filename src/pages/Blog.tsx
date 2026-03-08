@@ -5,6 +5,7 @@ import Footer from '@/components/layout/Footer';
 import { supabase } from '@/integrations/supabase/client';
 import { Calendar, Clock, MapPin, ArrowRight, Search, Tag } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface BlogPost {
   id: string;
