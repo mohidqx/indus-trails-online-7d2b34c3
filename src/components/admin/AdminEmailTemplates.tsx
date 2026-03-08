@@ -50,6 +50,14 @@ const defaultTemplates: EmailTemplate[] = [
     variables: ['customer_name', 'tour_name'],
     type: 'feedback',
   },
+  {
+    id: 'abandoned_booking',
+    name: 'Abandoned Booking Recovery',
+    subject: 'You left something behind! Complete your {{tour_name}} booking 🏔️',
+    body: `Dear {{customer_name}},\n\nWe noticed you started booking the {{tour_name}} tour but didn't complete it.\n\nDon't miss out on this incredible adventure! Your spot is still available.\n\n📋 Your Booking Details:\n• Tour: {{tour_name}}\n• Date: {{travel_date}}\n• Travelers: {{num_travelers}}\n\n🎁 Complete your booking now and get a special discount!\n\n👉 Click here to resume your booking: {{recovery_link}}\n\nIf you faced any issues or have questions, feel free to reach out to us:\n📞 +92 311 8088007\n💬 WhatsApp: +92 311 8088007\n\nWe'd love to help you plan your dream trip!\n\nBest regards,\nShahzaib Khan Mughal\nFounder, Indus Tours Pakistan`,
+    variables: ['customer_name', 'tour_name', 'travel_date', 'num_travelers', 'recovery_link'],
+    type: 'custom',
+  },
 ];
 
 const typeColors: Record<string, string> = {
