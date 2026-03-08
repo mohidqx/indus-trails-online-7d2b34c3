@@ -16,4 +16,4 @@ Disallow: /admin
 Disallow: /auth
 Disallow: /dashboard
 
-Sitemap: https://industours.lovable.app/sitemap.xml
+Sitemap: https://industours.pk/sitemap.xml
