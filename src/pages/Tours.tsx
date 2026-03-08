@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { getTourImage } from '@/lib/tourImages';
 
-interface Hotel {
+interface HotelInfo {
   id: string;
   name: string;
   star_rating: number | null;
@@ -27,7 +27,7 @@ interface Tour {
   image_url: string | null;
   is_featured: boolean;
   hotel_id: string | null;
-  hotels: Hotel | null;
+  hotels: HotelInfo | null;
 }
 
 export default function Tours() {
@@ -44,11 +44,9 @@ export default function Tours() {
         .eq('is_active', true)
         .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false });
-      
       if (data) setTours(data as Tour[]);
       setIsLoading(false);
     };
-    
     fetchTours();
   }, []);
 
@@ -64,21 +62,27 @@ export default function Tours() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       {/* Hero */}
-      <section className="relative pt-28 md:pt-32 pb-16 md:pb-20 bg-gradient-mountain">
-        <div className="container mx-auto px-4 sm:px-6 text-center">
+      <section className="page-hero">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.1),transparent_60%)]" />
+        <div className="container mx-auto px-4 sm:px-6 text-center relative z-10 animate-fade-up">
+          <span className="premium-badge !text-snow !border-snow/15 !bg-snow/[0.06] mb-4 inline-flex">
+            <Star className="w-4 h-4 text-accent" />
+            Curated Adventures
+          </span>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 md:mb-6">
             Our Tours
           </h1>
           <p className="text-base md:text-xl text-snow/80 max-w-2xl mx-auto px-4">
             Handcrafted journeys through Pakistan's most spectacular landscapes
           </p>
+          <div className="gold-divider mx-auto mt-6" />
         </div>
       </section>
 
       {/* Filters */}
-      <section className="py-6 md:py-8 border-b border-border">
+      <section className="py-6 md:py-8 border-b border-border/50">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap gap-2">
@@ -86,9 +90,9 @@ export default function Tours() {
                 <button
                   key={diff}
                   onClick={() => setSelectedDifficulty(diff as string)}
-                  className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all ${
+                  className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ${
                     selectedDifficulty === diff
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-teal'
                       : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                   }`}
                 >
@@ -96,13 +100,13 @@ export default function Tours() {
                 </button>
               ))}
             </div>
-            <div className="relative w-full md:w-80">
+            <div className="relative w-full md:w-80 premium-input rounded-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
               <Input
                 placeholder="Search tours..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 md:pl-10 text-sm md:text-base"
+                className="pl-9 md:pl-10 text-sm md:text-base border-0 bg-transparent"
               />
             </div>
           </div>
@@ -122,10 +126,11 @@ export default function Tours() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {filteredTours.map((tour) => (
+              {filteredTours.map((tour, index) => (
                 <div
                   key={tour.id}
-                  className="group bg-card rounded-2xl md:rounded-3xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-500"
+                  className="group bg-card rounded-2xl md:rounded-3xl overflow-hidden ultra-card animate-fade-up"
+                  style={{ animationDelay: `${index * 80}ms` }}
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <img
@@ -134,10 +139,10 @@ export default function Tours() {
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-mountain/60 to-transparent" />
-                    
+
                     <div className="absolute top-3 md:top-4 left-3 md:left-4 flex gap-2">
                       {tour.difficulty && (
-                        <span className="px-2 md:px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
+                        <span className="px-2 md:px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-teal">
                           {tour.difficulty}
                         </span>
                       )}
@@ -157,37 +162,34 @@ export default function Tours() {
                   </div>
 
                   <div className="p-4 md:p-6 space-y-3 md:space-y-4">
-                    <h3 className="text-lg md:text-xl font-serif font-bold text-foreground line-clamp-2">
+                    <h3 className="text-lg md:text-xl font-serif font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                       {tour.title}
                     </h3>
 
                     {tour.description && (
-                      <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
-                        {tour.description}
-                      </p>
+                      <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">{tour.description}</p>
                     )}
 
                     <div className="flex flex-wrap gap-3 md:gap-4 text-xs md:text-sm text-muted-foreground">
                       {tour.duration && (
                         <span className="flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                          <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary/50" />
                           {tour.duration}
                         </span>
                       )}
                       {tour.max_group_size && (
                         <span className="flex items-center gap-1.5">
-                          <Users className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                          <Users className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary/50" />
                           Up to {tour.max_group_size}
                         </span>
                       )}
                     </div>
 
-                    {/* Hotel Info */}
                     {tour.hotels && (
-                      <div className="flex items-center gap-2 p-2 md:p-3 rounded-lg bg-primary/5 border border-primary/10">
+                      <div className="flex items-center gap-2 p-2.5 md:p-3 rounded-xl bg-primary/5 border border-primary/10">
                         <Hotel className="w-4 h-4 text-primary flex-shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-xs font-medium text-foreground truncate">Stay included: {tour.hotels.name}</p>
+                          <p className="text-xs font-medium text-foreground truncate">Stay: {tour.hotels.name}</p>
                           {tour.hotels.star_rating && (
                             <div className="flex items-center gap-0.5">
                               {Array.from({ length: tour.hotels.star_rating }).map((_, i) => (
@@ -199,7 +201,7 @@ export default function Tours() {
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between pt-3 md:pt-4 border-t border-border">
+                    <div className="flex items-center justify-between pt-3 md:pt-4 border-t border-border/40">
                       <div>
                         <div className="flex items-baseline gap-2">
                           <span className="text-xl md:text-2xl font-bold text-foreground">
@@ -211,9 +213,9 @@ export default function Tours() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground">per person</p>
+                        <p className="text-[11px] text-muted-foreground/70">per person</p>
                       </div>
-                      <Button variant="default" size="sm" asChild>
+                      <Button variant="default" size="sm" asChild className="shadow-teal hover:shadow-lg transition-shadow">
                         <Link to={`/booking?tour=${tour.id}`}>Book Now</Link>
                       </Button>
                     </div>

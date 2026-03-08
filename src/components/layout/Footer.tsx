@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ArrowRight } from 'lucide-react';
+import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ArrowRight, Heart } from 'lucide-react';
 import { useSiteContent } from '@/hooks/useSiteContent';
 import logo from '@/assets/indus-tours-logo.jpeg';
 
@@ -39,9 +39,9 @@ export default function Footer() {
 
   return (
     <footer className="relative bg-gradient-to-b from-mountain to-[hsl(210_30%_16%)] text-snow overflow-hidden">
-      {/* Ambient glow */}
       <div className="absolute top-0 left-1/4 w-[400px] h-[200px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
-      
+      <div className="absolute bottom-0 right-1/4 w-[300px] h-[150px] bg-accent/5 rounded-full blur-[80px] pointer-events-none" />
+
       {/* Main Footer */}
       <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 relative">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
@@ -65,7 +65,7 @@ export default function Footer() {
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl bg-snow/5 hover:bg-accent hover:text-accent-foreground flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  className="w-10 h-10 rounded-xl bg-snow/5 hover:bg-accent hover:text-accent-foreground flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-gold"
                 >
                   <Icon className="w-4 h-4" />
                 </a>
@@ -76,6 +76,7 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h4 className="font-serif text-base font-semibold mb-5 text-snow/90">Quick Links</h4>
+            <div className="gold-divider mb-4 !w-8" style={{ width: '32px' }} />
             <ul className="space-y-2.5">
               {quickLinks.map((link) => (
                 <li key={link.path}>
@@ -91,6 +92,7 @@ export default function Footer() {
           {/* Popular Destinations */}
           <div>
             <h4 className="font-serif text-base font-semibold mb-5 text-snow/90">Destinations</h4>
+            <div className="gold-divider mb-4 !w-8" style={{ width: '32px' }} />
             <ul className="space-y-2.5">
               {destinations.map((dest) => (
                 <li key={dest}>
@@ -106,6 +108,7 @@ export default function Footer() {
           {/* Contact Info */}
           <div>
             <h4 className="font-serif text-base font-semibold mb-5 text-snow/90">Contact Us</h4>
+            <div className="gold-divider mb-4 !w-8" style={{ width: '32px' }} />
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -137,8 +140,8 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-snow/6">
         <div className="container mx-auto px-4 sm:px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-3">
-          <p className="text-snow/35 text-xs text-center md:text-left">
-            © {new Date().getFullYear()} Indus Tours Pakistan. All rights reserved.
+          <p className="text-snow/35 text-xs text-center md:text-left flex items-center gap-1">
+            © {new Date().getFullYear()} Indus Tours Pakistan. Made with <Heart className="w-3 h-3 text-destructive inline" /> in Pakistan
           </p>
           <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-xs">
             {supportLinks.map((link) => (
