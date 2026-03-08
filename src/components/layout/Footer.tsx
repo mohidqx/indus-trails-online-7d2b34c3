@@ -23,7 +23,7 @@ const supportLinks = [
 
 const destinations = ['Hunza Valley', 'Skardu', 'Fairy Meadows', 'Swat Valley', 'Naran Kaghan', 'Chitral'];
 
-export default function Footer() {
+const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
   const { data: content } = useSiteContent();
   const phone = (content?.phone as string) || '+92 300 1234567';
   const email = (content?.email as string) || 'info@industours.pk';
