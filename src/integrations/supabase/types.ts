@@ -367,6 +367,42 @@ export type Database = {
         }
         Relationships: []
       }
+      login_attempts: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          email: string
+          failure_reason: string | null
+          id: string
+          ip_address: string | null
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -490,6 +526,87 @@ export type Database = {
           },
         ]
       }
+      user_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          link: string | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          dietary_requirements: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          id: string
+          notification_deals: boolean | null
+          notification_email: boolean | null
+          notification_security: boolean | null
+          passport_country: string | null
+          preferred_destinations: string[] | null
+          travel_style: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dietary_requirements?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          id?: string
+          notification_deals?: boolean | null
+          notification_email?: boolean | null
+          notification_security?: boolean | null
+          passport_country?: string | null
+          preferred_destinations?: string[] | null
+          travel_style?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dietary_requirements?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          id?: string
+          notification_deals?: boolean | null
+          notification_email?: boolean | null
+          notification_security?: boolean | null
+          passport_country?: string | null
+          preferred_destinations?: string[] | null
+          travel_style?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -507,6 +624,57 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_sessions: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          ended_at: string | null
+          id: string
+          ip_address: string | null
+          is_active: boolean | null
+          last_active_at: string | null
+          os: string | null
+          session_token: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          ended_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_active?: boolean | null
+          last_active_at?: string | null
+          os?: string | null
+          session_token?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          ended_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_active?: boolean | null
+          last_active_at?: string | null
+          os?: string | null
+          session_token?: string | null
+          user_agent?: string | null
           user_id?: string
         }
         Relationships: []
@@ -702,6 +870,45 @@ export type Database = {
           viewport_width?: number | null
         }
         Relationships: []
+      }
+      wishlists: {
+        Row: {
+          created_at: string
+          destination_id: string | null
+          id: string
+          tour_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          destination_id?: string | null
+          id?: string
+          tour_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          destination_id?: string | null
+          id?: string
+          tour_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlists_destination_id_fkey"
+            columns: ["destination_id"]
+            isOneToOne: false
+            referencedRelation: "destinations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wishlists_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
