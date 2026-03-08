@@ -807,29 +807,44 @@ export type Database = {
       }
       visitor_logs: {
         Row: {
+          ad_blocker_detected: boolean | null
           all_languages: string[] | null
+          audio_fingerprint: string | null
           available_height: number | null
           available_width: number | null
           battery_charging: boolean | null
           battery_level: number | null
           browser: string | null
           browser_version: string | null
+          canvas_fingerprint: string | null
           city: string | null
           color_depth: number | null
           connection_type: string | null
           cookies_enabled: boolean | null
+          copy_events: number | null
           country: string | null
           cpu_cores: number | null
           created_at: string
           device_memory: number | null
           device_type: string | null
+          do_not_track: boolean | null
           dom_load_time: number | null
           downlink: number | null
+          engagement_score: number | null
           entry_url: string | null
+          exit_url: string | null
+          form_abandons: number | null
+          form_interactions: number | null
           gpu_renderer: string | null
           gpu_vendor: string | null
+          has_camera: boolean | null
+          has_microphone: boolean | null
           id: string
+          idle_time: number | null
+          incognito_detected: boolean | null
+          installed_plugins: string[] | null
           ip_address: string | null
+          js_heap_size: number | null
           language: string | null
           max_scroll: number | null
           max_touch_points: number | null
@@ -839,47 +854,80 @@ export type Database = {
           orientation: string | null
           os: string | null
           page_load_time: number | null
+          pages_visited: string[] | null
           pdf_viewer: boolean | null
           pixel_ratio: number | null
           platform: string | null
+          rage_clicks: number | null
+          referrer: string | null
+          referrer_domain: string | null
+          right_click_events: number | null
           screen_height: number | null
+          screen_orientation_changes: number | null
           screen_width: number | null
           scroll_distance: number | null
           sections_viewed: string[] | null
+          service_worker_support: boolean | null
           session_id: string
+          storage_quota: number | null
+          tab_hidden_time: number | null
+          tab_switches: number | null
           time_on_page: number | null
           timezone: string | null
+          total_clicks: number | null
           touch_support: boolean | null
           tz_offset: number | null
           updated_at: string
           user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
           viewport_height: number | null
           viewport_width: number | null
+          webgl_extensions: number | null
+          webgl_fingerprint: string | null
         }
         Insert: {
+          ad_blocker_detected?: boolean | null
           all_languages?: string[] | null
+          audio_fingerprint?: string | null
           available_height?: number | null
           available_width?: number | null
           battery_charging?: boolean | null
           battery_level?: number | null
           browser?: string | null
           browser_version?: string | null
+          canvas_fingerprint?: string | null
           city?: string | null
           color_depth?: number | null
           connection_type?: string | null
           cookies_enabled?: boolean | null
+          copy_events?: number | null
           country?: string | null
           cpu_cores?: number | null
           created_at?: string
           device_memory?: number | null
           device_type?: string | null
+          do_not_track?: boolean | null
           dom_load_time?: number | null
           downlink?: number | null
+          engagement_score?: number | null
           entry_url?: string | null
+          exit_url?: string | null
+          form_abandons?: number | null
+          form_interactions?: number | null
           gpu_renderer?: string | null
           gpu_vendor?: string | null
+          has_camera?: boolean | null
+          has_microphone?: boolean | null
           id?: string
+          idle_time?: number | null
+          incognito_detected?: boolean | null
+          installed_plugins?: string[] | null
           ip_address?: string | null
+          js_heap_size?: number | null
           language?: string | null
           max_scroll?: number | null
           max_touch_points?: number | null
@@ -889,47 +937,80 @@ export type Database = {
           orientation?: string | null
           os?: string | null
           page_load_time?: number | null
+          pages_visited?: string[] | null
           pdf_viewer?: boolean | null
           pixel_ratio?: number | null
           platform?: string | null
+          rage_clicks?: number | null
+          referrer?: string | null
+          referrer_domain?: string | null
+          right_click_events?: number | null
           screen_height?: number | null
+          screen_orientation_changes?: number | null
           screen_width?: number | null
           scroll_distance?: number | null
           sections_viewed?: string[] | null
+          service_worker_support?: boolean | null
           session_id: string
+          storage_quota?: number | null
+          tab_hidden_time?: number | null
+          tab_switches?: number | null
           time_on_page?: number | null
           timezone?: string | null
+          total_clicks?: number | null
           touch_support?: boolean | null
           tz_offset?: number | null
           updated_at?: string
           user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           viewport_height?: number | null
           viewport_width?: number | null
+          webgl_extensions?: number | null
+          webgl_fingerprint?: string | null
         }
         Update: {
+          ad_blocker_detected?: boolean | null
           all_languages?: string[] | null
+          audio_fingerprint?: string | null
           available_height?: number | null
           available_width?: number | null
           battery_charging?: boolean | null
           battery_level?: number | null
           browser?: string | null
           browser_version?: string | null
+          canvas_fingerprint?: string | null
           city?: string | null
           color_depth?: number | null
           connection_type?: string | null
           cookies_enabled?: boolean | null
+          copy_events?: number | null
           country?: string | null
           cpu_cores?: number | null
           created_at?: string
           device_memory?: number | null
           device_type?: string | null
+          do_not_track?: boolean | null
           dom_load_time?: number | null
           downlink?: number | null
+          engagement_score?: number | null
           entry_url?: string | null
+          exit_url?: string | null
+          form_abandons?: number | null
+          form_interactions?: number | null
           gpu_renderer?: string | null
           gpu_vendor?: string | null
+          has_camera?: boolean | null
+          has_microphone?: boolean | null
           id?: string
+          idle_time?: number | null
+          incognito_detected?: boolean | null
+          installed_plugins?: string[] | null
           ip_address?: string | null
+          js_heap_size?: number | null
           language?: string | null
           max_scroll?: number | null
           max_touch_points?: number | null
@@ -939,22 +1020,40 @@ export type Database = {
           orientation?: string | null
           os?: string | null
           page_load_time?: number | null
+          pages_visited?: string[] | null
           pdf_viewer?: boolean | null
           pixel_ratio?: number | null
           platform?: string | null
+          rage_clicks?: number | null
+          referrer?: string | null
+          referrer_domain?: string | null
+          right_click_events?: number | null
           screen_height?: number | null
+          screen_orientation_changes?: number | null
           screen_width?: number | null
           scroll_distance?: number | null
           sections_viewed?: string[] | null
+          service_worker_support?: boolean | null
           session_id?: string
+          storage_quota?: number | null
+          tab_hidden_time?: number | null
+          tab_switches?: number | null
           time_on_page?: number | null
           timezone?: string | null
+          total_clicks?: number | null
           touch_support?: boolean | null
           tz_offset?: number | null
           updated_at?: string
           user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           viewport_height?: number | null
           viewport_width?: number | null
+          webgl_extensions?: number | null
+          webgl_fingerprint?: string | null
         }
         Relationships: []
       }
