@@ -201,11 +201,15 @@ export default function AdminTours() {
                 {tour.is_featured && <span className="px-2 py-1 rounded bg-primary/10 text-primary">Featured</span>}
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-xl font-bold text-foreground">PKR {tour.price.toLocaleString()}</span>
-                {tour.discount_price && (
-                  <span className="text-sm text-muted-foreground line-through">
-                    PKR {tour.discount_price.toLocaleString()}
-                  </span>
+                {tour.discount_price ? (
+                  <>
+                    <span className="text-xl font-bold text-foreground">PKR {tour.discount_price.toLocaleString()}</span>
+                    <span className="text-sm text-muted-foreground line-through">
+                      PKR {tour.price.toLocaleString()}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-xl font-bold text-foreground">PKR {tour.price.toLocaleString()}</span>
                 )}
               </div>
             </div>
