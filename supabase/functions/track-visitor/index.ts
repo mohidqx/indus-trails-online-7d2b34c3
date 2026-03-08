@@ -35,11 +35,24 @@ serve(async (req) => {
         }
         const { error } = await db.from("visitor_logs")
           .update({
-          time_on_page: Math.round(body.time_on_page || 0),
+            time_on_page: Math.round(body.time_on_page || 0),
             mouse_moves: Math.round(body.mouse_moves || 0),
             scroll_distance: Math.round(body.scroll_distance || 0),
             max_scroll: Math.round(body.max_scroll || 0),
             sections_viewed: body.sections_viewed,
+            total_clicks: Math.round(body.total_clicks || 0),
+            rage_clicks: Math.round(body.rage_clicks || 0),
+            tab_switches: Math.round(body.tab_switches || 0),
+            tab_hidden_time: Math.round(body.tab_hidden_time || 0),
+            form_interactions: Math.round(body.form_interactions || 0),
+            copy_events: Math.round(body.copy_events || 0),
+            right_click_events: Math.round(body.right_click_events || 0),
+            screen_orientation_changes: Math.round(body.screen_orientation_changes || 0),
+            idle_time: Math.round(body.idle_time || 0),
+            engagement_score: Math.round(body.engagement_score || 0),
+            pages_visited: body.pages_visited,
+            exit_url: body.exit_url,
+            js_heap_size: body.js_heap_size,
             updated_at: new Date().toISOString(),
           })
           .eq("session_id", sessionId);
@@ -48,12 +61,38 @@ serve(async (req) => {
           headers: { "Content-Type": "application/json", ...corsHeaders },
         });
       }
+
+      // Check if IP is banned
+      const { data: bannedCheck } = await db.from("banned_ips")
+        .select("id")
+        .eq("ip_address", ipAddress)
+        .eq("is_active", true)
+        .limit(1);
+      
+      if (bannedCheck && bannedCheck.length > 0) {
+        return new Response(JSON.stringify({ error: "Blocked" }), {
+          status: 403, headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+
       // Detect device type from user agent
       const ua = (body.user_agent || "").toLowerCase();
       let deviceType = "desktop";
       if (/mobile|android|iphone|ipod/.test(ua)) deviceType = "mobile";
       else if (/tablet|ipad/.test(ua)) deviceType = "tablet";
       else if (body.max_touch_points > 0 && body.screen_width && body.screen_width < 1200) deviceType = "tablet";
+
+      // Try to get geo info from IP
+      let country = null;
+      let city = null;
+      try {
+        const geoRes = await fetch(`http://ip-api.com/json/${ipAddress}?fields=country,city`);
+        if (geoRes.ok) {
+          const geo = await geoRes.json();
+          country = geo.country || null;
+          city = geo.city || null;
+        }
+      } catch {}
 
       const { data, error } = await db.from("visitor_logs").insert({
         session_id: body.session_id,
@@ -87,6 +126,8 @@ serve(async (req) => {
         nav_type: body.nav_type,
         ip_address: ipAddress,
         device_type: deviceType,
+        country,
+        city,
         device_memory: body.device_memory,
         connection_type: body.connection_type,
         downlink: body.downlink,
@@ -94,6 +135,27 @@ serve(async (req) => {
         battery_charging: body.battery_charging,
         page_load_time: body.page_load_time != null ? Math.round(body.page_load_time) : null,
         dom_load_time: body.dom_load_time != null ? Math.round(body.dom_load_time) : null,
+        // New fields
+        referrer: body.referrer,
+        referrer_domain: body.referrer_domain,
+        utm_source: body.utm_source,
+        utm_medium: body.utm_medium,
+        utm_campaign: body.utm_campaign,
+        utm_term: body.utm_term,
+        utm_content: body.utm_content,
+        canvas_fingerprint: body.canvas_fingerprint,
+        audio_fingerprint: body.audio_fingerprint,
+        webgl_fingerprint: body.webgl_fingerprint,
+        ad_blocker_detected: body.ad_blocker_detected,
+        incognito_detected: body.incognito_detected,
+        do_not_track: body.do_not_track,
+        service_worker_support: body.service_worker_support,
+        webgl_extensions: body.webgl_extensions,
+        has_camera: body.has_camera,
+        has_microphone: body.has_microphone,
+        installed_plugins: body.installed_plugins,
+        storage_quota: body.storage_quota,
+        js_heap_size: body.js_heap_size,
       }).select().single();
 
       if (error) throw error;
@@ -119,6 +181,19 @@ serve(async (req) => {
           scroll_distance: Math.round(body.scroll_distance || 0),
           max_scroll: Math.round(body.max_scroll || 0),
           sections_viewed: body.sections_viewed,
+          total_clicks: Math.round(body.total_clicks || 0),
+          rage_clicks: Math.round(body.rage_clicks || 0),
+          tab_switches: Math.round(body.tab_switches || 0),
+          tab_hidden_time: Math.round(body.tab_hidden_time || 0),
+          form_interactions: Math.round(body.form_interactions || 0),
+          copy_events: Math.round(body.copy_events || 0),
+          right_click_events: Math.round(body.right_click_events || 0),
+          screen_orientation_changes: Math.round(body.screen_orientation_changes || 0),
+          idle_time: Math.round(body.idle_time || 0),
+          engagement_score: Math.round(body.engagement_score || 0),
+          pages_visited: body.pages_visited,
+          exit_url: body.exit_url,
+          js_heap_size: body.js_heap_size,
           updated_at: new Date().toISOString(),
         })
         .eq("session_id", sessionId);
