@@ -39,7 +39,7 @@ const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-b from-mountain via-[hsl(210_28%_18%)] to-[hsl(210_30%_14%)] text-snow overflow-hidden">
+    <footer ref={ref} className="relative bg-gradient-to-b from-mountain via-[hsl(210_28%_18%)] to-[hsl(210_30%_14%)] text-snow overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 left-1/4 w-[400px] h-[200px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[300px] h-[150px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
