@@ -227,23 +227,22 @@ export default function AdminSettings() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-[11px] text-muted-foreground mb-3">
+          <p className="text-[11px] text-muted-foreground mb-4">
             Export all data including bookings, users, tours, vehicles, hotels, deals, feedback, contact messages, 
             blog posts, gallery, newsletter subscribers, activity logs, visitor logs, login attempts, banned IPs, 
-            user bans, sessions, loyalty points, referrals, abandoned bookings, and site settings as a single JSON file.
+            user bans, sessions, loyalty points, referrals, abandoned bookings, and site settings.
           </p>
-          <Button 
-            onClick={handleMegaExport} 
-            disabled={isExporting} 
-            size="sm" 
-            className="bg-primary/20 text-primary hover:bg-primary/30 border border-primary/20"
-          >
-            {isExporting ? (
-              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Exporting All Data...</>
-            ) : (
-              <><Download className="w-3.5 h-3.5 mr-1.5" /> Download Full Export (JSON)</>
-            )}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => handleMegaExport('json')} disabled={!!isExporting} size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 border border-primary/20">
+              {isExporting === 'json' ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Exporting...</> : <><FileJson className="w-3.5 h-3.5 mr-1.5" /> JSON</>}
+            </Button>
+            <Button onClick={() => handleMegaExport('csv')} disabled={!!isExporting} size="sm" className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20">
+              {isExporting === 'csv' ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Exporting...</> : <><FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" /> CSV</>}
+            </Button>
+            <Button onClick={() => handleMegaExport('pdf')} disabled={!!isExporting} size="sm" className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20">
+              {isExporting === 'pdf' ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Generating...</> : <><FileText className="w-3.5 h-3.5 mr-1.5" /> PDF (Print)</>}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
