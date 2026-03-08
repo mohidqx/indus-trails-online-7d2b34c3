@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, MapPin, User, LogIn, ChevronRight, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ const navLinks = [
   { name: 'Contact', path: '/contact' },
 ];
 
-export default function Navbar() {
+const Navbar = forwardRef<HTMLElement>(function Navbar(_, ref) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -42,7 +42,7 @@ export default function Navbar() {
   const scrolledOrNotHome = isScrolled || !isHomePage;
 
   return (
-    <header className={cn(
+    <header ref={ref} className={cn(
       'fixed top-0 left-0 right-0 z-50 transition-all duration-700',
       scrolledOrNotHome
         ? 'bg-background/85 backdrop-blur-2xl shadow-lg border-b border-border/20'
@@ -238,4 +238,6 @@ export default function Navbar() {
       </div>
     </header>
   );
-}
+});
+
+export default Navbar;

@@ -47,7 +47,7 @@ export default function About() {
       <Navbar />
 
       {/* Hero with Parallax */}
-      <section className="relative pt-36 sm:pt-40 pb-16 sm:pb-32 overflow-hidden">
+      <section className="page-hero">
         <div className="absolute inset-0">
           <motion.img
             src={heroImage}
@@ -62,18 +62,16 @@ export default function About() {
           <div className="absolute inset-0 bg-gradient-to-t from-mountain/90 via-mountain/40 to-mountain/60" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--accent)/0.1),transparent_60%)]" />
         </div>
-        <div className="relative container mx-auto px-4 sm:px-6 text-center">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-            <span className="premium-badge !text-snow !border-snow/15 !bg-snow/[0.06] mb-4 inline-flex">
-              <Star className="w-4 h-4 text-accent" />
-              Our Story
-            </span>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 sm:mb-6 no-select">About Us</h1>
-            <p className="text-base sm:text-xl text-snow/80 max-w-2xl mx-auto">
-              Crafting unforgettable journeys through Pakistan's northern paradise since 2015
-            </p>
-            <div className="gold-divider mx-auto mt-6" />
-          </motion.div>
+        <div className="relative container mx-auto px-4 sm:px-6 text-center z-10 animate-fade-up">
+          <span className="premium-badge !text-snow !border-snow/15 !bg-snow/[0.06] mb-4 inline-flex">
+            <Star className="w-4 h-4 text-accent" />
+            Our Story
+          </span>
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 sm:mb-6 no-select">About Us</h1>
+          <p className="text-base sm:text-xl text-snow/80 max-w-2xl mx-auto">
+            Crafting unforgettable journeys through Pakistan's northern paradise since 2015
+          </p>
+          <div className="gold-divider mx-auto mt-6" />
         </div>
       </section>
 

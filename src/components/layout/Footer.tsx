@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ArrowRight, Heart, Sparkles } from 'lucide-react';
 import { useSiteContent } from '@/hooks/useSiteContent';
@@ -22,7 +23,7 @@ const supportLinks = [
 
 const destinations = ['Hunza Valley', 'Skardu', 'Fairy Meadows', 'Swat Valley', 'Naran Kaghan', 'Chitral'];
 
-export default function Footer() {
+const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
   const { data: content } = useSiteContent();
   const phone = (content?.phone as string) || '+92 300 1234567';
   const email = (content?.email as string) || 'info@industours.pk';
@@ -38,7 +39,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-b from-mountain via-[hsl(210_28%_18%)] to-[hsl(210_30%_14%)] text-snow overflow-hidden">
+    <footer ref={ref} className="relative bg-gradient-to-b from-mountain via-[hsl(210_28%_18%)] to-[hsl(210_30%_14%)] text-snow overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 left-1/4 w-[400px] h-[200px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[300px] h-[150px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
@@ -178,4 +179,6 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+});
+
+export default Footer;

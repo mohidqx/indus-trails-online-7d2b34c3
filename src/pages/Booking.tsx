@@ -164,10 +164,9 @@ export default function Booking() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-36 sm:pt-40 pb-12 sm:pb-20 bg-gradient-mountain overflow-hidden">
+      <section className="page-hero">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--accent)/0.08),transparent_60%)]" />
-        <div className="container mx-auto px-4 sm:px-6 text-center relative">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+        <div className="container mx-auto px-4 sm:px-6 text-center relative z-10 animate-fade-up">
             <span className="premium-badge !text-snow !border-snow/15 !bg-snow/[0.06] mb-4 inline-flex">
               {selectedDeal ? <Tag className="w-4 h-4 text-accent" /> : <Sparkles className="w-4 h-4 text-accent" />}
               {selectedDeal ? 'Special Offer' : 'Book Now'}
@@ -186,7 +185,6 @@ export default function Booking() {
                 {selectedDeal.code && <span className="font-mono">• Code: {selectedDeal.code}</span>}
               </div>
             )}
-          </motion.div>
         </div>
       </section>
 
