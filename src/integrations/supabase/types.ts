@@ -517,6 +517,138 @@ export type Database = {
         }
         Relationships: []
       }
+      visitor_logs: {
+        Row: {
+          all_languages: string[] | null
+          available_height: number | null
+          available_width: number | null
+          browser: string | null
+          browser_version: string | null
+          city: string | null
+          color_depth: number | null
+          cookies_enabled: boolean | null
+          country: string | null
+          cpu_cores: number | null
+          created_at: string
+          device_type: string | null
+          entry_url: string | null
+          gpu_renderer: string | null
+          gpu_vendor: string | null
+          id: string
+          ip_address: string | null
+          language: string | null
+          max_scroll: number | null
+          max_touch_points: number | null
+          mouse_moves: number | null
+          nav_type: string | null
+          online: boolean | null
+          orientation: string | null
+          os: string | null
+          pdf_viewer: boolean | null
+          pixel_ratio: number | null
+          platform: string | null
+          screen_height: number | null
+          screen_width: number | null
+          scroll_distance: number | null
+          sections_viewed: string[] | null
+          session_id: string
+          time_on_page: number | null
+          timezone: string | null
+          touch_support: boolean | null
+          tz_offset: number | null
+          updated_at: string
+          user_agent: string | null
+          viewport_height: number | null
+          viewport_width: number | null
+        }
+        Insert: {
+          all_languages?: string[] | null
+          available_height?: number | null
+          available_width?: number | null
+          browser?: string | null
+          browser_version?: string | null
+          city?: string | null
+          color_depth?: number | null
+          cookies_enabled?: boolean | null
+          country?: string | null
+          cpu_cores?: number | null
+          created_at?: string
+          device_type?: string | null
+          entry_url?: string | null
+          gpu_renderer?: string | null
+          gpu_vendor?: string | null
+          id?: string
+          ip_address?: string | null
+          language?: string | null
+          max_scroll?: number | null
+          max_touch_points?: number | null
+          mouse_moves?: number | null
+          nav_type?: string | null
+          online?: boolean | null
+          orientation?: string | null
+          os?: string | null
+          pdf_viewer?: boolean | null
+          pixel_ratio?: number | null
+          platform?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          scroll_distance?: number | null
+          sections_viewed?: string[] | null
+          session_id: string
+          time_on_page?: number | null
+          timezone?: string | null
+          touch_support?: boolean | null
+          tz_offset?: number | null
+          updated_at?: string
+          user_agent?: string | null
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Update: {
+          all_languages?: string[] | null
+          available_height?: number | null
+          available_width?: number | null
+          browser?: string | null
+          browser_version?: string | null
+          city?: string | null
+          color_depth?: number | null
+          cookies_enabled?: boolean | null
+          country?: string | null
+          cpu_cores?: number | null
+          created_at?: string
+          device_type?: string | null
+          entry_url?: string | null
+          gpu_renderer?: string | null
+          gpu_vendor?: string | null
+          id?: string
+          ip_address?: string | null
+          language?: string | null
+          max_scroll?: number | null
+          max_touch_points?: number | null
+          mouse_moves?: number | null
+          nav_type?: string | null
+          online?: boolean | null
+          orientation?: string | null
+          os?: string | null
+          pdf_viewer?: boolean | null
+          pixel_ratio?: number | null
+          platform?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          scroll_distance?: number | null
+          sections_viewed?: string[] | null
+          session_id?: string
+          time_on_page?: number | null
+          timezone?: string | null
+          touch_support?: boolean | null
+          tz_offset?: number | null
+          updated_at?: string
+          user_agent?: string | null
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       feedback_public: {
