@@ -242,6 +242,7 @@
     opacity: 0;
     transition: opacity 0.5s ease;
     z-index: 1;
+    pointer-events: none;
   }
   .ultra-card:hover::before {
     opacity: 1;
