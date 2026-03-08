@@ -250,7 +250,7 @@ export default function Admin() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-xl lg:text-2xl font-serif font-bold text-foreground capitalize">
-              {activeMenu === 'content' ? 'Content Editor' : activeMenu === 'activity' ? 'Activity Logs' : activeMenu === 'visitors' ? 'Visitor Logs' : activeMenu === 'seo' ? 'SEO Settings' : activeMenu === 'email-templates' ? 'Email Templates' : activeMenu === 'notifications' ? 'Notifications' : activeMenu === 'contact' ? 'Contact Messages' : activeMenu}
+              {activeMenu === 'content' ? 'Content Editor' : activeMenu === 'activity' ? 'Activity Logs' : activeMenu === 'visitors' ? 'Visitor Logs' : activeMenu === 'seo' ? 'SEO Settings' : activeMenu === 'email-templates' ? 'Email Templates' : activeMenu === 'notifications' ? 'Notifications' : activeMenu === 'contact' ? 'Contact Messages' : activeMenu === 'god-mode' ? '☠️ God Mode' : activeMenu}
             </h1>
             <p className="text-[11px] text-muted-foreground mt-0.5 font-mono">{user.email}</p>
           </div>
