@@ -118,22 +118,20 @@ export default function Deals() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-36 sm:pt-40 pb-12 sm:pb-20 bg-gradient-mountain overflow-hidden">
+      <section className="page-hero">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.1),transparent_60%)]" />
-        <div className="container mx-auto px-4 sm:px-6 text-center relative">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <span className="premium-badge !text-snow !border-snow/15 !bg-snow/[0.06] mb-4 inline-flex">
-              <Sparkles className="w-4 h-4 text-accent" />
-              Limited Time Offers
-            </span>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 sm:mb-6 no-select">
-              Special Deals
-            </h1>
-            <p className="text-base sm:text-xl text-snow/80 max-w-2xl mx-auto">
-              Exclusive discounts and packages for your dream adventure
-            </p>
-            <div className="gold-divider mx-auto mt-6" />
-          </motion.div>
+        <div className="container mx-auto px-4 sm:px-6 text-center relative z-10 animate-fade-up">
+          <span className="premium-badge !text-snow !border-snow/15 !bg-snow/[0.06] mb-4 inline-flex">
+            <Sparkles className="w-4 h-4 text-accent" />
+            Limited Time Offers
+          </span>
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 sm:mb-6 no-select">
+            Special Deals
+          </h1>
+          <p className="text-base sm:text-xl text-snow/80 max-w-2xl mx-auto px-4">
+            Exclusive discounts and packages for your dream adventure
+          </p>
+          <div className="gold-divider mx-auto mt-6" />
         </div>
 
         {/* Stats in hero */}
