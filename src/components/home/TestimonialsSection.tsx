@@ -149,7 +149,18 @@ export default function TestimonialsSection() {
               <motion.div
                 key={currentIndex}
                 custom={direction}
-                variants={{ ...slideVariants, ...staggerChildren }}
+                variants={{
+                  enter: slideVariants.enter,
+                  center: {
+                    ...slideVariants.center,
+                    transition: {
+                      ...((slideVariants.center as any).transition || {}),
+                      staggerChildren: 0.08,
+                      delayChildren: 0.15,
+                    },
+                  },
+                  exit: slideVariants.exit,
+                }}
                 initial="enter"
                 animate="center"
                 exit="exit"
