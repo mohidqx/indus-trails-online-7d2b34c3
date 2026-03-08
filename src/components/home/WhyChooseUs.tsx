@@ -4,80 +4,85 @@ const features = [
   {
     icon: Shield,
     title: 'Safety First',
-    description:
-      'Your safety is our priority. Experienced guides, well-maintained vehicles, and comprehensive travel insurance.',
+    description: 'Your safety is our priority. Experienced guides, well-maintained vehicles, and comprehensive travel insurance.',
+    gradient: 'from-primary/10 to-primary/5',
+    iconBg: 'bg-primary/15',
+    iconColor: 'text-primary',
   },
   {
     icon: Users,
     title: 'Expert Local Guides',
-    description:
-      'Our guides are locals who know every trail, story, and hidden gem in the northern regions.',
+    description: 'Our guides are locals who know every trail, story, and hidden gem in the northern regions.',
+    gradient: 'from-accent/10 to-accent/5',
+    iconBg: 'bg-accent/15',
+    iconColor: 'text-accent',
   },
   {
     icon: MapPin,
     title: 'Authentic Experiences',
-    description:
-      'Immerse yourself in local culture, cuisine, and traditions for an unforgettable journey.',
+    description: 'Immerse yourself in local culture, cuisine, and traditions for an unforgettable journey.',
+    gradient: 'from-emerald/10 to-emerald/5',
+    iconBg: 'bg-emerald/15',
+    iconColor: 'text-emerald',
   },
   {
     icon: Headphones,
     title: '24/7 Support',
-    description:
-      'Round-the-clock assistance before, during, and after your trip for complete peace of mind.',
+    description: 'Round-the-clock assistance before, during, and after your trip for complete peace of mind.',
+    gradient: 'from-lake/10 to-lake/5',
+    iconBg: 'bg-lake/15',
+    iconColor: 'text-lake',
   },
   {
     icon: Award,
     title: 'Award Winning',
-    description:
-      'Recognized as one of Pakistan\'s top tour operators with years of excellence in service.',
+    description: 'Recognized as one of Pakistan\'s top tour operators with years of excellence in service.',
+    gradient: 'from-sunset/10 to-sunset/5',
+    iconBg: 'bg-sunset/15',
+    iconColor: 'text-sunset',
   },
   {
     icon: Heart,
     title: 'Sustainable Tourism',
-    description:
-      'We are committed to preserving the natural beauty and supporting local communities.',
+    description: 'We are committed to preserving the natural beauty and supporting local communities.',
+    gradient: 'from-destructive/8 to-destructive/3',
+    iconBg: 'bg-destructive/10',
+    iconColor: 'text-destructive',
   },
 ];
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-16 md:py-24 bg-background relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
-      </div>
+    <section id="why-us" data-section className="py-16 md:py-28 bg-background relative overflow-hidden">
+      {/* Background accent */}
+      <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-primary/3 rounded-full blur-[180px] pointer-events-none -translate-y-1/2" />
 
       <div className="container mx-auto px-4 sm:px-6 relative">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/8 text-primary text-sm font-medium mb-5">
             Why Choose Us
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 md:mb-6">
             Your Journey,
             <span className="text-gradient-primary"> Our Passion</span>
           </h2>
-          <p className="text-base md:text-lg text-muted-foreground px-4">
+          <p className="text-base md:text-lg text-muted-foreground px-4 leading-relaxed">
             With over a decade of experience, we've perfected the art of creating memorable
             adventures in Pakistan's most spectacular landscapes.
           </p>
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className="group p-6 md:p-8 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300"
+              className={`group p-6 md:p-8 rounded-2xl bg-gradient-to-br ${feature.gradient} border border-border/30 hover:border-primary/20 premium-card`}
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/10 group-hover:bg-primary flex items-center justify-center mb-4 md:mb-6 transition-colors duration-300">
-                <feature.icon className="w-6 h-6 md:w-7 md:h-7 text-primary group-hover:text-primary-foreground transition-colors" />
+              <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl ${feature.iconBg} group-hover:scale-110 flex items-center justify-center mb-5 transition-transform duration-300`}>
+                <feature.icon className={`w-6 h-6 md:w-7 md:h-7 ${feature.iconColor}`} />
               </div>
               <h3 className="text-lg md:text-xl font-serif font-bold text-foreground mb-2 md:mb-3">{feature.title}</h3>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{feature.description}</p>
@@ -86,19 +91,28 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Stats Banner */}
-        <div className="mt-12 md:mt-20 p-6 sm:p-8 md:p-12 rounded-2xl md:rounded-3xl bg-gradient-mountain text-snow">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
+        <div className="mt-14 md:mt-24 p-8 sm:p-10 md:p-14 rounded-2xl md:rounded-3xl bg-gradient-premium text-snow relative overflow-hidden">
+          {/* Background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[80px]" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/30 rounded-full blur-[60px]" />
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center relative">
             {[
               { value: '10+', label: 'Years of Excellence' },
               { value: '500+', label: 'Happy Travelers' },
               { value: '150+', label: 'Tours Completed' },
               { value: '15+', label: 'Destinations' },
             ].map((stat, index) => (
-              <div key={index}>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-accent mb-2">
+              <div key={index} className="relative">
+                <p className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-accent mb-2 drop-shadow-lg">
                   {stat.value}
                 </p>
-                <p className="text-xs sm:text-sm text-snow/80">{stat.label}</p>
+                <p className="text-xs sm:text-sm text-snow/70 tracking-wide uppercase">{stat.label}</p>
+                {index < 3 && (
+                  <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-12 bg-gradient-to-b from-transparent via-snow/15 to-transparent" />
+                )}
               </div>
             ))}
           </div>

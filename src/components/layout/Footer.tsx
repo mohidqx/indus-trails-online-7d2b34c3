@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ArrowRight } from 'lucide-react';
 import { useSiteContent } from '@/hooks/useSiteContent';
 import logo from '@/assets/indus-tours-logo.jpeg';
 
@@ -20,18 +20,10 @@ const supportLinks = [
   { name: 'My Account', path: '/dashboard' },
 ];
 
-const destinations = [
-  'Hunza Valley',
-  'Skardu',
-  'Fairy Meadows',
-  'Swat Valley',
-  'Naran Kaghan',
-  'Chitral',
-];
+const destinations = ['Hunza Valley', 'Skardu', 'Fairy Meadows', 'Swat Valley', 'Naran Kaghan', 'Chitral'];
 
 export default function Footer() {
   const { data: content } = useSiteContent();
-
   const phone = (content?.phone as string) || '+92 300 1234567';
   const email = (content?.email as string) || 'info@industours.pk';
   const address = (content?.address as string) || 'Blue Area, F-7 Markaz, Islamabad, Pakistan';
@@ -46,33 +38,36 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-mountain text-snow">
+    <footer className="relative bg-gradient-to-b from-mountain to-[hsl(210_30%_16%)] text-snow overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute top-0 left-1/4 w-[400px] h-[200px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+      
       {/* Main Footer */}
-      <div className="container mx-auto px-4 sm:px-6 py-10 md:py-16">
+      <div className="container mx-auto px-4 sm:px-6 py-12 md:py-20 relative">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {/* Company Info */}
-          <div className="space-y-4 md:space-y-6 sm:col-span-2 lg:col-span-1">
+          <div className="space-y-5 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="Indus Tours Logo" className="w-10 h-10 md:w-12 md:h-12 rounded-xl object-cover" />
+              <img src={logo} alt="Indus Tours Logo" className="w-11 h-11 md:w-12 md:h-12 rounded-xl object-cover ring-2 ring-accent/20" />
               <div>
                 <h3 className="font-serif font-bold text-lg md:text-xl">Indus Tours</h3>
-                <p className="text-xs md:text-sm text-snow/70">Pakistan</p>
+                <p className="text-xs text-snow/50 tracking-wider uppercase">Pakistan</p>
               </div>
             </div>
-            <p className="text-sm md:text-base text-snow/80 leading-relaxed">
+            <p className="text-sm text-snow/60 leading-relaxed">
               Experience the breathtaking beauty of Pakistan's northern areas with our expertly
               curated tours. Founded by Shahzaib Khan Mughal.
             </p>
-            <div className="flex gap-3 md:gap-4">
+            <div className="flex gap-3">
               {socialLinks.map(({ Icon, url }, index) => (
                 <a
                   key={index}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-snow/10 hover:bg-accent hover:text-accent-foreground flex items-center justify-center transition-all duration-300"
+                  className="w-10 h-10 rounded-xl bg-snow/5 hover:bg-accent hover:text-accent-foreground flex items-center justify-center transition-all duration-300 hover:scale-110"
                 >
-                  <Icon className="w-4 h-4 md:w-5 md:h-5" />
+                  <Icon className="w-4 h-4" />
                 </a>
               ))}
             </div>
@@ -80,11 +75,12 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-serif text-base md:text-lg font-semibold mb-4 md:mb-6">Quick Links</h4>
-            <ul className="space-y-2 md:space-y-3">
+            <h4 className="font-serif text-base font-semibold mb-5 text-snow/90">Quick Links</h4>
+            <ul className="space-y-2.5">
               {quickLinks.map((link) => (
                 <li key={link.path}>
-                  <Link to={link.path} className="text-sm md:text-base text-snow/80 hover:text-accent transition-colors">
+                  <Link to={link.path} className="text-sm text-snow/50 hover:text-accent transition-colors flex items-center gap-1 group">
+                    <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                     {link.name}
                   </Link>
                 </li>
@@ -94,11 +90,12 @@ export default function Footer() {
 
           {/* Popular Destinations */}
           <div>
-            <h4 className="font-serif text-base md:text-lg font-semibold mb-4 md:mb-6">Destinations</h4>
-            <ul className="space-y-2 md:space-y-3">
+            <h4 className="font-serif text-base font-semibold mb-5 text-snow/90">Destinations</h4>
+            <ul className="space-y-2.5">
               {destinations.map((dest) => (
                 <li key={dest}>
-                  <Link to="/destinations" className="text-sm md:text-base text-snow/80 hover:text-accent transition-colors">
+                  <Link to="/destinations" className="text-sm text-snow/50 hover:text-accent transition-colors flex items-center gap-1 group">
+                    <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                     {dest}
                   </Link>
                 </li>
@@ -108,27 +105,27 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-serif text-base md:text-lg font-semibold mb-4 md:mb-6">Contact Us</h4>
-            <ul className="space-y-3 md:space-y-4">
+            <h4 className="font-serif text-base font-semibold mb-5 text-snow/90">Contact Us</h4>
+            <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 md:w-5 md:h-5 mt-0.5 text-accent flex-shrink-0" />
-                <span className="text-sm md:text-base text-snow/80">{address}</span>
+                <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <MapPin className="w-4 h-4 text-accent" />
+                </div>
+                <span className="text-sm text-snow/60">{address}</span>
               </li>
               <li>
-                <a
-                  href={`tel:${phone.replace(/\s/g, '')}`}
-                  className="flex items-center gap-3 text-sm md:text-base text-snow/80 hover:text-accent transition-colors"
-                >
-                  <Phone className="w-4 h-4 md:w-5 md:h-5 text-accent flex-shrink-0" />
+                <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-center gap-3 text-sm text-snow/60 hover:text-accent transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-4 h-4 text-accent" />
+                  </div>
                   {phone}
                 </a>
               </li>
               <li>
-                <a
-                  href={`mailto:${email}`}
-                  className="flex items-center gap-3 text-sm md:text-base text-snow/80 hover:text-accent transition-colors"
-                >
-                  <Mail className="w-4 h-4 md:w-5 md:h-5 text-accent flex-shrink-0" />
+                <a href={`mailto:${email}`} className="flex items-center gap-3 text-sm text-snow/60 hover:text-accent transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-4 h-4 text-accent" />
+                  </div>
                   <span className="truncate">{email}</span>
                 </a>
               </li>
@@ -138,14 +135,14 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-snow/10">
-        <div className="container mx-auto px-4 sm:px-6 py-4 md:py-6 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4">
-          <p className="text-snow/60 text-xs md:text-sm text-center md:text-left">
+      <div className="border-t border-snow/6">
+        <div className="container mx-auto px-4 sm:px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-3">
+          <p className="text-snow/35 text-xs text-center md:text-left">
             © {new Date().getFullYear()} Indus Tours Pakistan. All rights reserved.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-xs md:text-sm">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-xs">
             {supportLinks.map((link) => (
-              <Link key={link.path} to={link.path} className="text-snow/60 hover:text-accent transition-colors">
+              <Link key={link.path} to={link.path} className="text-snow/35 hover:text-accent transition-colors">
                 {link.name}
               </Link>
             ))}

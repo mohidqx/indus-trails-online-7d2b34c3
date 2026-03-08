@@ -1,37 +1,31 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Phone } from 'lucide-react';
+import { ArrowRight, Phone, Shield, Clock, CreditCard, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
 import heroImage from '@/assets/hero-hunza.jpg';
 
 export default function CTASection() {
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden">
-      {/* Background */}
+    <section id="cta" data-section className="relative py-20 md:py-32 overflow-hidden">
       <div className="absolute inset-0">
-        <img
-          src={heroImage}
-          alt="Mountains"
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-hero" />
+        <img src={heroImage} alt="Mountains" className="w-full h-full object-cover" loading="lazy" />
+        <div className="absolute inset-0 bg-gradient-to-br from-mountain/95 via-mountain/85 to-primary/70" />
+        {/* Ambient accent */}
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px] pointer-events-none" />
       </div>
 
-      {/* Content */}
       <div className="relative container mx-auto px-4 sm:px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-snow mb-4 sm:mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-snow mb-5 sm:mb-6 leading-tight">
             Ready for Your
             <span className="text-gradient-gold block mt-2">Next Adventure?</span>
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-snow/80 mb-8 sm:mb-10 max-w-2xl mx-auto px-4">
+          <p className="text-base sm:text-lg md:text-xl text-snow/70 mb-10 max-w-2xl mx-auto px-4 leading-relaxed">
             Let us craft your perfect journey through Pakistan's northern paradise. Your dream
             adventure is just one click away.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <Button variant="hero" size="lg" asChild className="w-full sm:w-auto">
+            <Button variant="hero" size="lg" asChild className="w-full sm:w-auto animate-glow">
               <Link to="/booking" className="flex items-center justify-center gap-2">
                 Start Planning
                 <ArrowRight className="w-5 h-5" />
@@ -45,17 +39,18 @@ export default function CTASection() {
             </Button>
           </div>
 
-          {/* Trust Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-snow/20">
+          {/* Trust Badges - Premium */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mt-14 pt-8 border-t border-snow/10">
             {[
-              { value: '100%', label: 'Satisfaction' },
-              { value: 'Free', label: 'Cancellation' },
-              { value: 'Secure', label: 'Payment' },
-              { value: '24/7', label: 'Support' },
+              { icon: Shield, value: '100%', label: 'Satisfaction' },
+              { icon: Clock, value: 'Free', label: 'Cancellation' },
+              { icon: CreditCard, value: 'Secure', label: 'Payment' },
+              { icon: Headphones, value: '24/7', label: 'Support' },
             ].map((badge, i) => (
-              <div key={i} className="text-center">
+              <div key={i} className="text-center group">
+                <badge.icon className="w-5 h-5 text-accent/60 mx-auto mb-2 group-hover:text-accent transition-colors" />
                 <p className="text-xl sm:text-2xl font-bold text-accent">{badge.value}</p>
-                <p className="text-xs sm:text-sm text-snow/70">{badge.label}</p>
+                <p className="text-xs text-snow/50 mt-0.5 tracking-wide uppercase">{badge.label}</p>
               </div>
             ))}
           </div>
