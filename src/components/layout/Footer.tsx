@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ArrowRight, Heart, Sparkles } from 'lucide-react';
 import { useSiteContent } from '@/hooks/useSiteContent';
+import NewsletterSignup from '@/components/common/NewsletterSignup';
 import logo from '@/assets/indus-tours-logo.jpeg';
 
 const quickLinks = [
