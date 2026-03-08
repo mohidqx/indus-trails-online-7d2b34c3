@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Lock, Loader2, Shield, Database, Globe, Zap, Server, HardDrive, Key, Download } from 'lucide-react';
+import { User, Lock, Loader2, Shield, Database, Globe, Zap, Server, HardDrive, Key, Download, FileJson, FileSpreadsheet, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -12,7 +12,7 @@ export default function AdminSettings() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
+  const [isExporting, setIsExporting] = useState<string | null>(null);
   const [passwords, setPasswords] = useState({ new: '', confirm: '' });
 
   const changePassword = async () => {
@@ -31,39 +31,100 @@ export default function AdminSettings() {
     setIsChangingPassword(false);
   };
 
-  const handleMegaExport = async () => {
-    setIsExporting(true);
-    toast({ title: 'Exporting...', description: 'Fetching all data. This may take a moment.' });
+  const fetchExportData = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/api-export`,
+      { headers: { 'Authorization': `Bearer ${session?.access_token}`, 'Content-Type': 'application/json' } }
+    );
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Export failed'); }
+    return await res.json();
+  };
+
+  const downloadFile = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  };
+
+  const jsonToCsv = (data: Record<string, unknown[]>): string => {
+    let csv = '';
+    for (const [table, rows] of Object.entries(data)) {
+      if (!Array.isArray(rows) || rows.length === 0) continue;
+      csv += `\n=== ${table.toUpperCase()} ===\n`;
+      const headers = Object.keys(rows[0] as Record<string, unknown>);
+      csv += headers.join(',') + '\n';
+      rows.forEach((row: unknown) => {
+        const r = row as Record<string, unknown>;
+        csv += headers.map(h => {
+          const val = r[h];
+          const str = val === null || val === undefined ? '' : String(val);
+          return str.includes(',') || str.includes('"') || str.includes('\n') ? `"${str.replace(/"/g, '""')}"` : str;
+        }).join(',') + '\n';
+      });
+    }
+    return csv;
+  };
+
+  const jsonToPdfHtml = (exportData: Record<string, unknown>): string => {
+    const data = exportData.data as Record<string, unknown[]>;
+    let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Indus Tours Full Export</title>
+      <style>body{font-family:Arial,sans-serif;font-size:11px;padding:20px;color:#222}
+      h1{font-size:18px;border-bottom:2px solid #1a7a4c;padding-bottom:8px}
+      h2{font-size:14px;margin-top:24px;color:#1a7a4c;border-bottom:1px solid #ddd;padding-bottom:4px}
+      table{border-collapse:collapse;width:100%;margin:8px 0 16px}
+      th,td{border:1px solid #ddd;padding:4px 6px;text-align:left;font-size:10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      th{background:#f5f5f5;font-weight:bold}
+      .meta{color:#666;font-size:10px;margin-bottom:16px}
+      @media print{body{padding:0}}</style></head><body>
+      <h1>🏔️ Indus Tours — Full Data Export</h1>
+      <p class="meta">Exported: ${exportData.exported_at} | By: ${exportData.exported_by}</p>`;
+    for (const [table, rows] of Object.entries(data)) {
+      if (!Array.isArray(rows) || rows.length === 0) continue;
+      const headers = Object.keys(rows[0] as Record<string, unknown>);
+      html += `<h2>${table.replace(/_/g, ' ').toUpperCase()} (${rows.length})</h2><table><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+      rows.slice(0, 500).forEach((row: unknown) => {
+        const r = row as Record<string, unknown>;
+        html += `<tr>${headers.map(h => {
+          const v = r[h]; const s = v === null ? '' : typeof v === 'object' ? JSON.stringify(v).slice(0, 80) : String(v).slice(0, 80);
+          return `<td>${s}</td>`;
+        }).join('')}</tr>`;
+      });
+      if (rows.length > 500) html += `<tr><td colspan="${headers.length}" style="text-align:center;color:#999">... and ${rows.length - 500} more rows</td></tr>`;
+      html += '</table>';
+    }
+    html += '</body></html>';
+    return html;
+  };
+
+  const handleMegaExport = async (format: 'json' | 'csv' | 'pdf') => {
+    setIsExporting(format);
+    toast({ title: 'Exporting...', description: `Preparing ${format.toUpperCase()} export. Please wait.` });
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/api-export`,
-        {
-          headers: {
-            'Authorization': `Bearer ${session?.access_token}`,
-            'Content-Type': 'application/json',
-          },
+      const exportData = await fetchExportData();
+      const date = new Date().toISOString().split('T')[0];
+      if (format === 'json') {
+        downloadFile(JSON.stringify(exportData, null, 2), `indus-tours-export-${date}.json`, 'application/json');
+      } else if (format === 'csv') {
+        const csv = jsonToCsv(exportData.data as Record<string, unknown[]>);
+        downloadFile(csv, `indus-tours-export-${date}.csv`, 'text/csv');
+      } else if (format === 'pdf') {
+        const html = jsonToPdfHtml(exportData);
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          printWindow.document.write(html);
+          printWindow.document.close();
+          setTimeout(() => printWindow.print(), 500);
         }
-      );
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Export failed');
       }
-      const data = await res.json();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `indus-tours-full-export-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast({ title: 'Export Complete', description: 'All data downloaded successfully.' });
+      toast({ title: 'Export Complete', description: `${format.toUpperCase()} export ready.` });
     } catch (err) {
       toast({ title: 'Export Failed', description: err instanceof Error ? err.message : 'Unknown error', variant: 'destructive' });
     }
-    setIsExporting(false);
+    setIsExporting(null);
   };
 
   return (
@@ -166,23 +227,22 @@ export default function AdminSettings() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-[11px] text-muted-foreground mb-3">
+          <p className="text-[11px] text-muted-foreground mb-4">
             Export all data including bookings, users, tours, vehicles, hotels, deals, feedback, contact messages, 
             blog posts, gallery, newsletter subscribers, activity logs, visitor logs, login attempts, banned IPs, 
-            user bans, sessions, loyalty points, referrals, abandoned bookings, and site settings as a single JSON file.
+            user bans, sessions, loyalty points, referrals, abandoned bookings, and site settings.
           </p>
-          <Button 
-            onClick={handleMegaExport} 
-            disabled={isExporting} 
-            size="sm" 
-            className="bg-primary/20 text-primary hover:bg-primary/30 border border-primary/20"
-          >
-            {isExporting ? (
-              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Exporting All Data...</>
-            ) : (
-              <><Download className="w-3.5 h-3.5 mr-1.5" /> Download Full Export (JSON)</>
-            )}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => handleMegaExport('json')} disabled={!!isExporting} size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 border border-primary/20">
+              {isExporting === 'json' ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Exporting...</> : <><FileJson className="w-3.5 h-3.5 mr-1.5" /> JSON</>}
+            </Button>
+            <Button onClick={() => handleMegaExport('csv')} disabled={!!isExporting} size="sm" className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20">
+              {isExporting === 'csv' ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Exporting...</> : <><FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" /> CSV</>}
+            </Button>
+            <Button onClick={() => handleMegaExport('pdf')} disabled={!!isExporting} size="sm" className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20">
+              {isExporting === 'pdf' ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Generating...</> : <><FileText className="w-3.5 h-3.5 mr-1.5" /> PDF (Print)</>}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
