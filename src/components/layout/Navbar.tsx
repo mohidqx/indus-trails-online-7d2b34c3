@@ -93,16 +93,16 @@ const Navbar = forwardRef<HTMLElement>(function Navbar(_, ref) {
             </div>
             <div>
               <h1 className={cn(
-                'font-serif font-bold text-lg sm:text-xl transition-colors duration-300',
+                'font-serif font-bold text-lg sm:text-xl transition-colors duration-300 leading-tight',
                 scrolledOrNotHome ? 'text-foreground' : 'text-snow'
               )}>
                 Indus Tours
               </h1>
               <p className={cn(
-                'text-[10px] font-semibold tracking-[0.2em] uppercase transition-colors duration-300',
+                'text-[10px] font-semibold tracking-[0.15em] uppercase transition-colors duration-300',
                 scrolledOrNotHome ? 'text-muted-foreground' : 'text-snow/40'
               )}>
-                Pakistan
+                & Tourism
               </p>
             </div>
           </Link>
