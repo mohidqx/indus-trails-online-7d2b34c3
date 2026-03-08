@@ -12,8 +12,10 @@ function getCorsHeaders(req: Request) {
 }
 
 serve(async (req) => {
+  const cors = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: cors });
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -29,12 +31,11 @@ serve(async (req) => {
     if (req.method === "POST") {
       const body = await req.json();
       
-      // Handle sendBeacon PUT workaround
       if (body._method === "PUT") {
         const sessionId = body.session_id;
         if (!sessionId) {
           return new Response(JSON.stringify({ error: "Missing session_id" }), {
-            status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+            status: 400, headers: { "Content-Type": "application/json", ...cors },
           });
         }
         const { error } = await db.from("visitor_logs")
@@ -62,11 +63,10 @@ serve(async (req) => {
           .eq("session_id", sessionId);
         if (error) throw error;
         return new Response(JSON.stringify({ data: { success: true } }), {
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { "Content-Type": "application/json", ...cors },
         });
       }
 
-      // Check if IP is banned
       const { data: bannedCheck } = await db.from("banned_ips")
         .select("id")
         .eq("ip_address", ipAddress)
@@ -75,18 +75,16 @@ serve(async (req) => {
       
       if (bannedCheck && bannedCheck.length > 0) {
         return new Response(JSON.stringify({ error: "Blocked" }), {
-          status: 403, headers: { "Content-Type": "application/json", ...corsHeaders },
+          status: 403, headers: { "Content-Type": "application/json", ...cors },
         });
       }
 
-      // Detect device type from user agent
       const ua = (body.user_agent || "").toLowerCase();
       let deviceType = "desktop";
       if (/mobile|android|iphone|ipod/.test(ua)) deviceType = "mobile";
       else if (/tablet|ipad/.test(ua)) deviceType = "tablet";
       else if (body.max_touch_points > 0 && body.screen_width && body.screen_width < 1200) deviceType = "tablet";
 
-      // Try to get geo info from IP
       let country = null;
       let city = null;
       try {
@@ -139,7 +137,6 @@ serve(async (req) => {
         battery_charging: body.battery_charging,
         page_load_time: body.page_load_time != null ? Math.round(body.page_load_time) : null,
         dom_load_time: body.dom_load_time != null ? Math.round(body.dom_load_time) : null,
-        // New fields
         referrer: body.referrer,
         referrer_domain: body.referrer_domain,
         utm_source: body.utm_source,
@@ -165,7 +162,7 @@ serve(async (req) => {
       if (error) throw error;
 
       return new Response(JSON.stringify({ data }), {
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...cors },
       });
     }
 
@@ -174,7 +171,7 @@ serve(async (req) => {
       const sessionId = body.session_id;
       if (!sessionId) {
         return new Response(JSON.stringify({ error: "Missing session_id" }), {
-          status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+          status: 400, headers: { "Content-Type": "application/json", ...cors },
         });
       }
 
@@ -205,18 +202,18 @@ serve(async (req) => {
       if (error) throw error;
 
       return new Response(JSON.stringify({ data: { success: true } }), {
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...cors },
       });
     }
 
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405, headers: { "Content-Type": "application/json", ...corsHeaders },
+      status: 405, headers: { "Content-Type": "application/json", ...cors },
     });
   } catch (err) {
     console.error("track-visitor error:", err);
     const message = err instanceof Error ? err.message : "Unknown error";
     return new Response(JSON.stringify({ error: message }), {
-      status: 500, headers: { "Content-Type": "application/json", ...corsHeaders },
+      status: 500, headers: { "Content-Type": "application/json", ...cors },
     });
   }
 });
