@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Monitor, Smartphone, Tablet, Globe, Clock, MousePointer, Eye, RefreshCw, Cpu, ChevronDown, ChevronUp, Search, Wifi, WifiOff, Download, Filter, TrendingUp, MapPin, Fingerprint } from 'lucide-react';
+import { Loader2, Monitor, Smartphone, Tablet, Globe, Clock, MousePointer, Eye, RefreshCw, Cpu, ChevronDown, ChevronUp, Search, Wifi, WifiOff, Download, Filter, TrendingUp, MapPin, Battery, Gauge, Zap, Activity } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +47,13 @@ interface VisitorLog {
   country: string | null;
   city: string | null;
   device_type: string | null;
+  device_memory: number | null;
+  connection_type: string | null;
+  downlink: number | null;
+  battery_level: number | null;
+  battery_charging: boolean | null;
+  page_load_time: number | null;
+  dom_load_time: number | null;
   created_at: string;
 }
 
@@ -58,15 +65,16 @@ const DeviceIcon = ({ type }: { type: string | null }) => {
   }
 };
 
-const DetailItem = ({ label, value, icon: Icon, highlight }: { label: string; value: string | number | null | undefined; icon?: any; highlight?: boolean }) => (
-  <div className="flex items-center justify-between py-1.5 border-b border-white/[0.03] last:border-0">
-    <span className="text-[11px] text-gray-500 flex items-center gap-1.5">
-      {Icon && <Icon className="w-3 h-3" />}
-      {label}
-    </span>
-    <span className={`text-[11px] font-medium ${highlight ? 'text-primary' : 'text-gray-300'}`}>
-      {value ?? '—'}
-    </span>
+const SectionLabel = ({ icon: Icon, label, color }: { icon: any; label: string; color: string }) => (
+  <div className={`flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider ${color} mb-2`}>
+    <Icon className="w-3.5 h-3.5" /> {label}
+  </div>
+);
+
+const DetailRow = ({ label, value, highlight }: { label: string; value: string | number | null | undefined; highlight?: boolean }) => (
+  <div className="flex items-center justify-between py-1 border-b border-white/[0.03] last:border-0">
+    <span className="text-[11px] text-gray-500">{label}</span>
+    <span className={`text-[11px] font-medium ${highlight ? 'text-primary' : 'text-gray-300'}`}>{value ?? '—'}</span>
   </div>
 );
 
@@ -78,6 +86,12 @@ const StatusDot = ({ active, label }: { active: boolean | null; label: string })
     {label}
   </span>
 );
+
+function formatTime(seconds: number | null) {
+  if (!seconds) return '0s';
+  if (seconds < 60) return `${seconds}s`;
+  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+}
 
 export default function AdminVisitors() {
   const { toast } = useToast();
@@ -134,13 +148,13 @@ export default function AdminVisitors() {
   };
 
   const exportCSV = () => {
-    const headers = ['Date', 'Browser', 'OS', 'Device', 'IP', 'Country', 'City', 'Screen', 'Time on Page', 'Max Scroll', 'Entry URL'];
+    const headers = ['Date', 'Browser', 'OS', 'Device', 'IP', 'Country', 'City', 'Screen', 'Time on Page', 'Max Scroll', 'Connection', 'Battery', 'Page Load', 'Entry URL'];
     const rows = filtered.map(v => [
       new Date(v.created_at).toLocaleString(),
-      `${v.browser} ${v.browser_version}`,
-      v.os, v.device_type, v.ip_address, v.country, v.city,
-      `${v.screen_width}x${v.screen_height}`,
-      `${v.time_on_page}s`, `${v.max_scroll}%`, v.entry_url
+      `${v.browser} ${v.browser_version}`, v.os, v.device_type, v.ip_address, v.country, v.city,
+      `${v.screen_width}x${v.screen_height}`, `${v.time_on_page}s`, `${v.max_scroll}%`,
+      v.connection_type, v.battery_level != null ? `${v.battery_level}%` : '', 
+      v.page_load_time ? `${v.page_load_time}ms` : '', v.entry_url
     ]);
     const csv = [headers, ...rows].map(r => r.map(c => `"${c || ''}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -157,21 +171,21 @@ export default function AdminVisitors() {
 
   return (
     <div className="space-y-5">
-      {/* Stats Overview */}
+      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
         {[
-          { label: 'Total', value: stats.total, icon: Eye, gradient: 'from-primary/10 to-primary/5' },
-          { label: 'Desktop', value: stats.desktop, icon: Monitor, gradient: 'from-blue-500/10 to-blue-500/5' },
-          { label: 'Mobile', value: stats.mobile, icon: Smartphone, gradient: 'from-emerald-500/10 to-emerald-500/5' },
-          { label: 'Tablet', value: stats.tablet, icon: Tablet, gradient: 'from-purple-500/10 to-purple-500/5' },
-          { label: 'Avg Time', value: `${stats.avgTime}s`, icon: Clock, gradient: 'from-accent/10 to-accent/5' },
-          { label: 'Avg Scroll', value: `${stats.avgScroll}%`, icon: TrendingUp, gradient: 'from-cyan-500/10 to-cyan-500/5' },
-          { label: 'Browsers', value: stats.uniqueBrowsers, icon: Globe, gradient: 'from-orange-500/10 to-orange-500/5' },
-          { label: 'Countries', value: stats.uniqueCountries, icon: MapPin, gradient: 'from-pink-500/10 to-pink-500/5' },
+          { label: 'Total', value: stats.total, icon: Eye, color: 'text-primary' },
+          { label: 'Desktop', value: stats.desktop, icon: Monitor, color: 'text-blue-400' },
+          { label: 'Mobile', value: stats.mobile, icon: Smartphone, color: 'text-emerald-400' },
+          { label: 'Tablet', value: stats.tablet, icon: Tablet, color: 'text-purple-400' },
+          { label: 'Avg Time', value: formatTime(stats.avgTime), icon: Clock, color: 'text-amber-400' },
+          { label: 'Avg Scroll', value: `${stats.avgScroll}%`, icon: TrendingUp, color: 'text-cyan-400' },
+          { label: 'Browsers', value: stats.uniqueBrowsers, icon: Globe, color: 'text-orange-400' },
+          { label: 'Countries', value: stats.uniqueCountries, icon: MapPin, color: 'text-pink-400' },
         ].map((s, i) => (
-          <Card key={i} className={`border-0 admin-stat-card bg-gradient-to-br ${s.gradient}`}>
+          <Card key={i} className="border-0 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
             <CardContent className="p-3 text-center">
-              <s.icon className="w-4 h-4 mx-auto mb-1 text-muted-foreground" />
+              <s.icon className={`w-4 h-4 mx-auto mb-1 ${s.color}`} />
               <p className="text-lg font-bold text-foreground">{s.value}</p>
               <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{s.label}</p>
             </CardContent>
@@ -188,20 +202,15 @@ export default function AdminVisitors() {
         <div className="flex gap-1">
           {['all', 'desktop', 'mobile', 'tablet'].map(d => (
             <Button key={d} variant={deviceFilter === d ? 'default' : 'outline'} size="sm" onClick={() => setDeviceFilter(d)} className="capitalize text-xs h-9">
-              {d === 'all' ? <Filter className="w-3.5 h-3.5 mr-1" /> : null}
-              {d}
+              {d === 'all' ? <Filter className="w-3.5 h-3.5 mr-1" /> : null}{d}
             </Button>
           ))}
         </div>
-        <Button variant="outline" size="sm" onClick={exportCSV} className="h-9 gap-1.5">
-          <Download className="w-3.5 h-3.5" /> CSV
-        </Button>
-        <Button variant="outline" size="sm" onClick={fetchVisitors} className="h-9 gap-1.5">
-          <RefreshCw className="w-3.5 h-3.5" /> Refresh
-        </Button>
+        <Button variant="outline" size="sm" onClick={exportCSV} className="h-9 gap-1.5"><Download className="w-3.5 h-3.5" /> CSV</Button>
+        <Button variant="outline" size="sm" onClick={fetchVisitors} className="h-9 gap-1.5"><RefreshCw className="w-3.5 h-3.5" /> Refresh</Button>
       </div>
 
-      {/* Visitor Cards */}
+      {/* Visitor List */}
       <div className="space-y-2">
         {filtered.length === 0 ? (
           <div className="text-center py-16">
@@ -212,13 +221,13 @@ export default function AdminVisitors() {
           filtered.map(v => {
             const isExpanded = expandedId === v.id;
             return (
-              <div key={v.id} className="rounded-xl border border-border/50 bg-card/30 overflow-hidden transition-all hover:border-border admin-stat-card">
-                {/* Summary Row */}
+              <div key={v.id} className="rounded-xl border border-border/50 bg-card/30 overflow-hidden transition-all hover:border-border/80">
+                {/* Summary */}
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : v.id)}
                   className="w-full flex items-center gap-3 p-3 text-left hover:bg-white/[0.01] transition-colors"
                 >
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
                     v.device_type === 'mobile' ? 'bg-emerald-500/10 text-emerald-400' :
                     v.device_type === 'tablet' ? 'bg-purple-500/10 text-purple-400' :
                     'bg-blue-500/10 text-blue-400'
@@ -228,18 +237,24 @@ export default function AdminVisitors() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-medium text-sm text-foreground">{v.browser || 'Unknown'} {v.browser_version?.split('.')[0]}</span>
-                      <Badge variant="outline" className="text-[9px] h-4 px-1.5 border-white/10">{v.os}</Badge>
+                      <Badge variant="outline" className="text-[9px] h-4 px-1.5 border-border/50">{v.os}</Badge>
                       <Badge variant="secondary" className="text-[9px] h-4 px-1.5 capitalize bg-white/[0.04]">{v.device_type}</Badge>
                       {v.country && <Badge variant="outline" className="text-[9px] h-4 px-1.5 border-primary/20 text-primary">{v.country}{v.city ? `, ${v.city}` : ''}</Badge>}
                     </div>
                     <div className="flex items-center gap-3 mt-0.5 text-[10px] text-muted-foreground">
                       <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" /> {new Date(v.created_at).toLocaleString()}</span>
-                      <span>{v.time_on_page || 0}s</span>
+                      <span>{formatTime(v.time_on_page)}</span>
                       <span>{v.max_scroll || 0}% scroll</span>
+                      {v.page_load_time && <span className="flex items-center gap-0.5"><Zap className="w-3 h-3" /> {v.page_load_time}ms</span>}
                       {v.ip_address && <span className="font-mono text-[9px]">{v.ip_address}</span>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {v.battery_level != null && (
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                        <Battery className="w-3.5 h-3.5" /> {v.battery_level}%
+                      </span>
+                    )}
                     {v.online !== null && (
                       v.online ? <Wifi className="w-3.5 h-3.5 text-emerald-400" /> : <WifiOff className="w-3.5 h-3.5 text-red-400" />
                     )}
@@ -247,99 +262,79 @@ export default function AdminVisitors() {
                   </div>
                 </button>
 
-                {/* Expanded Full Details */}
+                {/* Expanded Details - Reference-style layout */}
                 {isExpanded && (
                   <div className="border-t border-white/[0.03] p-4 bg-black/20 animate-fade-in">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       
                       {/* Browser & System */}
-                      <Card className="border-0 bg-white/[0.02]">
-                        <CardHeader className="pb-2 pt-3 px-3">
-                          <CardTitle className="text-[11px] font-semibold text-primary flex items-center gap-1.5 uppercase tracking-wider">
-                            <Globe className="w-3.5 h-3.5" /> Browser & System
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-3 pb-3">
-                          <DetailItem label="Browser" value={`${v.browser} ${v.browser_version}`} highlight />
-                          <DetailItem label="OS" value={v.os} highlight />
-                          <DetailItem label="Platform" value={v.platform} />
-                          <DetailItem label="Language" value={v.language} highlight />
-                          <DetailItem label="All Languages" value={v.all_languages?.join(', ')} />
-                          <DetailItem label="Timezone" value={v.timezone} />
-                          <DetailItem label="TZ Offset" value={v.tz_offset != null ? `${v.tz_offset} min` : null} />
-                          <DetailItem label="Nav Type" value={v.nav_type} />
-                          <div className="flex flex-wrap gap-1.5 mt-2">
-                            <StatusDot active={v.cookies_enabled} label="Cookies" />
-                            <StatusDot active={v.online} label="Online" />
-                            <StatusDot active={v.pdf_viewer} label="PDF" />
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <div className="space-y-1 p-3 rounded-lg bg-white/[0.02]">
+                        <SectionLabel icon={Globe} label="Browser & System" color="text-primary" />
+                        <DetailRow label="User Agent" value={v.user_agent ? (v.user_agent.length > 60 ? v.user_agent.slice(0, 57) + '...' : v.user_agent) : null} />
+                        <DetailRow label="Browser" value={`${v.browser} ${v.browser_version}`} highlight />
+                        <DetailRow label="OS" value={v.os} highlight />
+                        <DetailRow label="Platform" value={v.platform} />
+                        <DetailRow label="Language" value={v.language} highlight />
+                        <DetailRow label="All Languages" value={v.all_languages?.join(', ')} />
+                        <DetailRow label="Timezone" value={v.timezone} />
+                        <DetailRow label="TZ Offset" value={v.tz_offset != null ? `${v.tz_offset} min` : null} />
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          <StatusDot active={v.cookies_enabled} label="Cookies" />
+                          <StatusDot active={v.online} label="Online" />
+                          <StatusDot active={v.pdf_viewer} label="PDF" />
+                        </div>
+                      </div>
 
                       {/* Screen & Display */}
-                      <Card className="border-0 bg-white/[0.02]">
-                        <CardHeader className="pb-2 pt-3 px-3">
-                          <CardTitle className="text-[11px] font-semibold text-blue-400 flex items-center gap-1.5 uppercase tracking-wider">
-                            <Monitor className="w-3.5 h-3.5" /> Screen & Display
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-3 pb-3">
-                          <DetailItem label="Screen" value={v.screen_width && v.screen_height ? `${v.screen_width} × ${v.screen_height}` : null} highlight />
-                          <DetailItem label="Available" value={v.available_width && v.available_height ? `${v.available_width} × ${v.available_height}` : null} />
-                          <DetailItem label="Viewport" value={v.viewport_width && v.viewport_height ? `${v.viewport_width} × ${v.viewport_height}` : null} highlight />
-                          <DetailItem label="Pixel Ratio" value={v.pixel_ratio ? `${v.pixel_ratio}x` : null} />
-                          <DetailItem label="Color Depth" value={v.color_depth ? `${v.color_depth}-bit` : null} />
-                          <DetailItem label="Orientation" value={v.orientation} />
-                        </CardContent>
-                      </Card>
+                      <div className="space-y-1 p-3 rounded-lg bg-white/[0.02]">
+                        <SectionLabel icon={Monitor} label="Screen & Display" color="text-blue-400" />
+                        <DetailRow label="Screen" value={v.screen_width && v.screen_height ? `${v.screen_width} × ${v.screen_height}` : null} highlight />
+                        <DetailRow label="Available" value={v.available_width && v.available_height ? `${v.available_width} × ${v.available_height}` : null} />
+                        <DetailRow label="Viewport" value={v.viewport_width && v.viewport_height ? `${v.viewport_width} × ${v.viewport_height}` : null} highlight />
+                        <DetailRow label="Pixel Ratio" value={v.pixel_ratio ? `${v.pixel_ratio}x` : null} />
+                        <DetailRow label="Color Depth" value={v.color_depth ? `${v.color_depth}-bit` : null} />
+                        <DetailRow label="Orientation" value={v.orientation} />
+                      </div>
 
                       {/* Hardware */}
-                      <Card className="border-0 bg-white/[0.02]">
-                        <CardHeader className="pb-2 pt-3 px-3">
-                          <CardTitle className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
-                            <Cpu className="w-3.5 h-3.5" /> Hardware
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-3 pb-3">
-                          <DetailItem label="CPU Cores" value={v.cpu_cores} highlight />
-                          <DetailItem label="Touch Points" value={v.max_touch_points} />
-                          <DetailItem label="GPU Vendor" value={v.gpu_vendor} />
-                          <DetailItem label="GPU Renderer" value={v.gpu_renderer ? (v.gpu_renderer.length > 35 ? v.gpu_renderer.slice(0, 32) + '...' : v.gpu_renderer) : null} />
-                          <div className="mt-2">
-                            <StatusDot active={v.touch_support} label="Touch Support" />
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      {/* Behavior & Location */}
-                      <Card className="border-0 bg-white/[0.02]">
-                        <CardHeader className="pb-2 pt-3 px-3">
-                          <CardTitle className="text-[11px] font-semibold text-accent flex items-center gap-1.5 uppercase tracking-wider">
-                            <MousePointer className="w-3.5 h-3.5" /> Behavior
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-3 pb-3">
-                          <DetailItem label="Time on Page" value={v.time_on_page != null ? `${v.time_on_page}s` : null} highlight />
-                          <DetailItem label="Mouse Moves" value={v.mouse_moves?.toLocaleString()} />
-                          <DetailItem label="Scroll Distance" value={v.scroll_distance ? `${v.scroll_distance.toLocaleString()}px` : null} />
-                          <DetailItem label="Max Scroll" value={v.max_scroll != null ? `${v.max_scroll}%` : null} highlight />
-                          <DetailItem label="Sections Viewed" value={v.sections_viewed?.length ? v.sections_viewed.join(', ') : 'none'} />
-                          <DetailItem label="Entry URL" value={v.entry_url ? (() => { try { return new URL(v.entry_url).pathname; } catch { return v.entry_url; } })() : null} highlight />
-                          {(v.country || v.city) && (
-                            <DetailItem icon={MapPin} label="Location" value={[v.city, v.country].filter(Boolean).join(', ')} highlight />
-                          )}
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    {/* Full User Agent */}
-                    <div className="mt-4 p-3 rounded-lg bg-white/[0.02] border border-white/[0.03]">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Fingerprint className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Full User Agent</span>
+                      <div className="space-y-1 p-3 rounded-lg bg-white/[0.02]">
+                        <SectionLabel icon={Cpu} label="Hardware" color="text-emerald-400" />
+                        <DetailRow label="Device Memory" value={v.device_memory ? `${v.device_memory} GB` : null} highlight />
+                        <DetailRow label="CPU Cores" value={v.cpu_cores} highlight />
+                        <DetailRow label="Touch Points" value={v.max_touch_points} />
+                        <DetailRow label="GPU Vendor" value={v.gpu_vendor} />
+                        <DetailRow label="GPU Renderer" value={v.gpu_renderer ? (v.gpu_renderer.length > 45 ? v.gpu_renderer.slice(0, 42) + '...' : v.gpu_renderer) : null} />
+                        <div className="mt-2"><StatusDot active={v.touch_support} label="Touch Support" /></div>
                       </div>
-                      <p className="text-[10px] text-gray-500 font-mono break-all leading-relaxed">{v.user_agent || '—'}</p>
-                      <p className="text-[10px] text-gray-600 mt-2 font-mono">Session: {v.session_id}</p>
+
+                      {/* Network & Battery */}
+                      <div className="space-y-1 p-3 rounded-lg bg-white/[0.02]">
+                        <SectionLabel icon={Wifi} label="Network & Battery" color="text-cyan-400" />
+                        <DetailRow label="Connection" value={v.connection_type} highlight />
+                        <DetailRow label="Downlink" value={v.downlink ? `${v.downlink} Mbps` : null} />
+                        <DetailRow label="Battery" value={v.battery_level != null ? `${v.battery_level}%` : null} highlight />
+                        <DetailRow label="Charging" value={v.battery_charging != null ? (v.battery_charging ? 'Yes' : 'No') : null} />
+                      </div>
+
+                      {/* Performance */}
+                      <div className="space-y-1 p-3 rounded-lg bg-white/[0.02]">
+                        <SectionLabel icon={Gauge} label="Performance" color="text-amber-400" />
+                        <DetailRow label="Page Load" value={v.page_load_time ? `${v.page_load_time} ms` : null} highlight />
+                        <DetailRow label="DOM Loaded" value={v.dom_load_time ? `${v.dom_load_time} ms` : null} highlight />
+                        <DetailRow label="Nav Type" value={v.nav_type} />
+                        <DetailRow label="Entry URL" value={v.entry_url ? (() => { try { return new URL(v.entry_url).pathname; } catch { return v.entry_url; } })() : null} highlight />
+                      </div>
+
+                      {/* Behavior */}
+                      <div className="space-y-1 p-3 rounded-lg bg-white/[0.02]">
+                        <SectionLabel icon={Activity} label="Behavior" color="text-pink-400" />
+                        <DetailRow label="Time on Page" value={formatTime(v.time_on_page)} highlight />
+                        <DetailRow label="Mouse Moves" value={v.mouse_moves?.toLocaleString()} />
+                        <DetailRow label="Scroll Distance" value={v.scroll_distance ? `${v.scroll_distance.toLocaleString()}px` : null} />
+                        <DetailRow label="Max Scroll" value={v.max_scroll != null ? `${v.max_scroll}%` : null} highlight />
+                        <DetailRow label="Sections" value={v.sections_viewed?.length ? v.sections_viewed.join(', ') : 'none'} />
+                        {(v.country || v.city) && <DetailRow label="Location" value={[v.city, v.country].filter(Boolean).join(', ')} highlight />}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -349,12 +344,11 @@ export default function AdminVisitors() {
         )}
       </div>
 
-      {/* Footer count */}
-      <div className="text-center py-2">
-        <p className="text-[11px] text-muted-foreground">
-          Showing {filtered.length} of {visitors.length} visitor logs
+      {filtered.length > 0 && (
+        <p className="text-center text-[10px] text-muted-foreground py-2">
+          Showing {filtered.length} of {visitors.length} visitors
         </p>
-      </div>
+      )}
     </div>
   );
 }

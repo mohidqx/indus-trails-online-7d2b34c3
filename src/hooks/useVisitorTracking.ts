@@ -59,6 +59,39 @@ function getOrientation() {
   return window.innerWidth > window.innerHeight ? 'landscape-primary' : 'portrait-primary';
 }
 
+async function getBatteryInfo() {
+  try {
+    if ('getBattery' in navigator) {
+      const battery = await (navigator as any).getBattery();
+      return { level: Math.round(battery.level * 100), charging: battery.charging };
+    }
+  } catch {}
+  return { level: null, charging: null };
+}
+
+function getConnectionInfo() {
+  try {
+    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    if (conn) {
+      return { type: conn.effectiveType || conn.type || null, downlink: conn.downlink || null };
+    }
+  } catch {}
+  return { type: null, downlink: null };
+}
+
+function getPageLoadTimes() {
+  try {
+    const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    if (navEntry) {
+      return {
+        pageLoad: Math.round(navEntry.loadEventEnd - navEntry.startTime),
+        domLoad: Math.round(navEntry.domContentLoadedEventEnd - navEntry.startTime),
+      };
+    }
+  } catch {}
+  return { pageLoad: null, domLoad: null };
+}
+
 export function useVisitorTracking() {
   const sessionRef = useRef<string | null>(null);
   const metricsRef = useRef({ mouseMoves: 0, scrollDistance: 0, maxScroll: 0, sections: new Set<string>() });
@@ -71,46 +104,66 @@ export function useVisitorTracking() {
 
     const { browser, version } = getBrowserInfo();
     const gpu = getGPUInfo();
+    const connection = getConnectionInfo();
     const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
 
-    const payload = {
-      session_id: sessionId,
-      user_agent: navigator.userAgent,
-      browser,
-      browser_version: version,
-      os: getOS(),
-      platform: navigator.platform || 'Unknown',
-      language: navigator.language,
-      all_languages: Array.from(navigator.languages || [navigator.language]),
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      tz_offset: new Date().getTimezoneOffset(),
-      cookies_enabled: navigator.cookieEnabled,
-      online: navigator.onLine,
-      pdf_viewer: !!(navigator as any).pdfViewerEnabled,
-      screen_width: screen.width,
-      screen_height: screen.height,
-      available_width: screen.availWidth,
-      available_height: screen.availHeight,
-      viewport_width: window.innerWidth,
-      viewport_height: window.innerHeight,
-      pixel_ratio: window.devicePixelRatio,
-      color_depth: screen.colorDepth,
-      orientation: getOrientation(),
-      cpu_cores: navigator.hardwareConcurrency || 0,
-      max_touch_points: navigator.maxTouchPoints || 0,
-      touch_support: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-      gpu_vendor: gpu.vendor,
-      gpu_renderer: gpu.renderer,
-      entry_url: window.location.href,
-      nav_type: navEntry?.type || 'navigate',
+    const sendInitialPayload = async () => {
+      const battery = await getBatteryInfo();
+      // Wait for page load to complete
+      const loadTimes = getPageLoadTimes();
+
+      const payload = {
+        session_id: sessionId,
+        user_agent: navigator.userAgent,
+        browser,
+        browser_version: version,
+        os: getOS(),
+        platform: navigator.platform || 'Unknown',
+        language: navigator.language,
+        all_languages: Array.from(navigator.languages || [navigator.language]),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        tz_offset: new Date().getTimezoneOffset(),
+        cookies_enabled: navigator.cookieEnabled,
+        online: navigator.onLine,
+        pdf_viewer: !!(navigator as any).pdfViewerEnabled,
+        screen_width: screen.width,
+        screen_height: screen.height,
+        available_width: screen.availWidth,
+        available_height: screen.availHeight,
+        viewport_width: window.innerWidth,
+        viewport_height: window.innerHeight,
+        pixel_ratio: window.devicePixelRatio,
+        color_depth: screen.colorDepth,
+        orientation: getOrientation(),
+        cpu_cores: navigator.hardwareConcurrency || 0,
+        max_touch_points: navigator.maxTouchPoints || 0,
+        touch_support: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+        gpu_vendor: gpu.vendor,
+        gpu_renderer: gpu.renderer,
+        entry_url: window.location.href,
+        nav_type: navEntry?.type || 'navigate',
+        // New fields
+        device_memory: (navigator as any).deviceMemory || null,
+        connection_type: connection.type,
+        downlink: connection.downlink,
+        battery_level: battery.level,
+        battery_charging: battery.charging,
+        page_load_time: loadTimes.pageLoad,
+        dom_load_time: loadTimes.domLoad,
+      };
+
+      const apiBase = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
+      fetch(`${apiBase}/track-visitor`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
     };
 
+    // Delay to capture page load times
+    setTimeout(sendInitialPayload, 2000);
+
     const apiBase = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
-    fetch(`${apiBase}/track-visitor`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
-      body: JSON.stringify(payload),
-    }).catch(() => {});
 
     // Track mouse moves
     const onMouseMove = () => { metricsRef.current.mouseMoves++; };
@@ -131,7 +184,7 @@ export function useVisitorTracking() {
       }
     };
 
-    // Track sections viewed via IntersectionObserver
+    // Track sections viewed
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting && entry.target.id) {
@@ -140,7 +193,6 @@ export function useVisitorTracking() {
       });
     }, { threshold: 0.3 });
 
-    // Observe all sections
     setTimeout(() => {
       document.querySelectorAll('section[id], [data-section]').forEach(el => observer.observe(el));
     }, 1000);
@@ -148,7 +200,6 @@ export function useVisitorTracking() {
     document.addEventListener('mousemove', onMouseMove, { passive: true });
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    // Send behavior data periodically and on unload
     const sendBehavior = () => {
       if (!sessionRef.current) return;
       const data = {
@@ -160,7 +211,6 @@ export function useVisitorTracking() {
         sections_viewed: Array.from(metricsRef.current.sections),
       };
       
-      // Use sendBeacon for reliability on unload
       if (navigator.sendBeacon) {
         navigator.sendBeacon(
           `${apiBase}/track-visitor`,
