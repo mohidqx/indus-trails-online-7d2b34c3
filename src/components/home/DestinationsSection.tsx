@@ -46,16 +46,16 @@ export default function DestinationsSection() {
 
   return (
     <section id="destinations" data-section className="py-16 md:py-28 bg-background relative overflow-hidden">
-      {/* Subtle background accent */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/3 rounded-full blur-[150px] pointer-events-none" />
-      
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
+
       <div className="container mx-auto px-4 sm:px-6 relative">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/8 text-primary text-sm font-medium mb-5">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20 animate-fade-up">
+          <span className="premium-badge mb-5 inline-flex">
             <Compass className="w-4 h-4" />
             Popular Destinations
-          </div>
+          </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 md:mb-6">
             Discover Pakistan's
             <span className="text-gradient-primary block sm:inline"> Hidden Gems</span>
@@ -64,16 +64,17 @@ export default function DestinationsSection() {
             From the ancient Silk Road to the roof of the world, explore destinations that will
             leave you breathless.
           </p>
+          <div className="gold-divider mx-auto mt-6" />
         </div>
 
-        {/* Destinations Grid */}
+        {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {destinations.map((dest, index) => (
             <Link
               key={dest.id}
               to="/destinations"
-              className="group relative rounded-2xl overflow-hidden aspect-[3/4] premium-card"
-              style={{ animationDelay: `${index * 100}ms` }}
+              className="group relative rounded-2xl overflow-hidden aspect-[3/4] ultra-card animate-fade-up"
+              style={{ animationDelay: `${index * 120}ms` }}
             >
               <img
                 src={getDestinationImage(dest.name, dest.image_url)}
@@ -81,8 +82,7 @@ export default function DestinationsSection() {
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-mountain via-mountain/20 to-transparent" />
-              
-              {/* Premium border glow on hover */}
+
               <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ring-1 ring-inset ring-accent/30" />
 
               <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end">
@@ -100,7 +100,7 @@ export default function DestinationsSection() {
                     </p>
                   )}
                   <div className="flex items-center justify-end">
-                    <span className="w-9 h-9 rounded-full bg-snow/10 group-hover:bg-accent flex items-center justify-center transition-all duration-300 backdrop-blur-sm">
+                    <span className="w-9 h-9 rounded-full bg-snow/10 group-hover:bg-accent flex items-center justify-center transition-all duration-300 backdrop-blur-sm group-hover:scale-110">
                       <ArrowRight className="w-4 h-4 text-snow group-hover:text-accent-foreground transition-colors" />
                     </span>
                   </div>
@@ -111,8 +111,8 @@ export default function DestinationsSection() {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-10 md:mt-14">
-          <Button variant="outline" size="lg" asChild className="group">
+        <div className="text-center mt-10 md:mt-14 animate-fade-up delay-500">
+          <Button variant="outline" size="lg" asChild className="group shadow-sm hover:shadow-teal transition-all">
             <Link to="/destinations" className="flex items-center gap-2">
               View All Destinations
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

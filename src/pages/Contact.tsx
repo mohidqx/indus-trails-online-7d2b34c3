@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,11 +12,7 @@ export default function Contact() {
   const { toast } = useToast();
   const { data: content } = useSiteContent();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
+    name: '', email: '', phone: '', subject: '', message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -27,21 +23,9 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    toast({
-      title: 'Message Sent!',
-      description: 'We will get back to you within 24 hours.',
-    });
-
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: '',
-    });
+    await new Promise((r) => setTimeout(r, 1500));
+    toast({ title: 'Message Sent!', description: 'We will get back to you within 24 hours.' });
+    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     setIsSubmitting(false);
   };
 
@@ -57,12 +41,18 @@ export default function Contact() {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-20 bg-gradient-mountain">
-        <div className="container mx-auto px-4 sm:px-6 text-center">
+      <section className="page-hero">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent)/0.08),transparent_60%)]" />
+        <div className="container mx-auto px-4 sm:px-6 text-center relative z-10 animate-fade-up">
+          <span className="premium-badge !text-snow !border-snow/15 !bg-snow/[0.06] mb-4 inline-flex">
+            <MessageSquare className="w-4 h-4 text-accent" />
+            Get In Touch
+          </span>
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-snow mb-4 sm:mb-6">Contact Us</h1>
           <p className="text-base sm:text-xl text-snow/80 max-w-2xl mx-auto">
             Have questions? We'd love to hear from you. Send us a message!
           </p>
+          <div className="gold-divider mx-auto mt-6" />
         </div>
       </section>
 
@@ -71,19 +61,20 @@ export default function Contact() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-3 gap-8 md:gap-12">
             {/* Contact Info */}
-            <div className="space-y-6 sm:space-y-8">
+            <div className="space-y-6 sm:space-y-8 animate-fade-up">
               <div>
                 <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground mb-4 sm:mb-6">Get In Touch</h2>
-                <p className="text-sm sm:text-base text-muted-foreground">
+                <div className="gold-divider mb-4" />
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   Whether you have questions about our tours, need help planning your trip, or just
                   want to say hello, we're here for you.
                 </p>
               </div>
 
-              <div className="space-y-4 sm:space-y-6">
+              <div className="space-y-4 sm:space-y-5">
                 {contactInfo.map(({ icon: Icon, title, value, href }) => (
-                  <div key={title} className="flex items-start gap-3 sm:gap-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <div key={title} className="flex items-start gap-3 sm:gap-4 p-3 rounded-xl hover:bg-muted/20 transition-colors group">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors">
                       <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                     </div>
                     <div>
@@ -102,73 +93,52 @@ export default function Contact() {
             </div>
 
             {/* Contact Form */}
-            <div className="lg:col-span-2">
-              <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-lg">
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground mb-4 sm:mb-6">Send Us a Message</h2>
+            <div className="lg:col-span-2 animate-fade-up delay-200">
+              <div className="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-premium">
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground mb-2 sm:mb-3">Send Us a Message</h2>
+                <div className="gold-divider mb-6" />
 
-                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                  <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+                  <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
-                      <Input
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="John Doe"
-                      />
+                      <div className="premium-input rounded-md">
+                        <Input required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="John Doe" className="border-0 bg-transparent" />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Email Address *</label>
-                      <Input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="john@example.com"
-                      />
+                      <div className="premium-input rounded-md">
+                        <Input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="john@example.com" className="border-0 bg-transparent" />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Phone Number</label>
-                      <Input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="+92 300 1234567"
-                      />
+                      <div className="premium-input rounded-md">
+                        <Input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+92 300 1234567" className="border-0 bg-transparent" />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Subject *</label>
-                      <Input
-                        required
-                        value={formData.subject}
-                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        placeholder="Tour Inquiry"
-                      />
+                      <div className="premium-input rounded-md">
+                        <Input required value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} placeholder="Tour Inquiry" className="border-0 bg-transparent" />
+                      </div>
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">Message *</label>
-                    <Textarea
-                      required
-                      rows={5}
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Tell us about your travel plans..."
-                    />
+                    <div className="premium-input rounded-md">
+                      <Textarea required rows={5} value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="Tell us about your travel plans..." className="border-0 bg-transparent resize-none" />
+                    </div>
                   </div>
 
-                  <Button type="submit" variant="gold" size="lg" disabled={isSubmitting} className="w-full sm:w-auto">
-                    {isSubmitting ? (
-                      'Sending...'
-                    ) : (
-                      <>
-                        Send Message
-                        <Send className="w-5 h-5 ml-2" />
-                      </>
+                  <Button type="submit" variant="gold" size="lg" disabled={isSubmitting} className="w-full sm:w-auto shadow-gold">
+                    {isSubmitting ? 'Sending...' : (
+                      <>Send Message <Send className="w-5 h-5 ml-2" /></>
                     )}
                   </Button>
                 </form>
@@ -178,7 +148,7 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Google Map Embed */}
+      {/* Map */}
       <section className="h-64 sm:h-80 md:h-96">
         <iframe
           title="Office Location"

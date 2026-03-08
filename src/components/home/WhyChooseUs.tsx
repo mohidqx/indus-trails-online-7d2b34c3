@@ -54,13 +54,13 @@ const features = [
 export default function WhyChooseUs() {
   return (
     <section id="why-us" data-section className="py-16 md:py-28 bg-background relative overflow-hidden">
-      {/* Background accent */}
       <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-primary/3 rounded-full blur-[180px] pointer-events-none -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-accent/3 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 relative">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/8 text-primary text-sm font-medium mb-5">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20 animate-fade-up">
+          <span className="premium-badge mb-5 inline-flex">
             Why Choose Us
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 md:mb-6">
@@ -71,6 +71,7 @@ export default function WhyChooseUs() {
             With over a decade of experience, we've perfected the art of creating memorable
             adventures in Pakistan's most spectacular landscapes.
           </p>
+          <div className="gold-divider mx-auto mt-6" />
         </div>
 
         {/* Features Grid */}
@@ -78,7 +79,7 @@ export default function WhyChooseUs() {
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className={`group p-6 md:p-8 rounded-2xl bg-gradient-to-br ${feature.gradient} border border-border/30 hover:border-primary/20 premium-card`}
+              className={`group p-6 md:p-8 rounded-2xl bg-gradient-to-br ${feature.gradient} border border-border/30 hover:border-primary/20 ultra-card animate-fade-up`}
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl ${feature.iconBg} group-hover:scale-110 flex items-center justify-center mb-5 transition-transform duration-300`}>
@@ -91,13 +92,12 @@ export default function WhyChooseUs() {
         </div>
 
         {/* Stats Banner */}
-        <div className="mt-14 md:mt-24 p-8 sm:p-10 md:p-14 rounded-2xl md:rounded-3xl bg-gradient-premium text-snow relative overflow-hidden">
-          {/* Background pattern */}
+        <div className="mt-14 md:mt-24 p-8 sm:p-10 md:p-14 rounded-2xl md:rounded-3xl bg-gradient-premium text-snow relative overflow-hidden animate-fade-up">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[80px]" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/30 rounded-full blur-[60px]" />
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center relative">
             {[
               { value: '10+', label: 'Years of Excellence' },
@@ -105,8 +105,8 @@ export default function WhyChooseUs() {
               { value: '150+', label: 'Tours Completed' },
               { value: '15+', label: 'Destinations' },
             ].map((stat, index) => (
-              <div key={index} className="relative">
-                <p className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-accent mb-2 drop-shadow-lg">
+              <div key={index} className="relative group">
+                <p className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-accent mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-300">
                   {stat.value}
                 </p>
                 <p className="text-xs sm:text-sm text-snow/70 tracking-wide uppercase">{stat.label}</p>

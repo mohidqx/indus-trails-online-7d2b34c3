@@ -32,6 +32,15 @@ export default function TestimonialsSection() {
     fetchTestimonials();
   }, []);
 
+  // Auto-advance
+  useEffect(() => {
+    if (testimonials.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [testimonials.length]);
+
   const next = () => setCurrentIndex((prev) => (prev + 1) % testimonials.length);
   const prev = () => setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
 
@@ -52,14 +61,14 @@ export default function TestimonialsSection() {
   return (
     <section id="testimonials" data-section className="py-16 md:py-28 bg-secondary/20 overflow-hidden relative">
       <div className="absolute top-0 left-1/2 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[150px] pointer-events-none -translate-x-1/2" />
-      
+
       <div className="container mx-auto px-4 sm:px-6 relative">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-18">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-5">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-18 animate-fade-up">
+          <span className="premium-badge mb-5 inline-flex">
             <MessageCircle className="w-4 h-4" />
             Testimonials
-          </div>
+          </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 md:mb-6">
             What Our Travelers
             <span className="text-gradient-gold"> Say</span>
@@ -67,11 +76,12 @@ export default function TestimonialsSection() {
           <p className="text-base md:text-lg text-muted-foreground px-4 leading-relaxed">
             Real stories from real travelers who experienced the magic of Pakistan's north with us.
           </p>
+          <div className="gold-divider mx-auto mt-6" />
         </div>
 
-        {/* Testimonials Carousel */}
-        <div className="relative max-w-4xl mx-auto">
-          <div className="relative bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-premium shimmer-border">
+        {/* Carousel */}
+        <div className="relative max-w-4xl mx-auto animate-fade-up delay-200">
+          <div className="relative glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-premium">
             <Quote className="absolute top-6 right-6 sm:top-8 sm:right-8 w-12 h-12 sm:w-16 sm:h-16 text-primary/8" />
 
             <div className="space-y-5 sm:space-y-6">
@@ -86,7 +96,7 @@ export default function TestimonialsSection() {
               </p>
 
               <div className="flex items-center gap-3 sm:gap-4 pt-4">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-bold text-base sm:text-lg shadow-teal">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-bold text-base sm:text-lg shadow-teal">
                   {getInitials(testimonials[currentIndex].name)}
                 </div>
                 <div>
@@ -103,9 +113,9 @@ export default function TestimonialsSection() {
             </div>
           </div>
 
-          {/* Navigation */}
+          {/* Nav */}
           <div className="flex items-center justify-center gap-4 mt-8">
-            <Button variant="outline" size="icon" onClick={prev} className="rounded-full border-border/50 hover:border-primary/30 hover:bg-primary/5">
+            <Button variant="outline" size="icon" onClick={prev} className="rounded-full border-border/50 hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm transition-all">
               <ChevronLeft className="w-5 h-5" />
             </Button>
             <div className="flex gap-2">
@@ -114,12 +124,12 @@ export default function TestimonialsSection() {
                   key={index}
                   onClick={() => setCurrentIndex(index)}
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    index === currentIndex ? 'w-8 bg-primary' : 'w-2 bg-muted-foreground/20 hover:bg-muted-foreground/40'
+                    index === currentIndex ? 'w-8 bg-primary shadow-teal' : 'w-2 bg-muted-foreground/20 hover:bg-muted-foreground/40'
                   }`}
                 />
               ))}
             </div>
-            <Button variant="outline" size="icon" onClick={next} className="rounded-full border-border/50 hover:border-primary/30 hover:bg-primary/5">
+            <Button variant="outline" size="icon" onClick={next} className="rounded-full border-border/50 hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm transition-all">
               <ChevronRight className="w-5 h-5" />
             </Button>
           </div>

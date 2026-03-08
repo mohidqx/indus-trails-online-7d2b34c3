@@ -53,15 +53,16 @@ export default function FeaturedTours() {
   return (
     <section id="tours" data-section className="py-16 md:py-28 bg-secondary/20 relative overflow-hidden">
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
-      
+      <div className="absolute top-20 right-0 w-[300px] h-[300px] bg-primary/3 rounded-full blur-[100px] pointer-events-none" />
+
       <div className="container mx-auto px-4 sm:px-6 relative">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6 mb-12 md:mb-18">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6 mb-12 md:mb-18 animate-fade-up">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-5">
+            <span className="premium-badge mb-5 inline-flex">
               <Sparkles className="w-4 h-4" />
               Featured Tours
-            </div>
+            </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-3 md:mb-4">
               Unforgettable
               <span className="text-gradient-gold"> Adventures</span>
@@ -70,8 +71,9 @@ export default function FeaturedTours() {
               Handcrafted journeys through Pakistan's most spectacular landscapes, led by
               experienced local guides.
             </p>
+            <div className="gold-divider mt-4" />
           </div>
-          <Button variant="outline" size="lg" asChild className="w-fit group">
+          <Button variant="outline" size="lg" asChild className="w-fit group shadow-sm hover:shadow-teal transition-all">
             <Link to="/tours" className="flex items-center gap-2">
               View All Tours
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -79,12 +81,12 @@ export default function FeaturedTours() {
           </Button>
         </div>
 
-        {/* Tours Grid */}
+        {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
           {tours.map((tour, index) => (
             <div
               key={tour.id}
-              className="group bg-card rounded-2xl md:rounded-3xl overflow-hidden premium-card shimmer-border"
+              className="group bg-card rounded-2xl md:rounded-3xl overflow-hidden ultra-card shimmer-border animate-fade-up"
               style={{ animationDelay: `${index * 150}ms` }}
             >
               {/* Image */}
@@ -164,7 +166,7 @@ export default function FeaturedTours() {
                     </div>
                     <p className="text-[11px] text-muted-foreground/70 mt-0.5">per person</p>
                   </div>
-                  <Button variant="default" size="sm" asChild className="shadow-teal">
+                  <Button variant="default" size="sm" asChild className="shadow-teal hover:shadow-lg transition-shadow">
                     <Link to={`/booking?tour=${tour.id}`}>Book Now</Link>
                   </Button>
                 </div>

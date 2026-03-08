@@ -9,12 +9,12 @@ export default function CTASection() {
       <div className="absolute inset-0">
         <img src={heroImage} alt="Mountains" className="w-full h-full object-cover" loading="lazy" />
         <div className="absolute inset-0 bg-gradient-to-br from-mountain/95 via-mountain/85 to-primary/70" />
-        {/* Ambient accent */}
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px] pointer-events-none animate-pulse-soft" />
+        <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-primary/8 rounded-full blur-[120px] pointer-events-none animate-pulse-soft delay-500" />
       </div>
 
       <div className="relative container mx-auto px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-3xl mx-auto text-center animate-fade-up">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-snow mb-5 sm:mb-6 leading-tight">
             Ready for Your
             <span className="text-gradient-gold block mt-2">Next Adventure?</span>
@@ -25,7 +25,7 @@ export default function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <Button variant="hero" size="lg" asChild className="w-full sm:w-auto animate-glow">
+            <Button variant="hero" size="lg" asChild className="w-full sm:w-auto animate-glow shadow-gold">
               <Link to="/booking" className="flex items-center justify-center gap-2">
                 Start Planning
                 <ArrowRight className="w-5 h-5" />
@@ -39,7 +39,7 @@ export default function CTASection() {
             </Button>
           </div>
 
-          {/* Trust Badges - Premium */}
+          {/* Trust Badges */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mt-14 pt-8 border-t border-snow/10">
             {[
               { icon: Shield, value: '100%', label: 'Satisfaction' },
@@ -48,7 +48,7 @@ export default function CTASection() {
               { icon: Headphones, value: '24/7', label: 'Support' },
             ].map((badge, i) => (
               <div key={i} className="text-center group">
-                <badge.icon className="w-5 h-5 text-accent/60 mx-auto mb-2 group-hover:text-accent transition-colors" />
+                <badge.icon className="w-5 h-5 text-accent/60 mx-auto mb-2 group-hover:text-accent group-hover:scale-110 transition-all duration-300" />
                 <p className="text-xl sm:text-2xl font-bold text-accent">{badge.value}</p>
                 <p className="text-xs text-snow/50 mt-0.5 tracking-wide uppercase">{badge.label}</p>
               </div>
