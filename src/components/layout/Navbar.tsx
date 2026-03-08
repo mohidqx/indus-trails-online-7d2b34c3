@@ -238,4 +238,6 @@ const Navbar = forwardRef<HTMLElement>(function Navbar(_, ref) {
       </div>
     </header>
   );
-}
+});
+
+export default Navbar;
