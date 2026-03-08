@@ -40,7 +40,7 @@ export default function FeaturedTours() {
 
   if (isLoading) {
     return (
-      <section className="py-16 md:py-24 bg-secondary/20">
+      <section className="py-20 md:py-28 bg-secondary/20">
         <div className="container mx-auto px-4 sm:px-6 flex justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
@@ -51,123 +51,124 @@ export default function FeaturedTours() {
   if (tours.length === 0) return null;
 
   return (
-    <section id="tours" data-section className="py-16 md:py-28 bg-secondary/20 relative overflow-hidden">
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-20 right-0 w-[300px] h-[300px] bg-primary/3 rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="container mx-auto px-4 sm:px-6 relative">
+    <section id="tours" data-section className="py-20 md:py-32 bg-secondary/20 luxury-section texture-noise relative">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6 mb-12 md:mb-18 animate-fade-up">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14 md:mb-20 animate-fade-up">
           <div className="max-w-2xl">
-            <span className="premium-badge mb-5 inline-flex">
+            <span className="premium-badge mb-6 inline-flex">
               <Sparkles className="w-4 h-4" />
               Featured Tours
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-3 md:mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground mb-4">
               Unforgettable
               <span className="text-gradient-gold"> Adventures</span>
             </h2>
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-              Handcrafted journeys through Pakistan's most spectacular landscapes, led by
-              experienced local guides.
+            <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl">
+              Handcrafted journeys through Pakistan's most spectacular landscapes, led by experienced local guides.
             </p>
-            <div className="gold-divider mt-4" />
+            <div className="gold-divider mt-5" />
           </div>
-          <Button variant="outline" size="lg" asChild className="w-fit group shadow-sm hover:shadow-teal transition-all">
+          <Button variant="outline" size="lg" asChild className="w-fit group shadow-sm hover:shadow-teal transition-all border-primary/20 hover:border-primary/40">
             <Link to="/tours" className="flex items-center gap-2">
               View All Tours
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
             </Link>
           </Button>
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {tours.map((tour, index) => (
             <div
               key={tour.id}
-              className="group bg-card rounded-2xl md:rounded-3xl overflow-hidden ultra-card shimmer-border animate-fade-up"
+              className="group bg-card rounded-2xl md:rounded-3xl overflow-hidden ultra-card animate-fade-up"
               style={{ animationDelay: `${index * 150}ms` }}
             >
               {/* Image */}
-              <div className="relative aspect-[4/3] overflow-hidden">
+              <div className="relative aspect-[4/3] overflow-hidden image-shine">
                 <img
                   src={getTourImage(tour.title, tour.image_url)}
                   alt={tour.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-mountain/70 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-mountain/80 via-mountain/20 to-transparent" />
 
                 <div className="absolute top-3 md:top-4 left-3 md:left-4 flex gap-2">
-                  <span className="px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-semibold shadow-gold">
+                  <span className="px-3 py-1.5 rounded-full bg-accent text-accent-foreground text-xs font-bold shadow-gold tracking-wide">
                     Featured
                   </span>
                   {tour.discount_price && tour.discount_price < tour.price && (
-                    <span className="px-3 py-1 rounded-full bg-destructive text-destructive-foreground text-xs font-semibold">
+                    <span className="px-3 py-1.5 rounded-full bg-destructive text-destructive-foreground text-xs font-bold">
                       {Math.round(((tour.price - tour.discount_price) / tour.price) * 100)}% OFF
                     </span>
                   )}
                 </div>
+
+                {/* Price overlay on image */}
+                <div className="absolute bottom-3 right-3">
+                  <div className="glass-premium rounded-xl px-4 py-2 text-snow">
+                    <span className="text-lg font-bold">PKR {(tour.discount_price || tour.price).toLocaleString()}</span>
+                    <span className="text-[10px] block text-snow/50">per person</span>
+                  </div>
+                </div>
               </div>
 
               {/* Content */}
-              <div className="p-5 md:p-6 space-y-3 md:space-y-4">
+              <div className="p-5 md:p-7 space-y-4">
                 <h3 className="text-lg md:text-xl font-serif font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                   {tour.title}
                 </h3>
 
-                <div className="flex flex-wrap gap-3 md:gap-4 text-xs md:text-sm text-muted-foreground">
+                <div className="flex flex-wrap gap-4 text-xs md:text-sm text-muted-foreground">
                   {tour.duration && (
                     <span className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary/60" />
+                      <Clock className="w-4 h-4 text-primary/60" />
                       {tour.duration}
                     </span>
                   )}
                   {tour.max_group_size && (
                     <span className="flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary/60" />
+                      <Users className="w-4 h-4 text-primary/60" />
                       Up to {tour.max_group_size}
                     </span>
                   )}
                   {tour.difficulty && (
                     <span className="flex items-center gap-1.5">
-                      <Star className="w-3.5 h-3.5 md:w-4 md:h-4 text-accent/60" />
+                      <Star className="w-4 h-4 text-accent/60" />
                       {tour.difficulty}
                     </span>
                   )}
                 </div>
 
                 {tour.includes && tour.includes.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 md:gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {tour.includes.slice(0, 3).map((item) => (
-                      <span key={item} className="px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs border border-border/50">
+                      <span key={item} className="px-3 py-1 rounded-full bg-primary/5 text-primary/80 text-xs font-medium border border-primary/10">
                         {item}
                       </span>
                     ))}
                     {tour.includes.length > 3 && (
-                      <span className="px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs border border-border/50">
+                      <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs border border-border/50">
                         +{tour.includes.length - 3} more
                       </span>
                     )}
                   </div>
                 )}
 
-                <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                  <div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl md:text-2xl font-bold text-foreground">
-                        PKR {(tour.discount_price || tour.price).toLocaleString()}
+                <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                  <div className="flex items-baseline gap-2">
+                    {tour.discount_price && tour.discount_price < tour.price && (
+                      <span className="text-sm text-muted-foreground line-through">
+                        PKR {tour.price.toLocaleString()}
                       </span>
-                      {tour.discount_price && tour.discount_price < tour.price && (
-                        <span className="text-xs md:text-sm text-muted-foreground line-through">
-                          {tour.price.toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-muted-foreground/70 mt-0.5">per person</p>
+                    )}
                   </div>
-                  <Button variant="default" size="sm" asChild className="shadow-teal hover:shadow-lg transition-shadow">
-                    <Link to={`/booking?tour=${tour.id}`}>Book Now</Link>
+                  <Button variant="default" size="sm" asChild className="shadow-teal hover:shadow-lg transition-all group/btn">
+                    <Link to={`/booking?tour=${tour.id}`} className="flex items-center gap-1.5">
+                      Book Now
+                      <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+                    </Link>
                   </Button>
                 </div>
               </div>

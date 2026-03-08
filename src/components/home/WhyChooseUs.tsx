@@ -53,65 +53,73 @@ const features = [
 
 export default function WhyChooseUs() {
   return (
-    <section id="why-us" data-section className="py-16 md:py-28 bg-background relative overflow-hidden">
-      <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-primary/3 rounded-full blur-[180px] pointer-events-none -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-accent/3 rounded-full blur-[140px] pointer-events-none" />
-
-      <div className="container mx-auto px-4 sm:px-6 relative">
+    <section id="why-us" data-section className="py-20 md:py-32 bg-background luxury-section texture-noise relative">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20 animate-fade-up">
-          <span className="premium-badge mb-5 inline-flex">
+        <div className="text-center max-w-3xl mx-auto mb-14 md:mb-20 animate-fade-up">
+          <span className="premium-badge mb-6 inline-flex">
             Why Choose Us
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-foreground mb-4 md:mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground mb-4 md:mb-6">
             Your Journey,
             <span className="text-gradient-primary"> Our Passion</span>
           </h2>
-          <p className="text-base md:text-lg text-muted-foreground px-4 leading-relaxed">
+          <p className="text-base md:text-lg text-muted-foreground px-4 leading-relaxed max-w-2xl mx-auto">
             With over a decade of experience, we've perfected the art of creating memorable
             adventures in Pakistan's most spectacular landscapes.
           </p>
-          <div className="gold-divider mx-auto mt-6" />
+          <div className="flex items-center justify-center gap-3 mt-6">
+            <div className="w-12 h-px bg-gradient-to-r from-transparent to-primary/30" />
+            <div className="w-1.5 h-1.5 rounded-full bg-accent shadow-gold" />
+            <div className="gold-divider" />
+            <div className="w-1.5 h-1.5 rounded-full bg-accent shadow-gold" />
+            <div className="w-12 h-px bg-gradient-to-l from-transparent to-primary/30" />
+          </div>
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className={`group p-6 md:p-8 rounded-2xl bg-gradient-to-br ${feature.gradient} border border-border/30 hover:border-primary/20 ultra-card animate-fade-up`}
+              className={`group p-7 md:p-9 rounded-2xl md:rounded-3xl bg-gradient-to-br ${feature.gradient} border border-border/20 hover:border-primary/15 ultra-card-glow animate-fade-up`}
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl ${feature.iconBg} group-hover:scale-110 flex items-center justify-center mb-5 transition-transform duration-300`}>
-                <feature.icon className={`w-6 h-6 md:w-7 md:h-7 ${feature.iconColor}`} />
+              <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl ${feature.iconBg} group-hover:scale-110 flex items-center justify-center mb-6 transition-all duration-500 shadow-sm`}>
+                <feature.icon className={`w-7 h-7 md:w-8 md:h-8 ${feature.iconColor} transition-transform duration-300`} />
               </div>
-              <h3 className="text-lg md:text-xl font-serif font-bold text-foreground mb-2 md:mb-3">{feature.title}</h3>
+              <h3 className="text-lg md:text-xl font-serif font-bold text-foreground mb-3">{feature.title}</h3>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{feature.description}</p>
             </div>
           ))}
         </div>
 
         {/* Stats Banner */}
-        <div className="mt-14 md:mt-24 p-8 sm:p-10 md:p-14 rounded-2xl md:rounded-3xl bg-gradient-premium text-snow relative overflow-hidden animate-fade-up">
+        <div className="mt-16 md:mt-28 p-10 sm:p-12 md:p-16 rounded-2xl md:rounded-3xl bg-gradient-premium text-snow relative overflow-hidden animate-fade-up shadow-ultra">
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[80px]" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/30 rounded-full blur-[60px]" />
+            <div className="absolute top-0 right-0 w-72 h-72 bg-accent/20 rounded-full blur-[100px]" />
+            <div className="absolute bottom-0 left-0 w-56 h-56 bg-primary/30 rounded-full blur-[80px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-32 bg-snow/5 rounded-full blur-[60px]" />
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center relative">
+          {/* Decorative lines */}
+          <div className="absolute top-8 left-8 w-20 h-px bg-gradient-to-r from-accent/30 to-transparent" />
+          <div className="absolute bottom-8 right-8 w-20 h-px bg-gradient-to-l from-accent/30 to-transparent" />
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 text-center relative">
             {[
               { value: '10+', label: 'Years of Excellence' },
               { value: '500+', label: 'Happy Travelers' },
               { value: '150+', label: 'Tours Completed' },
               { value: '15+', label: 'Destinations' },
             ].map((stat, index) => (
-              <div key={index} className="relative group">
-                <p className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-accent mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <div key={index} className="relative group cursor-default">
+                <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-accent mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-500 stat-highlight">
                   {stat.value}
                 </p>
-                <p className="text-xs sm:text-sm text-snow/70 tracking-wide uppercase">{stat.label}</p>
+                <p className="text-[10px] sm:text-xs text-snow/60 tracking-[0.15em] uppercase font-medium">{stat.label}</p>
                 {index < 3 && (
-                  <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-12 bg-gradient-to-b from-transparent via-snow/15 to-transparent" />
+                  <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-14 bg-gradient-to-b from-transparent via-snow/12 to-transparent" />
                 )}
               </div>
             ))}
