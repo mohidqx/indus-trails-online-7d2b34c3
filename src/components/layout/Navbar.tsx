@@ -26,6 +26,7 @@ export default function Navbar() {
   const isHomePage = location.pathname === '/';
   const { data: content } = useSiteContent();
   const { user, isLoading: authLoading } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const phone = (content?.phone as string) || '+92 300 1234567';
   const address = (content?.address as string) || 'Islamabad, Pakistan';
