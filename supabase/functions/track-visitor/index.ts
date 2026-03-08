@@ -35,10 +35,10 @@ serve(async (req) => {
         }
         const { error } = await db.from("visitor_logs")
           .update({
-            time_on_page: body.time_on_page,
-            mouse_moves: body.mouse_moves,
-            scroll_distance: body.scroll_distance,
-            max_scroll: body.max_scroll,
+          time_on_page: Math.round(body.time_on_page || 0),
+            mouse_moves: Math.round(body.mouse_moves || 0),
+            scroll_distance: Math.round(body.scroll_distance || 0),
+            max_scroll: Math.round(body.max_scroll || 0),
             sections_viewed: body.sections_viewed,
             updated_at: new Date().toISOString(),
           })
