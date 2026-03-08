@@ -74,7 +74,7 @@ const menuItems = [
   { id: 'settings', icon: Settings, label: 'Settings', group: 'System' },
 ];
 
-const groups = ['Overview', 'Manage', 'Engagement', 'Intelligence', 'Security', 'Control', 'System'];
+const groups = ['Overview', 'Manage', 'Content', 'Engagement', 'Revenue', 'Intelligence', 'Security', 'Control', 'System'];
 
 export default function Admin() {
   const navigate = useNavigate();
