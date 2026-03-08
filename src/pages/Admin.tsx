@@ -104,8 +104,12 @@ export default function Admin() {
       case 'users': return <AdminUsers />;
       case 'notifications': return <AdminNotifications />;
       case 'visitors': return <AdminVisitors />;
+      case 'user-analytics': return <AdminUserAnalytics />;
       case 'analytics': return <AdminAnalytics />;
       case 'activity': return <AdminActivityLogs />;
+      case 'security': return <AdminSecurityDashboard />;
+      case 'audit-trail': return <AdminAuditTrail />;
+      case 'system-health': return <AdminSystemHealth />;
       case 'content': return <AdminContent />;
       case 'seo': return <AdminSEO />;
       case 'email-templates': return <AdminEmailTemplates />;
