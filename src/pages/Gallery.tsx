@@ -116,7 +116,7 @@ export default function Gallery() {
             ))}
           </div>
         )}
-      </div>
+              </motion.div>
 
       {/* Lightbox */}
       {lightbox && (
