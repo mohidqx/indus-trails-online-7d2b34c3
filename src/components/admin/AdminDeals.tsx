@@ -4,13 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { dealsApi } from '@/lib/api';
+import { dealsApi, toursApi } from '@/lib/api';
 import ImageUpload from '@/components/common/ImageUpload';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 
 interface Deal {
@@ -19,11 +16,19 @@ interface Deal {
   description: string | null;
   discount_percent: number | null;
   code: string | null;
+  tour_id: string | null;
   valid_from: string | null;
   valid_until: string | null;
   is_active: boolean;
   is_popup: boolean;
   image_url: string | null;
+  tours?: { title: string } | null;
+}
+
+interface TourOption {
+  id: string;
+  title: string;
+  price: number;
 }
 
 const emptyDeal = {
@@ -31,6 +36,7 @@ const emptyDeal = {
   description: '',
   discount_percent: 10,
   code: '',
+  tour_id: null as string | null,
   valid_from: '',
   valid_until: '',
   is_active: true,
@@ -41,18 +47,19 @@ const emptyDeal = {
 export default function AdminDeals() {
   const { toast } = useToast();
   const [deals, setDeals] = useState<Deal[]>([]);
+  const [tours, setTours] = useState<TourOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editingDeal, setEditingDeal] = useState<typeof emptyDeal & { id?: string }>(emptyDeal);
 
   useEffect(() => {
     fetchDeals();
+    fetchTours();
   }, []);
 
   const fetchDeals = async () => {
     setIsLoading(true);
     const { data, error } = await dealsApi.getAll();
-
     if (!error && data) {
       setDeals(data as Deal[]);
     } else if (error) {
@@ -61,12 +68,18 @@ export default function AdminDeals() {
     setIsLoading(false);
   };
 
+  const fetchTours = async () => {
+    const { data } = await toursApi.getAll({ active: true });
+    if (data) setTours(data as TourOption[]);
+  };
+
   const saveDeal = async () => {
     const dealData = {
       title: editingDeal.title,
       description: editingDeal.description || null,
       discount_percent: editingDeal.discount_percent || null,
       code: editingDeal.code || null,
+      tour_id: editingDeal.tour_id || null,
       valid_from: editingDeal.valid_from || null,
       valid_until: editingDeal.valid_until || null,
       is_active: editingDeal.is_active,
@@ -93,9 +106,7 @@ export default function AdminDeals() {
 
   const deleteDeal = async (id: string) => {
     if (!confirm('Are you sure you want to delete this deal?')) return;
-
     const { error } = await dealsApi.delete(id);
-
     if (error) {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
@@ -121,7 +132,6 @@ export default function AdminDeals() {
         </Button>
       </div>
 
-      {/* Deals Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {deals.map((deal) => (
           <div key={deal.id} className="bg-card rounded-2xl overflow-hidden shadow-card">
@@ -140,9 +150,10 @@ export default function AdminDeals() {
                 <div>
                   <h3 className="font-semibold text-foreground">{deal.title}</h3>
                   {deal.code && <p className="text-sm text-primary font-mono">Code: {deal.code}</p>}
+                  {deal.tours?.title && <p className="text-xs text-muted-foreground">Tour: {deal.tours.title}</p>}
                 </div>
                 <div className="flex gap-1">
-                  <Button size="icon" variant="ghost" onClick={() => { setEditingDeal(deal); setIsEditing(true); }}>
+                  <Button size="icon" variant="ghost" onClick={() => { setEditingDeal({ ...deal, tour_id: deal.tour_id }); setIsEditing(true); }}>
                     <Pencil className="w-4 h-4" />
                   </Button>
                   <Button size="icon" variant="ghost" onClick={() => deleteDeal(deal.id)}>
@@ -174,7 +185,6 @@ export default function AdminDeals() {
         ))}
       </div>
 
-      {/* Edit Modal */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -183,88 +193,63 @@ export default function AdminDeals() {
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Title *</label>
-              <Input
-                value={editingDeal.title}
-                onChange={(e) => setEditingDeal({ ...editingDeal, title: e.target.value })}
-                placeholder="Deal title"
-              />
+              <Input value={editingDeal.title} onChange={(e) => setEditingDeal({ ...editingDeal, title: e.target.value })} placeholder="Deal title" />
             </div>
             <div>
               <label className="text-sm font-medium">Description</label>
-              <Textarea
-                value={editingDeal.description || ''}
-                onChange={(e) => setEditingDeal({ ...editingDeal, description: e.target.value })}
-                placeholder="Deal description"
-                rows={3}
-              />
+              <Textarea value={editingDeal.description || ''} onChange={(e) => setEditingDeal({ ...editingDeal, description: e.target.value })} placeholder="Deal description" rows={3} />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Linked Tour</label>
+              <select
+                value={editingDeal.tour_id || ''}
+                onChange={(e) => setEditingDeal({ ...editingDeal, tour_id: e.target.value || null })}
+                className="w-full h-10 px-3 rounded-md border border-input bg-background"
+              >
+                <option value="">No specific tour (applies to all)</option>
+                {tours.map((tour) => (
+                  <option key={tour.id} value={tour.id}>
+                    {tour.title} - PKR {tour.price.toLocaleString()}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium">Discount %</label>
-                <Input
-                  type="number"
-                  value={editingDeal.discount_percent || ''}
-                  onChange={(e) => setEditingDeal({ ...editingDeal, discount_percent: Number(e.target.value) })}
-                  placeholder="e.g., 25"
-                />
+                <Input type="number" value={editingDeal.discount_percent || ''} onChange={(e) => setEditingDeal({ ...editingDeal, discount_percent: Number(e.target.value) })} placeholder="e.g., 25" />
               </div>
               <div>
                 <label className="text-sm font-medium">Promo Code</label>
-                <Input
-                  value={editingDeal.code || ''}
-                  onChange={(e) => setEditingDeal({ ...editingDeal, code: e.target.value.toUpperCase() })}
-                  placeholder="e.g., SUMMER25"
-                />
+                <Input value={editingDeal.code || ''} onChange={(e) => setEditingDeal({ ...editingDeal, code: e.target.value.toUpperCase() })} placeholder="e.g., SUMMER25" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium">Valid From</label>
-                <Input
-                  type="date"
-                  value={editingDeal.valid_from || ''}
-                  onChange={(e) => setEditingDeal({ ...editingDeal, valid_from: e.target.value })}
-                />
+                <Input type="date" value={editingDeal.valid_from || ''} onChange={(e) => setEditingDeal({ ...editingDeal, valid_from: e.target.value })} />
               </div>
               <div>
                 <label className="text-sm font-medium">Valid Until</label>
-                <Input
-                  type="date"
-                  value={editingDeal.valid_until || ''}
-                  onChange={(e) => setEditingDeal({ ...editingDeal, valid_until: e.target.value })}
-                />
+                <Input type="date" value={editingDeal.valid_until || ''} onChange={(e) => setEditingDeal({ ...editingDeal, valid_until: e.target.value })} />
               </div>
             </div>
             <div>
               <label className="text-sm font-medium">Image</label>
-              <ImageUpload
-                value={editingDeal.image_url || null}
-                onChange={(url) => setEditingDeal({ ...editingDeal, image_url: url || '' })}
-                folder="deals"
-              />
+              <ImageUpload value={editingDeal.image_url || null} onChange={(url) => setEditingDeal({ ...editingDeal, image_url: url || '' })} folder="deals" />
             </div>
             <div className="flex gap-4">
               <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={editingDeal.is_active}
-                  onChange={(e) => setEditingDeal({ ...editingDeal, is_active: e.target.checked })}
-                />
+                <input type="checkbox" checked={editingDeal.is_active} onChange={(e) => setEditingDeal({ ...editingDeal, is_active: e.target.checked })} />
                 Active
               </label>
               <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={editingDeal.is_popup}
-                  onChange={(e) => setEditingDeal({ ...editingDeal, is_popup: e.target.checked })}
-                />
+                <input type="checkbox" checked={editingDeal.is_popup} onChange={(e) => setEditingDeal({ ...editingDeal, is_popup: e.target.checked })} />
                 Show as Popup
               </label>
             </div>
             <div className="flex gap-2 pt-4">
-              <Button onClick={saveDeal} disabled={!editingDeal.title}>
-                {editingDeal.id ? 'Update' : 'Create'} Deal
-              </Button>
+              <Button onClick={saveDeal} disabled={!editingDeal.title}>{editingDeal.id ? 'Update' : 'Create'} Deal</Button>
               <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
             </div>
           </div>

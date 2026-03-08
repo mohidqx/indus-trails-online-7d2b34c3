@@ -12,6 +12,7 @@ const NOTIFICATION_EMAIL = "mohidmughalk@gmail.com";
 
 type CreateBookingRequest = {
   tour_id: string | null;
+  deal_id?: string | null;
   travel_date: string;
   num_travelers: number;
   customer_name: string;
@@ -21,6 +22,9 @@ type CreateBookingRequest = {
   customer_cnic?: string | null;
   customer_address?: string | null;
   special_requests?: string | null;
+  total_price?: number | null;
+  original_price?: number | null;
+  discount_applied?: number | null;
 };
 
 function isEmail(value: string) {
@@ -62,6 +66,8 @@ async function sendCustomerEmail(
     num_travelers: number;
     total_price: number | null;
     tour_title?: string;
+    deal_title?: string;
+    discount_percent?: number;
   }
 ) {
   const html = `
@@ -81,6 +87,7 @@ async function sendCustomerEmail(
         .value { color: #333; font-weight: 600; }
         .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
         .highlight { color: #1a5f2a; font-weight: bold; }
+        .deal-badge { background: #fef2f2; color: #dc2626; padding: 8px 16px; border-radius: 8px; display: inline-block; margin: 10px 0; font-weight: bold; }
       </style>
     </head>
     <body>
@@ -92,6 +99,8 @@ async function sendCustomerEmail(
         <div class="content">
           <p>Dear <strong>${booking.customer_name}</strong>,</p>
           <p>We're thrilled to confirm your booking! Our team will contact you shortly with more details about your upcoming adventure.</p>
+          
+          ${booking.deal_title ? `<div class="deal-badge">🏷️ Deal Applied: ${booking.deal_title} (${booking.discount_percent}% OFF)</div>` : ''}
           
           <div class="booking-details">
             <h3 style="margin-top: 0; color: #1a5f2a;">📋 Booking Details</h3>
@@ -160,7 +169,10 @@ async function sendAdminEmail(
     num_travelers: number;
     special_requests: string | null;
     total_price: number | null;
+    original_price: number | null;
+    discount_applied: number | null;
     tour_title?: string;
+    deal_title?: string;
     created_at: string;
   }
 ) {
@@ -183,6 +195,7 @@ async function sendAdminEmail(
         .urgent { background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
         .price-box { background: #ecfdf5; padding: 15px; border-radius: 8px; text-align: center; }
         .price { font-size: 24px; color: #059669; font-weight: bold; }
+        .deal-info { background: #fef2f2; padding: 10px 15px; border-radius: 8px; margin: 10px 0; }
       </style>
     </head>
     <body>
@@ -198,59 +211,28 @@ async function sendAdminEmail(
 
           <div class="section">
             <h3>👤 Customer Information</h3>
-            <div class="detail-row">
-              <div class="label">Full Name</div>
-              <div class="value">${booking.customer_name}</div>
-            </div>
-            <div class="detail-row">
-              <div class="label">Email</div>
-              <div class="value"><a href="mailto:${booking.customer_email}">${booking.customer_email}</a></div>
-            </div>
-            <div class="detail-row">
-              <div class="label">Phone</div>
-              <div class="value"><a href="tel:${booking.customer_phone}">${booking.customer_phone}</a></div>
-            </div>
-            ${booking.customer_nationality ? `
-            <div class="detail-row">
-              <div class="label">Nationality</div>
-              <div class="value">${booking.customer_nationality}</div>
-            </div>
-            ` : ''}
-            ${booking.customer_cnic ? `
-            <div class="detail-row">
-              <div class="label">CNIC</div>
-              <div class="value">${booking.customer_cnic}</div>
-            </div>
-            ` : ''}
-            ${booking.customer_address ? `
-            <div class="detail-row">
-              <div class="label">Address</div>
-              <div class="value">${booking.customer_address}</div>
-            </div>
-            ` : ''}
+            <div class="detail-row"><div class="label">Full Name</div><div class="value">${booking.customer_name}</div></div>
+            <div class="detail-row"><div class="label">Email</div><div class="value"><a href="mailto:${booking.customer_email}">${booking.customer_email}</a></div></div>
+            <div class="detail-row"><div class="label">Phone</div><div class="value"><a href="tel:${booking.customer_phone}">${booking.customer_phone}</a></div></div>
+            ${booking.customer_nationality ? `<div class="detail-row"><div class="label">Nationality</div><div class="value">${booking.customer_nationality}</div></div>` : ''}
+            ${booking.customer_cnic ? `<div class="detail-row"><div class="label">CNIC</div><div class="value">${booking.customer_cnic}</div></div>` : ''}
+            ${booking.customer_address ? `<div class="detail-row"><div class="label">Address</div><div class="value">${booking.customer_address}</div></div>` : ''}
           </div>
 
           <div class="section">
             <h3>🗺️ Tour Details</h3>
-            <div class="detail-row">
-              <div class="label">Booking ID</div>
-              <div class="value">${booking.id}</div>
-            </div>
-            ${booking.tour_title ? `
-            <div class="detail-row">
-              <div class="label">Tour Package</div>
-              <div class="value">${booking.tour_title}</div>
-            </div>
-            ` : ''}
-            <div class="detail-row">
-              <div class="label">Travel Date</div>
-              <div class="value">${formatDate(booking.travel_date)}</div>
-            </div>
-            <div class="detail-row">
-              <div class="label">Number of Travelers</div>
-              <div class="value">${booking.num_travelers} person(s)</div>
-            </div>
+            <div class="detail-row"><div class="label">Booking ID</div><div class="value">${booking.id}</div></div>
+            ${booking.tour_title ? `<div class="detail-row"><div class="label">Tour Package</div><div class="value">${booking.tour_title}</div></div>` : ''}
+            <div class="detail-row"><div class="label">Travel Date</div><div class="value">${formatDate(booking.travel_date)}</div></div>
+            <div class="detail-row"><div class="label">Number of Travelers</div><div class="value">${booking.num_travelers} person(s)</div></div>
           </div>
+
+          ${booking.deal_title ? `
+          <div class="deal-info">
+            <strong>🏷️ Deal Applied:</strong> ${booking.deal_title} (${booking.discount_applied}% off)
+            ${booking.original_price ? `<br>Original: PKR ${booking.original_price.toLocaleString()} → Discounted: PKR ${(booking.total_price || 0).toLocaleString()}` : ''}
+          </div>
+          ` : ''}
 
           ${booking.special_requests ? `
           <div class="section">
@@ -278,7 +260,6 @@ async function sendAdminEmail(
 }
 
 serve(async (req) => {
-  // CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -294,6 +275,7 @@ serve(async (req) => {
     const body = (await req.json()) as Partial<CreateBookingRequest>;
 
     const tour_id = typeof body.tour_id === "string" && body.tour_id.length ? body.tour_id : null;
+    const deal_id = typeof body.deal_id === "string" && body.deal_id.length ? body.deal_id : null;
     const travel_date = (body.travel_date ?? "").toString();
     const num_travelers = Number(body.num_travelers);
     const customer_name = (body.customer_name ?? "").toString().trim();
@@ -325,7 +307,6 @@ serve(async (req) => {
       });
     }
 
-    // If user is logged in, capture user_id from JWT (optional)
     let user_id: string | null = null;
     const authHeader = req.headers.get("Authorization");
     if (authHeader?.startsWith("Bearer ")) {
@@ -339,12 +320,16 @@ serve(async (req) => {
       }
     }
 
-    // Use service role for DB write (bypasses RLS) + server-side price calc
     const db = createClient(supabaseUrl, serviceRoleKey);
 
     let total_price: number | null = null;
+    let original_price: number | null = null;
+    let discount_applied: number | null = null;
     let tour_title: string | undefined;
+    let deal_title: string | undefined;
+    let discount_percent = 0;
     
+    // Fetch tour price
     if (tour_id) {
       const { data: tour, error: tourError } = await db
         .from("tours")
@@ -361,8 +346,29 @@ serve(async (req) => {
 
       if (tour) {
         tour_title = tour.title;
-        const unit = Number(tour.discount_price ?? tour.price);
-        total_price = Number.isFinite(unit) ? unit * num_travelers : null;
+        const unitPrice = Number(tour.discount_price ?? tour.price);
+        original_price = Number.isFinite(unitPrice) ? unitPrice * num_travelers : null;
+        total_price = original_price;
+      }
+    }
+
+    // Fetch and apply deal discount
+    if (deal_id) {
+      const { data: deal } = await db
+        .from("deals")
+        .select("title, discount_percent, is_active")
+        .eq("id", deal_id)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (deal && deal.discount_percent) {
+        deal_title = deal.title;
+        discount_percent = deal.discount_percent;
+        discount_applied = discount_percent;
+        
+        if (total_price !== null) {
+          total_price = Math.round(total_price * (1 - discount_percent / 100));
+        }
       }
     }
 
@@ -371,6 +377,7 @@ serve(async (req) => {
       .insert({
         user_id,
         tour_id,
+        deal_id,
         customer_name,
         customer_email,
         customer_phone,
@@ -381,6 +388,8 @@ serve(async (req) => {
         num_travelers,
         special_requests,
         total_price,
+        original_price,
+        discount_applied,
         status: "pending",
       })
       .select("id, created_at, total_price")
@@ -394,7 +403,7 @@ serve(async (req) => {
       });
     }
 
-    // Send email notifications (non-blocking - don't fail booking if email fails)
+    // Send email notifications (non-blocking)
     if (resendApiKey) {
       const resend = new Resend(resendApiKey);
       
@@ -410,11 +419,14 @@ serve(async (req) => {
         num_travelers,
         special_requests,
         total_price: booking.total_price,
+        original_price,
+        discount_applied,
         tour_title,
+        deal_title,
+        discount_percent,
         created_at: booking.created_at,
       };
 
-      // Send emails in parallel
       try {
         const [customerResult, adminResult] = await Promise.allSettled([
           sendCustomerEmail(resend, emailData),
@@ -423,18 +435,12 @@ serve(async (req) => {
 
         if (customerResult.status === "rejected") {
           console.error("Failed to send customer email:", customerResult.reason);
-        } else {
-          console.log("Customer email sent:", customerResult.value);
         }
-
         if (adminResult.status === "rejected") {
           console.error("Failed to send admin email:", adminResult.reason);
-        } else {
-          console.log("Admin email sent:", adminResult.value);
         }
       } catch (emailError) {
         console.error("Email sending error:", emailError);
-        // Continue - don't fail the booking
       }
     } else {
       console.warn("RESEND_API_KEY not configured - skipping email notifications");

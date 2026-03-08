@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { dealsApi } from '@/lib/api';
 
 interface Tour {
   id: string;
@@ -23,6 +24,7 @@ interface Deal {
   discount_percent: number | null;
   code: string | null;
   tour_id: string | null;
+  tours?: { title: string; price: number; discount_price: number | null } | null;
 }
 
 export default function Booking() {
@@ -32,10 +34,12 @@ export default function Booking() {
   
   const [step, setStep] = useState(1);
   const [tours, setTours] = useState<Tour[]>([]);
+  const [deals, setDeals] = useState<Deal[]>([]);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [isLoadingTours, setIsLoadingTours] = useState(true);
   const [formData, setFormData] = useState({
     tour: '',
+    dealCode: '',
     date: '',
     travelers: '2',
     name: '',
@@ -51,10 +55,20 @@ export default function Booking() {
 
   useEffect(() => {
     fetchTours();
-    if (dealId) {
-      fetchDeal(dealId);
+    fetchDeals();
+  }, []);
+
+  useEffect(() => {
+    if (dealId && deals.length > 0) {
+      const deal = deals.find(d => d.id === dealId);
+      if (deal) {
+        setSelectedDeal(deal);
+        if (deal.tour_id) {
+          setFormData(prev => ({ ...prev, tour: deal.tour_id! }));
+        }
+      }
     }
-  }, [dealId]);
+  }, [dealId, deals]);
 
   const fetchTours = async () => {
     setIsLoadingTours(true);
@@ -70,20 +84,32 @@ export default function Booking() {
     setIsLoadingTours(false);
   };
 
-  const fetchDeal = async (id: string) => {
-    const { data } = await supabase
-      .from('deals')
-      .select('id, title, discount_percent, code, tour_id')
-      .eq('id', id)
-      .eq('is_active', true)
-      .maybeSingle();
-    
+  const fetchDeals = async () => {
+    const { data } = await dealsApi.getAll({ active: true });
     if (data) {
-      setSelectedDeal(data);
-      if (data.tour_id) {
-        setFormData(prev => ({ ...prev, tour: data.tour_id! }));
-      }
+      setDeals(data as Deal[]);
     }
+  };
+
+  const applyDealCode = () => {
+    const code = formData.dealCode.trim().toUpperCase();
+    if (!code) return;
+    
+    const deal = deals.find(d => d.code?.toUpperCase() === code);
+    if (deal) {
+      setSelectedDeal(deal);
+      if (deal.tour_id && !formData.tour) {
+        setFormData(prev => ({ ...prev, tour: deal.tour_id! }));
+      }
+      toast({ title: 'Deal Applied!', description: `${deal.title} - ${deal.discount_percent}% off` });
+    } else {
+      toast({ title: 'Invalid Code', description: 'This promo code is not valid or has expired.', variant: 'destructive' });
+    }
+  };
+
+  const removeDeal = () => {
+    setSelectedDeal(null);
+    setFormData(prev => ({ ...prev, dealCode: '' }));
   };
 
   const selectedTour = tours.find((t) => t.id === formData.tour);
@@ -91,6 +117,7 @@ export default function Booking() {
   const discountPercent = selectedDeal?.discount_percent || 0;
   const discountedPrice = discountPercent > 0 ? basePrice * (1 - discountPercent / 100) : basePrice;
   const totalPrice = discountedPrice * parseInt(formData.travelers || '1');
+  const originalPrice = basePrice * parseInt(formData.travelers || '1');
 
   const isPakistani = formData.nationality.toLowerCase().includes('pakistan');
 
@@ -112,6 +139,8 @@ export default function Booking() {
         customer_address: formData.address.trim() || null,
         special_requests: formData.specialRequests.trim() || null,
         total_price: Math.round(totalPrice),
+        original_price: Math.round(originalPrice),
+        discount_applied: discountPercent,
       };
 
       const { error } = await supabase.functions.invoke('create-booking', {
@@ -228,6 +257,76 @@ export default function Booking() {
                       )}
                     </div>
 
+                    {/* Deal Code / Available Deals */}
+                    <div className="space-y-3">
+                      {!selectedDeal ? (
+                        <>
+                          <div>
+                            <label className="block text-sm font-medium text-foreground mb-2">
+                              <Tag className="w-4 h-4 inline mr-1" />
+                              Have a Promo Code?
+                            </label>
+                            <div className="flex gap-2">
+                              <Input
+                                value={formData.dealCode}
+                                onChange={(e) => setFormData({ ...formData, dealCode: e.target.value.toUpperCase() })}
+                                placeholder="Enter promo code..."
+                                className="uppercase"
+                              />
+                              <Button variant="outline" onClick={applyDealCode} disabled={!formData.dealCode.trim()}>
+                                Apply
+                              </Button>
+                            </div>
+                          </div>
+                          {deals.length > 0 && (
+                            <div>
+                              <label className="block text-sm font-medium text-foreground mb-2">Or Select an Available Deal</label>
+                              <div className="grid gap-2">
+                                {deals.map((deal) => (
+                                  <button
+                                    key={deal.id}
+                                    onClick={() => {
+                                      setSelectedDeal(deal);
+                                      if (deal.tour_id && !formData.tour) {
+                                        setFormData(prev => ({ ...prev, tour: deal.tour_id! }));
+                                      }
+                                    }}
+                                    className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-all text-left"
+                                  >
+                                    <div>
+                                      <p className="font-medium text-foreground">{deal.title}</p>
+                                      {deal.tours?.title && (
+                                        <p className="text-xs text-muted-foreground">Tour: {deal.tours.title}</p>
+                                      )}
+                                    </div>
+                                    <span className="px-3 py-1 rounded-full bg-destructive/10 text-destructive text-sm font-bold">
+                                      {deal.discount_percent}% OFF
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="p-3 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Tag className="w-4 h-4 text-accent" />
+                            <div>
+                              <p className="font-medium text-accent">{selectedDeal.title}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {selectedDeal.discount_percent}% discount
+                                {selectedDeal.code && ` • Code: ${selectedDeal.code}`}
+                              </p>
+                            </div>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={removeDeal} className="text-muted-foreground hover:text-destructive">
+                            ✕
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-2">
@@ -271,7 +370,7 @@ export default function Booking() {
                           <div className="text-right">
                             {selectedDeal && discountPercent > 0 && (
                               <span className="text-sm text-muted-foreground line-through mr-2">
-                                PKR {(basePrice * parseInt(formData.travelers || '1')).toLocaleString()}
+                                PKR {Math.round(originalPrice).toLocaleString()}
                               </span>
                             )}
                             <span className="text-xl sm:text-2xl font-bold text-primary">
@@ -487,7 +586,14 @@ export default function Booking() {
                   <div className="p-4 sm:p-6 rounded-xl bg-primary/10 border border-primary/20">
                     <div className="flex justify-between items-center">
                       <span className="text-foreground font-medium">Total Amount:</span>
-                      <span className="text-2xl sm:text-3xl font-bold text-primary">PKR {Math.round(totalPrice).toLocaleString()}</span>
+                      <div className="text-right">
+                        {selectedDeal && discountPercent > 0 && (
+                          <span className="text-sm text-muted-foreground line-through mr-2">
+                            PKR {Math.round(originalPrice).toLocaleString()}
+                          </span>
+                        )}
+                        <span className="text-2xl sm:text-3xl font-bold text-primary">PKR {Math.round(totalPrice).toLocaleString()}</span>
+                      </div>
                     </div>
                   </div>
 

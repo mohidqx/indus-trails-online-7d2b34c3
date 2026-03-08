@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, X, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { destinationsApi } from '@/lib/api';
 import ImageUpload from '@/components/common/ImageUpload';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
@@ -41,8 +41,8 @@ export default function AdminDestinations() {
 
   const fetchDestinations = async () => {
     setIsLoading(true);
-    const { data } = await supabase.from('destinations').select('*').order('created_at', { ascending: false });
-    if (data) setDestinations(data);
+    const { data, error } = await destinationsApi.getAll();
+    if (!error && data) setDestinations(data as Destination[]);
     setIsLoading(false);
   };
 
@@ -57,15 +57,15 @@ export default function AdminDestinations() {
       is_featured: editingDest.is_featured,
     };
 
-    let error;
+    let result;
     if (editingDest.id) {
-      ({ error } = await supabase.from('destinations').update(destData).eq('id', editingDest.id));
+      result = await destinationsApi.update(editingDest.id, destData);
     } else {
-      ({ error } = await supabase.from('destinations').insert(destData));
+      result = await destinationsApi.create(destData);
     }
 
-    if (error) {
-      toast({ title: 'Error', description: 'Failed to save destination', variant: 'destructive' });
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: `Destination ${editingDest.id ? 'updated' : 'created'}` });
       setIsEditing(false);
@@ -76,8 +76,9 @@ export default function AdminDestinations() {
 
   const deleteDestination = async (id: string) => {
     if (!confirm('Delete this destination?')) return;
-    const { error } = await supabase.from('destinations').delete().eq('id', id);
+    const { error } = await destinationsApi.delete(id);
     if (!error) { toast({ title: 'Deleted' }); fetchDestinations(); }
+    else toast({ title: 'Error', description: error, variant: 'destructive' });
   };
 
   const addHighlight = () => {
@@ -100,11 +101,18 @@ export default function AdminDestinations() {
         {destinations.map((dest) => (
           <div key={dest.id} className="bg-card rounded-2xl overflow-hidden shadow-card">
             <div className="aspect-video bg-muted flex items-center justify-center">
-              {dest.image_url ? <img src={dest.image_url} alt={dest.name} className="w-full h-full object-cover" /> : <span className="text-muted-foreground">No image</span>}
+              {dest.image_url ? (
+                <img src={dest.image_url} alt={dest.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="flex flex-col items-center text-muted-foreground">
+                  <ImageIcon className="w-8 h-8 mb-1" />
+                  <span className="text-sm">No image</span>
+                </div>
+              )}
             </div>
             <div className="p-4 space-y-2">
               <div className="flex justify-between">
-                <h3 className="font-semibold">{dest.name}</h3>
+                <h3 className="font-semibold text-foreground">{dest.name}</h3>
                 <div className="flex gap-1">
                   <Button size="icon" variant="ghost" onClick={() => { setEditingDest(dest); setIsEditing(true); }}><Pencil className="w-4 h-4" /></Button>
                   <Button size="icon" variant="ghost" onClick={() => deleteDestination(dest.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>

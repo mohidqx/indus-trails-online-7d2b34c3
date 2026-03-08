@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Check, X, Loader2, Eye, Search, Trash2, Download, Tag, Printer, Edit, Undo, CheckSquare, Square, Archive } from 'lucide-react';
+import { Check, X, Loader2, Eye, Search, Trash2, Download, Tag, Printer, Edit, Undo, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -7,27 +7,14 @@ import { bookingsApi } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -64,7 +51,6 @@ export default function AdminBookings() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState('active');
-  const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchBookings();
@@ -74,33 +60,24 @@ export default function AdminBookings() {
         fetchBookings();
       })
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const fetchBookings = async () => {
     setIsLoading(true);
-    
-    // Fetch active bookings
     const { data: activeData, error: activeError } = await bookingsApi.getAll();
     if (!activeError && activeData) {
       setBookings((activeData as Booking[]).filter(b => !b.is_deleted));
     }
-
-    // Fetch deleted bookings
     const { data: deletedData, error: deletedError } = await bookingsApi.getAll({ includeDeleted: true });
     if (!deletedError && deletedData) {
       setDeletedBookings((deletedData as Booking[]).filter(b => b.is_deleted));
     }
-
     setIsLoading(false);
   };
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await bookingsApi.update(id, { status });
-
     if (error) {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
@@ -111,17 +88,19 @@ export default function AdminBookings() {
 
   const updateBooking = async () => {
     if (!editingBooking) return;
-    
     const { error } = await bookingsApi.update(editingBooking.id, {
       customer_name: editingBooking.customer_name,
       customer_email: editingBooking.customer_email,
       customer_phone: editingBooking.customer_phone,
+      customer_nationality: editingBooking.customer_nationality,
+      customer_cnic: editingBooking.customer_cnic,
+      customer_address: editingBooking.customer_address,
       travel_date: editingBooking.travel_date,
       num_travelers: editingBooking.num_travelers,
       total_price: editingBooking.total_price,
       special_requests: editingBooking.special_requests,
+      status: editingBooking.status,
     });
-
     if (error) {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
@@ -133,7 +112,6 @@ export default function AdminBookings() {
 
   const deleteBooking = async (id: string) => {
     const { error } = await bookingsApi.delete(id);
-
     if (error) {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
@@ -145,7 +123,6 @@ export default function AdminBookings() {
 
   const restoreBooking = async (id: string) => {
     const { error } = await bookingsApi.restore(id);
-
     if (error) {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
@@ -154,7 +131,6 @@ export default function AdminBookings() {
     }
   };
 
-  // Bulk actions
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       setSelectedIds(new Set(filteredBookings.map(b => b.id)));
@@ -165,19 +141,13 @@ export default function AdminBookings() {
 
   const handleSelectOne = (id: string, checked: boolean) => {
     const newSet = new Set(selectedIds);
-    if (checked) {
-      newSet.add(id);
-    } else {
-      newSet.delete(id);
-    }
+    if (checked) newSet.add(id); else newSet.delete(id);
     setSelectedIds(newSet);
   };
 
   const bulkUpdateStatus = async (status: string) => {
     if (selectedIds.size === 0) return;
-    
     const { error } = await bookingsApi.bulkUpdate(Array.from(selectedIds), { status });
-    
     if (error) {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
@@ -189,9 +159,7 @@ export default function AdminBookings() {
 
   const bulkDelete = async () => {
     if (selectedIds.size === 0) return;
-    
     const { error } = await bookingsApi.bulkDelete(Array.from(selectedIds));
-    
     if (error) {
       toast({ title: 'Error', description: error, variant: 'destructive' });
     } else {
@@ -204,7 +172,6 @@ export default function AdminBookings() {
   const printBookingSlip = (booking: Booking) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
-
     const content = `
       <!DOCTYPE html>
       <html>
@@ -221,6 +188,7 @@ export default function AdminBookings() {
           .value { font-weight: 500; }
           .total { font-size: 20px; color: #1e40af; text-align: right; margin-top: 20px; }
           .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #666; }
+          .deal { background: #fef2f2; padding: 8px 12px; border-radius: 6px; margin: 10px 0; }
           @media print { body { print-color-adjust: exact; } }
         </style>
       </head>
@@ -229,14 +197,12 @@ export default function AdminBookings() {
           <div class="logo">Indus Tours</div>
           <p>Booking Confirmation</p>
         </div>
-        
         <div class="section">
           <div class="section-title">Booking Information</div>
           <div class="row"><span class="label">Booking ID:</span><span class="value">${booking.id.slice(0, 8).toUpperCase()}</span></div>
           <div class="row"><span class="label">Status:</span><span class="value">${booking.status?.toUpperCase()}</span></div>
           <div class="row"><span class="label">Date Created:</span><span class="value">${new Date(booking.created_at).toLocaleDateString()}</span></div>
         </div>
-
         <div class="section">
           <div class="section-title">Customer Details</div>
           <div class="row"><span class="label">Name:</span><span class="value">${booking.customer_name}</span></div>
@@ -244,27 +210,21 @@ export default function AdminBookings() {
           <div class="row"><span class="label">Phone:</span><span class="value">${booking.customer_phone}</span></div>
           ${booking.customer_nationality ? `<div class="row"><span class="label">Nationality:</span><span class="value">${booking.customer_nationality}</span></div>` : ''}
           ${booking.customer_cnic ? `<div class="row"><span class="label">CNIC:</span><span class="value">${booking.customer_cnic}</span></div>` : ''}
+          ${booking.customer_address ? `<div class="row"><span class="label">Address:</span><span class="value">${booking.customer_address}</span></div>` : ''}
         </div>
-
         <div class="section">
           <div class="section-title">Tour Details</div>
           <div class="row"><span class="label">Tour:</span><span class="value">${booking.tours?.title || 'Custom Request'}</span></div>
           <div class="row"><span class="label">Travel Date:</span><span class="value">${new Date(booking.travel_date).toLocaleDateString()}</span></div>
           <div class="row"><span class="label">Travelers:</span><span class="value">${booking.num_travelers} person(s)</span></div>
-          ${booking.deals ? `<div class="row"><span class="label">Deal Applied:</span><span class="value">${booking.deals.title} (${booking.deals.discount_percent}% off)</span></div>` : ''}
+          ${booking.deals ? `<div class="deal">🏷️ <strong>${booking.deals.title}</strong> (${booking.deals.discount_percent}% off) ${booking.deals.code ? `• Code: ${booking.deals.code}` : ''}</div>` : ''}
         </div>
-
-        ${booking.special_requests ? `
-        <div class="section">
-          <div class="section-title">Special Requests</div>
-          <p>${booking.special_requests}</p>
-        </div>
+        ${booking.special_requests ? `<div class="section"><div class="section-title">Special Requests</div><p>${booking.special_requests}</p></div>` : ''}
+        ${booking.original_price && booking.discount_applied ? `
+        <div class="row"><span class="label">Original Price:</span><span class="value">PKR ${Number(booking.original_price).toLocaleString()}</span></div>
+        <div class="row"><span class="label">Discount:</span><span class="value">${booking.discount_applied}%</span></div>
         ` : ''}
-
-        <div class="total">
-          Total Amount: PKR ${Number(booking.total_price || 0).toLocaleString()}
-        </div>
-
+        <div class="total">Total Amount: PKR ${Number(booking.total_price || 0).toLocaleString()}</div>
         <div class="footer">
           <p>Thank you for booking with Indus Tours!</p>
           <p>Contact: info@industours.pk | +92 300 1234567</p>
@@ -272,7 +232,6 @@ export default function AdminBookings() {
       </body>
       </html>
     `;
-
     printWindow.document.write(content);
     printWindow.document.close();
     printWindow.print();
@@ -286,19 +245,15 @@ export default function AdminBookings() {
   });
 
   const exportToCSV = () => {
-    const headers = ['Customer Name', 'Email', 'Phone', 'Tour', 'Date', 'Travelers', 'Amount', 'Status', 'Created At'];
+    const headers = ['Customer Name', 'Email', 'Phone', 'Nationality', 'CNIC', 'Address', 'Tour', 'Deal', 'Date', 'Travelers', 'Original Price', 'Discount %', 'Amount', 'Status', 'Created At'];
     const csvData = filteredBookings.map(b => [
-      b.customer_name,
-      b.customer_email,
-      b.customer_phone,
-      b.tours?.title || 'Custom Request',
-      new Date(b.travel_date).toLocaleDateString(),
-      b.num_travelers,
-      b.total_price,
-      b.status,
-      new Date(b.created_at).toLocaleString()
+      b.customer_name, b.customer_email, b.customer_phone,
+      b.customer_nationality || '', b.customer_cnic || '', b.customer_address || '',
+      b.tours?.title || 'Custom Request', b.deals?.title || '',
+      new Date(b.travel_date).toLocaleDateString(), b.num_travelers,
+      b.original_price || '', b.discount_applied || '',
+      b.total_price, b.status, new Date(b.created_at).toLocaleString()
     ]);
-    
     const csvContent = [headers, ...csvData].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -376,8 +331,15 @@ export default function AdminBookings() {
                   <td className="p-4 text-foreground">
                     {new Date(booking.travel_date).toLocaleDateString()}
                   </td>
-                  <td className="p-4 text-foreground font-medium">
-                    PKR {Number(booking.total_price || 0).toLocaleString()}
+                  <td className="p-4 text-foreground">
+                    <div>
+                      <p className="font-medium">PKR {Number(booking.total_price || 0).toLocaleString()}</p>
+                      {booking.original_price && booking.discount_applied ? (
+                        <p className="text-xs text-muted-foreground line-through">
+                          PKR {Number(booking.original_price).toLocaleString()}
+                        </p>
+                      ) : null}
+                    </div>
                   </td>
                   <td className="p-4">
                     <span className={`text-xs px-2 py-1 rounded-full ${
@@ -441,17 +403,11 @@ export default function AdminBookings() {
         </TabsList>
 
         <TabsContent value="active">
-          {/* Filters & Bulk Actions */}
           <div className="flex flex-col gap-4 mt-4">
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name or email..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
-                />
+                <Input placeholder="Search by name or email..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
               </div>
               <div className="flex gap-2">
                 {selectedIds.size > 0 && (
@@ -471,15 +427,11 @@ export default function AdminBookings() {
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete {selectedIds.size} bookings?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            These bookings will be moved to the archive.
-                          </AlertDialogDescription>
+                          <AlertDialogDescription>These bookings will be moved to the archive.</AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={bulkDelete} className="bg-destructive text-destructive-foreground">
-                            Delete
-                          </AlertDialogAction>
+                          <AlertDialogAction onClick={bulkDelete} className="bg-destructive text-destructive-foreground">Delete</AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
@@ -493,41 +445,28 @@ export default function AdminBookings() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={exportToCSV}>
-                      Export as CSV
-                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={exportToCSV}>Export as CSV</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
               {['all', 'pending', 'confirmed', 'cancelled', 'completed'].map((status) => (
-                <Button
-                  key={status}
-                  variant={statusFilter === status ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setStatusFilter(status)}
-                  className="capitalize text-xs sm:text-sm"
-                >
+                <Button key={status} variant={statusFilter === status ? 'default' : 'outline'} size="sm" onClick={() => setStatusFilter(status)} className="capitalize text-xs sm:text-sm">
                   {status}
                 </Button>
               ))}
             </div>
           </div>
-
-          <div className="mt-4">
-            <BookingsTable data={filteredBookings} />
-          </div>
+          <div className="mt-4"><BookingsTable data={filteredBookings} /></div>
         </TabsContent>
 
         <TabsContent value="archive">
-          <div className="mt-4">
-            <BookingsTable data={deletedBookings} isArchive />
-          </div>
+          <div className="mt-4"><BookingsTable data={deletedBookings} isArchive /></div>
         </TabsContent>
       </Tabs>
 
-      {/* Booking Details Modal */}
+      {/* Booking Details Modal - Full metadata */}
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -535,64 +474,91 @@ export default function AdminBookings() {
           </DialogHeader>
           {selectedBooking && (
             <div className="space-y-4">
-              {/* Tour Image */}
               {selectedBooking.tours?.image_url && (
-                <img 
-                  src={selectedBooking.tours.image_url} 
-                  alt={selectedBooking.tours.title}
-                  className="w-full h-40 object-cover rounded-lg"
-                />
+                <img src={selectedBooking.tours.image_url} alt={selectedBooking.tours.title} className="w-full h-40 object-cover rounded-lg" />
               )}
 
-              {/* Customer Information */}
               <div className="p-4 rounded-lg bg-muted/50">
                 <h4 className="font-semibold text-foreground mb-3">👤 Customer Information</h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground">Full Name</p>
-                    <p className="font-medium">{selectedBooking.customer_name}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Email</p>
-                    <p className="font-medium">{selectedBooking.customer_email}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Phone</p>
-                    <p className="font-medium">{selectedBooking.customer_phone}</p>
-                  </div>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div><p className="text-muted-foreground">Full Name</p><p className="font-medium">{selectedBooking.customer_name}</p></div>
+                  <div><p className="text-muted-foreground">Email</p><p className="font-medium break-all">{selectedBooking.customer_email}</p></div>
+                  <div><p className="text-muted-foreground">Phone</p><p className="font-medium">{selectedBooking.customer_phone}</p></div>
                   {selectedBooking.customer_nationality && (
-                    <div>
-                      <p className="text-muted-foreground">Nationality</p>
-                      <p className="font-medium">{selectedBooking.customer_nationality}</p>
-                    </div>
+                    <div><p className="text-muted-foreground">Nationality</p><p className="font-medium">{selectedBooking.customer_nationality}</p></div>
+                  )}
+                  {selectedBooking.customer_cnic && (
+                    <div><p className="text-muted-foreground">CNIC</p><p className="font-medium">{selectedBooking.customer_cnic}</p></div>
+                  )}
+                  {selectedBooking.customer_address && (
+                    <div className="col-span-2"><p className="text-muted-foreground">Address</p><p className="font-medium">{selectedBooking.customer_address}</p></div>
                   )}
                 </div>
               </div>
 
-              {/* Tour Details */}
               <div className="p-4 rounded-lg bg-muted/50">
                 <h4 className="font-semibold text-foreground mb-3">🗺️ Tour Details</h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground">Tour</p>
-                    <p className="font-medium">{selectedBooking.tours?.title || 'Custom Request'}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Travel Date</p>
-                    <p className="font-medium">{new Date(selectedBooking.travel_date).toLocaleDateString()}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Travelers</p>
-                    <p className="font-medium">{selectedBooking.num_travelers}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Total</p>
-                    <p className="font-medium text-primary">PKR {Number(selectedBooking.total_price || 0).toLocaleString()}</p>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div><p className="text-muted-foreground">Tour</p><p className="font-medium">{selectedBooking.tours?.title || 'Custom Request'}</p></div>
+                  <div><p className="text-muted-foreground">Travel Date</p><p className="font-medium">{new Date(selectedBooking.travel_date).toLocaleDateString()}</p></div>
+                  <div><p className="text-muted-foreground">Travelers</p><p className="font-medium">{selectedBooking.num_travelers}</p></div>
+                  <div><p className="text-muted-foreground">Status</p>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      selectedBooking.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-600' :
+                      selectedBooking.status === 'cancelled' ? 'bg-destructive/10 text-destructive' :
+                      'bg-accent/10 text-accent'
+                    }`}>{selectedBooking.status}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Actions */}
+              {selectedBooking.deals && (
+                <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-accent" />
+                    <span className="font-semibold text-accent">{selectedBooking.deals.title}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {selectedBooking.deals.discount_percent}% discount
+                    {selectedBooking.deals.code && ` • Code: ${selectedBooking.deals.code}`}
+                  </p>
+                </div>
+              )}
+
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                <h4 className="font-semibold text-foreground mb-2">💰 Pricing</h4>
+                <div className="space-y-1 text-sm">
+                  {selectedBooking.original_price && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Original Price</span>
+                      <span className="line-through text-muted-foreground">PKR {Number(selectedBooking.original_price).toLocaleString()}</span>
+                    </div>
+                  )}
+                  {selectedBooking.discount_applied ? (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Discount</span>
+                      <span className="text-accent font-medium">{selectedBooking.discount_applied}%</span>
+                    </div>
+                  ) : null}
+                  <div className="flex justify-between text-lg font-bold">
+                    <span className="text-foreground">Total</span>
+                    <span className="text-primary">PKR {Number(selectedBooking.total_price || 0).toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedBooking.special_requests && (
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <h4 className="font-semibold text-foreground mb-2">📝 Special Requests</h4>
+                  <p className="text-sm text-muted-foreground">{selectedBooking.special_requests}</p>
+                </div>
+              )}
+
+              <div className="p-3 rounded-lg bg-muted/30 text-xs text-muted-foreground">
+                <p>Booking ID: <span className="font-mono">{selectedBooking.id}</span></p>
+                <p>Created: {new Date(selectedBooking.created_at).toLocaleString()}</p>
+              </div>
+
               <div className="flex flex-wrap gap-2 pt-2 border-t">
                 <Button onClick={() => printBookingSlip(selectedBooking)}>
                   <Printer className="w-4 h-4 mr-2" /> Print Slip
@@ -600,13 +566,27 @@ export default function AdminBookings() {
                 <Button variant="outline" onClick={() => { setEditingBooking(selectedBooking); setSelectedBooking(null); }}>
                   <Edit className="w-4 h-4 mr-2" /> Edit
                 </Button>
+                {!selectedBooking.is_deleted && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm"><Trash2 className="w-4 h-4 mr-1" /> Archive</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader><AlertDialogTitle>Archive this booking?</AlertDialogTitle></AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => deleteBooking(selectedBooking.id)} className="bg-destructive text-destructive-foreground">Archive</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
 
-      {/* Edit Booking Modal */}
+      {/* Edit Booking Modal - Full fields */}
       <Dialog open={!!editingBooking} onOpenChange={() => setEditingBooking(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -616,60 +596,63 @@ export default function AdminBookings() {
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Customer Name</label>
-                <Input
-                  value={editingBooking.customer_name}
-                  onChange={(e) => setEditingBooking({ ...editingBooking, customer_name: e.target.value })}
-                />
+                <Input value={editingBooking.customer_name} onChange={(e) => setEditingBooking({ ...editingBooking, customer_name: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Email</label>
-                  <Input
-                    value={editingBooking.customer_email}
-                    onChange={(e) => setEditingBooking({ ...editingBooking, customer_email: e.target.value })}
-                  />
+                  <Input value={editingBooking.customer_email} onChange={(e) => setEditingBooking({ ...editingBooking, customer_email: e.target.value })} />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Phone</label>
-                  <Input
-                    value={editingBooking.customer_phone}
-                    onChange={(e) => setEditingBooking({ ...editingBooking, customer_phone: e.target.value })}
-                  />
+                  <Input value={editingBooking.customer_phone} onChange={(e) => setEditingBooking({ ...editingBooking, customer_phone: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Travel Date</label>
-                  <Input
-                    type="date"
-                    value={editingBooking.travel_date}
-                    onChange={(e) => setEditingBooking({ ...editingBooking, travel_date: e.target.value })}
-                  />
+                  <label className="text-sm font-medium">Nationality</label>
+                  <Input value={editingBooking.customer_nationality || ''} onChange={(e) => setEditingBooking({ ...editingBooking, customer_nationality: e.target.value || null })} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Travelers</label>
-                  <Input
-                    type="number"
-                    value={editingBooking.num_travelers}
-                    onChange={(e) => setEditingBooking({ ...editingBooking, num_travelers: Number(e.target.value) })}
-                  />
+                  <label className="text-sm font-medium">CNIC</label>
+                  <Input value={editingBooking.customer_cnic || ''} onChange={(e) => setEditingBooking({ ...editingBooking, customer_cnic: e.target.value || null })} />
                 </div>
               </div>
               <div>
+                <label className="text-sm font-medium">Address</label>
+                <Input value={editingBooking.customer_address || ''} onChange={(e) => setEditingBooking({ ...editingBooking, customer_address: e.target.value || null })} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Travel Date</label>
+                  <Input type="date" value={editingBooking.travel_date} onChange={(e) => setEditingBooking({ ...editingBooking, travel_date: e.target.value })} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Travelers</label>
+                  <Input type="number" value={editingBooking.num_travelers} onChange={(e) => setEditingBooking({ ...editingBooking, num_travelers: Number(e.target.value) })} />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Status</label>
+                <select
+                  value={editingBooking.status}
+                  onChange={(e) => setEditingBooking({ ...editingBooking, status: e.target.value })}
+                  className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+              <div>
                 <label className="text-sm font-medium">Total Price (PKR)</label>
-                <Input
-                  type="number"
-                  value={editingBooking.total_price}
-                  onChange={(e) => setEditingBooking({ ...editingBooking, total_price: Number(e.target.value) })}
-                />
+                <Input type="number" value={editingBooking.total_price} onChange={(e) => setEditingBooking({ ...editingBooking, total_price: Number(e.target.value) })} />
                 <p className="text-xs text-muted-foreground mt-1">Modify to apply special offer/discount</p>
               </div>
               <div>
                 <label className="text-sm font-medium">Special Requests</label>
-                <Input
-                  value={editingBooking.special_requests || ''}
-                  onChange={(e) => setEditingBooking({ ...editingBooking, special_requests: e.target.value })}
-                />
+                <Input value={editingBooking.special_requests || ''} onChange={(e) => setEditingBooking({ ...editingBooking, special_requests: e.target.value })} />
               </div>
               <div className="flex gap-2 pt-4">
                 <Button onClick={updateBooking}>Save Changes</Button>
