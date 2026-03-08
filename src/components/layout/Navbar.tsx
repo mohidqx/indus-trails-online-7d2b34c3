@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, MapPin, User, LogIn, ChevronRight } from 'lucide-react';
+import { Menu, X, Phone, MapPin, User, LogIn, ChevronRight, Sun, Moon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { useSiteContent } from '@/hooks/useSiteContent';
+import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useSiteContent } from '@/hooks/useSiteContent';
