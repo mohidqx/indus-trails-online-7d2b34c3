@@ -85,7 +85,7 @@ export const bookingsApi = {
   bulkUpdate: (ids: string[], data: Record<string, unknown>) =>
     apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ ids, ...data, bulk: true }) }),
   bulkDelete: (ids: string[]) =>
-    apiRequest('api-bookings', { method: 'DELETE', body: JSON.stringify({ ids, bulk: true }) }),
+    apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ ids, bulk: true, is_deleted: true, deleted_at: new Date().toISOString() }) }),
   restore: (id: string) =>
     apiRequest('api-bookings', { method: 'PUT', body: JSON.stringify({ id, restore: true }) }),
 };
