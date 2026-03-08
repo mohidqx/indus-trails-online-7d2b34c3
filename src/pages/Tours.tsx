@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Users, Clock, Star, Search, Loader2, Hotel } from 'lucide-react';
+import TourComparison from '@/components/tours/TourComparison';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -78,6 +79,13 @@ export default function Tours() {
             Handcrafted journeys through Pakistan's most spectacular landscapes
           </p>
           <div className="gold-divider mx-auto mt-6" />
+        </div>
+      </section>
+
+      {/* Comparison Tool */}
+      <section className="py-4 border-b border-border/50">
+        <div className="container mx-auto px-4 sm:px-6">
+          <TourComparison />
         </div>
       </section>
 

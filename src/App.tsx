@@ -9,6 +9,8 @@ import { ThemeProvider } from "@/hooks/useTheme";
 import WhatsAppButton from "@/components/common/WhatsAppButton";
 import PageTransition from "@/components/common/PageTransition";
 import { useVisitorTracking } from "@/hooks/useVisitorTracking";
+import AIChatbot from "@/components/common/AIChatbot";
+import LiveBookingTicker from "@/components/common/LiveBookingTicker";
 import Index from "./pages/Index";
 import Destinations from "./pages/Destinations";
 import Tours from "./pages/Tours";
@@ -19,6 +21,8 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Booking from "./pages/Booking";
 import Feedback from "./pages/Feedback";
+import Blog from "./pages/Blog";
+import Gallery from "./pages/Gallery";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -47,6 +51,8 @@ function AnimatedRoutes() {
         <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
         <Route path="/booking" element={<PageTransition><Booking /></PageTransition>} />
         <Route path="/feedback" element={<PageTransition><Feedback /></PageTransition>} />
+        <Route path="/blog" element={<PageTransition><Blog /></PageTransition>} />
+        <Route path="/gallery" element={<PageTransition><Gallery /></PageTransition>} />
         <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
@@ -67,6 +73,8 @@ const App = () => (
             <VisitorTracker />
             <AnimatedRoutes />
             <WhatsAppButton />
+            <AIChatbot />
+            <LiveBookingTicker />
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>

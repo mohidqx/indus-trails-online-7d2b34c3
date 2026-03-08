@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ArrowRight, Heart, Sparkles } from 'lucide-react';
 import { useSiteContent } from '@/hooks/useSiteContent';
+import NewsletterSignup from '@/components/common/NewsletterSignup';
 import logo from '@/assets/indus-tours-logo.jpeg';
 
 const quickLinks = [
@@ -12,6 +13,8 @@ const quickLinks = [
   { name: 'Hotels', path: '/hotels' },
   { name: 'Vehicles', path: '/vehicles' },
   { name: 'Deals', path: '/deals' },
+  { name: 'Blog', path: '/blog' },
+  { name: 'Gallery', path: '/gallery' },
 ];
 
 const supportLinks = [
@@ -53,15 +56,8 @@ const Footer = forwardRef<HTMLElement>(function Footer(_, ref) {
             <Sparkles className="w-6 h-6 text-accent mx-auto mb-4" />
             <h3 className="text-2xl md:text-3xl font-serif font-bold text-snow mb-3">Stay Updated</h3>
             <p className="text-sm text-snow/50 mb-6 max-w-md mx-auto">Get exclusive deals and travel inspiration delivered to your inbox.</p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-5 py-3 rounded-xl bg-snow/5 border border-snow/10 text-snow placeholder:text-snow/30 text-sm focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all"
-              />
-              <button className="px-6 py-3 rounded-xl bg-accent text-accent-foreground font-semibold text-sm hover:bg-accent/90 transition-all shadow-gold hover:shadow-xl">
-                Subscribe
-              </button>
+            <div className="max-w-md mx-auto">
+              <NewsletterSignup />
             </div>
           </div>
         </div>

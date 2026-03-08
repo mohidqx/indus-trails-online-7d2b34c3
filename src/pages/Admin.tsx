@@ -4,7 +4,7 @@ import {
   LayoutDashboard, MapPin, CalendarDays, Car, Tag, MessageSquare, Settings,
   LogOut, FileText, Bell, BarChart3, Loader2, Menu, Hotel, Home, Users, Activity, Eye,
   ChevronRight, Zap, Search, Mail, MessageCircle, Shield, Server, FileCheck, Monitor,
-  Skull, Ban
+  Skull, Ban, BookOpen, Image, Gift, AlertTriangle, Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -36,6 +36,11 @@ import AdminSystemHealth from '@/components/admin/AdminSystemHealth';
 import AdminUserAnalytics from '@/components/admin/AdminUserAnalytics';
 import AdminAuditTrail from '@/components/admin/AdminAuditTrail';
 import AdminSiteControl from '@/components/admin/AdminSiteControl';
+import AdminBlog from '@/components/admin/AdminBlog';
+import AdminGallery from '@/components/admin/AdminGallery';
+import AdminNewsletter from '@/components/admin/AdminNewsletter';
+import AdminLoyalty from '@/components/admin/AdminLoyalty';
+import AdminAbandonedBookings from '@/components/admin/AdminAbandonedBookings';
 import { logAdminAction } from '@/lib/activityLogger';
 
 const menuItems = [
@@ -46,10 +51,15 @@ const menuItems = [
   { id: 'vehicles', icon: Car, label: 'Vehicles', group: 'Manage' },
   { id: 'hotels', icon: Hotel, label: 'Hotels', group: 'Manage' },
   { id: 'deals', icon: Tag, label: 'Deals & Offers', group: 'Manage' },
+  { id: 'blog', icon: BookOpen, label: 'Blog Posts', group: 'Content' },
+  { id: 'gallery', icon: Image, label: 'Photo Gallery', group: 'Content' },
   { id: 'feedback', icon: MessageSquare, label: 'Feedback', group: 'Engagement' },
   { id: 'contact', icon: MessageCircle, label: 'Contact Messages', group: 'Engagement' },
   { id: 'users', icon: Users, label: 'Users', group: 'Engagement' },
   { id: 'notifications', icon: Bell, label: 'Notifications', group: 'Engagement' },
+  { id: 'newsletter', icon: Mail, label: 'Newsletter', group: 'Engagement' },
+  { id: 'loyalty', icon: Gift, label: 'Loyalty & Referrals', group: 'Revenue' },
+  { id: 'abandoned', icon: AlertTriangle, label: 'Abandoned Bookings', group: 'Revenue' },
   { id: 'visitors', icon: Eye, label: 'Visitor Logs', group: 'Intelligence' },
   { id: 'user-analytics', icon: Monitor, label: 'User Analytics', group: 'Intelligence' },
   { id: 'analytics', icon: BarChart3, label: 'Analytics', group: 'Intelligence' },
@@ -64,7 +74,7 @@ const menuItems = [
   { id: 'settings', icon: Settings, label: 'Settings', group: 'System' },
 ];
 
-const groups = ['Overview', 'Manage', 'Engagement', 'Intelligence', 'Security', 'Control', 'System'];
+const groups = ['Overview', 'Manage', 'Content', 'Engagement', 'Revenue', 'Intelligence', 'Security', 'Control', 'System'];
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -102,10 +112,15 @@ export default function Admin() {
       case 'vehicles': return <AdminVehicles />;
       case 'hotels': return <AdminHotels />;
       case 'deals': return <AdminDeals />;
+      case 'blog': return <AdminBlog />;
+      case 'gallery': return <AdminGallery />;
       case 'feedback': return <AdminFeedback />;
       case 'contact': return <AdminContactMessages />;
       case 'users': return <AdminUsers />;
       case 'notifications': return <AdminNotifications />;
+      case 'newsletter': return <AdminNewsletter />;
+      case 'loyalty': return <AdminLoyalty />;
+      case 'abandoned': return <AdminAbandonedBookings />;
       case 'visitors': return <AdminVisitors />;
       case 'user-analytics': return <AdminUserAnalytics />;
       case 'analytics': return <AdminAnalytics />;
@@ -114,7 +129,6 @@ export default function Admin() {
       case 'audit-trail': return <AdminAuditTrail />;
       case 'system-health': return <AdminSystemHealth />;
       case 'god-mode': return <AdminSiteControl />;
-      case 'system-health': return <AdminSystemHealth />;
       case 'content': return <AdminContent />;
       case 'seo': return <AdminSEO />;
       case 'email-templates': return <AdminEmailTemplates />;

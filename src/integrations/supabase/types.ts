@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_bookings: {
+        Row: {
+          created_at: string
+          email: string | null
+          form_data: Json | null
+          id: string
+          recovered: boolean | null
+          recovery_sent: boolean | null
+          tour_id: string | null
+          user_id: string | null
+          vehicle_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          form_data?: Json | null
+          id?: string
+          recovered?: boolean | null
+          recovery_sent?: boolean | null
+          tour_id?: string | null
+          user_id?: string | null
+          vehicle_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          form_data?: Json | null
+          id?: string
+          recovered?: boolean | null
+          recovery_sent?: boolean | null
+          tour_id?: string | null
+          user_id?: string | null
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abandoned_bookings_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "abandoned_bookings_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activity_logs: {
         Row: {
           action: string
@@ -77,6 +128,54 @@ export type Database = {
           ip_address?: string
           is_active?: boolean | null
           reason?: string | null
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          author: string | null
+          category: string | null
+          content: string
+          created_at: string
+          excerpt: string | null
+          id: string
+          image_url: string | null
+          is_published: boolean | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views: number | null
+        }
+        Insert: {
+          author?: string | null
+          category?: string | null
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views?: number | null
+        }
+        Update: {
+          author?: string | null
+          category?: string | null
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views?: number | null
         }
         Relationships: []
       }
@@ -358,6 +457,48 @@ export type Database = {
           },
         ]
       }
+      gallery_photos: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          is_approved: boolean | null
+          is_featured: boolean | null
+          likes: number | null
+          location: string | null
+          title: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          likes?: number | null
+          location?: string | null
+          title?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          likes?: number | null
+          location?: string | null
+          title?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       hotels: {
         Row: {
           amenities: string[] | null
@@ -397,6 +538,51 @@ export type Database = {
         }
         Relationships: []
       }
+      itineraries: {
+        Row: {
+          created_at: string
+          destinations: string[] | null
+          end_date: string | null
+          id: string
+          is_public: boolean | null
+          notes: string | null
+          start_date: string | null
+          title: string
+          total_estimate: number | null
+          tour_ids: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          destinations?: string[] | null
+          end_date?: string | null
+          id?: string
+          is_public?: boolean | null
+          notes?: string | null
+          start_date?: string | null
+          title: string
+          total_estimate?: number | null
+          tour_ids?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          destinations?: string[] | null
+          end_date?: string | null
+          id?: string
+          is_public?: boolean | null
+          notes?: string | null
+          start_date?: string | null
+          title?: string
+          total_estimate?: number | null
+          tour_ids?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           city: string | null
@@ -433,6 +619,71 @@ export type Database = {
         }
         Relationships: []
       }
+      loyalty_points: {
+        Row: {
+          action: string
+          booking_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          points: number
+          user_id: string
+        }
+        Insert: {
+          action: string
+          booking_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          points?: number
+          user_id: string
+        }
+        Update: {
+          action?: string
+          booking_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          points?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_points_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean | null
+          name: string | null
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -459,6 +710,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      referrals: {
+        Row: {
+          booking_id: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referred_email: string
+          referrer_id: string
+          reward_points: number | null
+          status: string | null
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_email: string
+          referrer_id: string
+          reward_points?: number | null
+          status?: string | null
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_email?: string
+          referrer_id?: string
+          reward_points?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       site_content: {
         Row: {
@@ -507,6 +799,47 @@ export type Database = {
           value?: Json
         }
         Relationships: []
+      }
+      tour_availability: {
+        Row: {
+          available_date: string
+          created_at: string
+          id: string
+          is_available: boolean | null
+          price_override: number | null
+          slots_booked: number | null
+          slots_total: number | null
+          tour_id: string
+        }
+        Insert: {
+          available_date: string
+          created_at?: string
+          id?: string
+          is_available?: boolean | null
+          price_override?: number | null
+          slots_booked?: number | null
+          slots_total?: number | null
+          tour_id: string
+        }
+        Update: {
+          available_date?: string
+          created_at?: string
+          id?: string
+          is_available?: boolean | null
+          price_override?: number | null
+          slots_booked?: number | null
+          slots_total?: number | null
+          tour_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_availability_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tours: {
         Row: {
