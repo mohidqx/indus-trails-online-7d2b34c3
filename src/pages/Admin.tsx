@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, MapPin, CalendarDays, Car, Tag, MessageSquare, Settings,
   LogOut, FileText, Bell, BarChart3, Loader2, Menu, Hotel, Home, Users, Activity, Eye,
-  ChevronRight, Zap
+  ChevronRight, Zap, Search, Mail
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
