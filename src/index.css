@@ -633,6 +633,16 @@
   box-shadow: 0 0 20px rgba(45, 212, 191, 0.08);
 }
 
+.admin-mobile-sidebar {
+  background: linear-gradient(180deg, #080d1c 0%, #060a16 40%, #040710 70%, #030508 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 8px 0 40px rgba(0, 0, 0, 0.7), 0 0 80px rgba(45, 212, 191, 0.03);
+}
+
+.safe-area-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
 .admin-dark input:focus,
 .admin-dark textarea:focus,
 .admin-dark select:focus {
@@ -643,4 +653,18 @@
 
 .admin-badge-glow {
   box-shadow: 0 0 12px currentColor;
+}
+
+/* Mobile admin improvements */
+@media (max-width: 1023px) {
+  .admin-dark main .admin-stat-card {
+    padding: 0.75rem;
+  }
+  .admin-dark table {
+    font-size: 0.8rem;
+  }
+  .admin-dark table th,
+  .admin-dark table td {
+    padding: 0.5rem 0.625rem;
+  }
 }
