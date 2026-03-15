@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { z } from 'zod';
 import logo from '@/assets/indus-tours-logo.jpeg';
 import { useAuth } from '@/hooks/useAuth';
+import { useSiteSettings } from '@/components/common/SiteGate';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
