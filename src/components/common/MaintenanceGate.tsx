@@ -11,9 +11,13 @@ interface MaintenanceGateProps {
 
 export default function MaintenanceGate({ children }: MaintenanceGateProps) {
   const { isAdmin, isLoading: authLoading } = useAuth();
+  const location = useLocation();
   const [isMaintenanceOn, setIsMaintenanceOn] = useState(false);
   const [maintenanceMsg, setMaintenanceMsg] = useState('');
   const [checked, setChecked] = useState(false);
+
+  // Admin and auth routes are always accessible
+  const isExemptRoute = location.pathname.startsWith('/admin') || location.pathname.startsWith('/auth');
 
   useEffect(() => {
     const check = async () => {
