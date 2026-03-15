@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { z } from 'zod';
 import logo from '@/assets/indus-tours-logo.jpeg';
 import { useAuth } from '@/hooks/useAuth';
+import { useSiteSettings } from '@/components/common/SiteGate';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -18,6 +19,8 @@ export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin, isLoading: authLoading } = useAuth();
+  const siteSettings = useSiteSettings();
+  const isRegistrationDisabled = siteSettings.registration_enabled?.enabled === false;
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -189,6 +192,16 @@ export default function Auth() {
           description: 'You have successfully logged in.',
         });
       } else {
+        // Check if registration is disabled
+        if (isRegistrationDisabled) {
+          toast({
+            title: 'Registration Closed',
+            description: 'New user registration is currently disabled by the administrator.',
+            variant: 'destructive',
+          });
+          return;
+        }
+
         const redirectUrl = `${window.location.origin}/`;
 
         const { error } = await supabase.auth.signUp({
@@ -401,15 +414,24 @@ export default function Auth() {
 
           {!isForgotPassword && (
             <div className="mt-6 text-center">
+              {isRegistrationDisabled && !isLogin ? (
+                <p className="text-sm text-destructive font-medium">
+                  🚫 New registrations are currently closed
+                </p>
+              ) : null}
               <button
                 type="button"
                 onClick={() => {
+                  if (!isLogin && isRegistrationDisabled) return;
                   setIsLogin(!isLogin);
                   setErrors({});
                 }}
-                className="text-sm text-primary hover:underline"
+                className={`text-sm mt-1 ${isRegistrationDisabled && isLogin ? 'text-muted-foreground/50 cursor-not-allowed' : 'text-primary hover:underline'}`}
+                disabled={isRegistrationDisabled && isLogin}
               >
-                {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Login'}
+                {isLogin 
+                  ? (isRegistrationDisabled ? 'Registration is currently closed' : "Don't have an account? Sign up")
+                  : 'Already have an account? Login'}
               </button>
             </div>
           )}
