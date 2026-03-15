@@ -31,6 +31,8 @@ interface Deal {
 
 export default function Booking() {
   const { toast } = useToast();
+  const { user, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dealId = searchParams.get('deal');
   const tourIdParam = searchParams.get('tour');
