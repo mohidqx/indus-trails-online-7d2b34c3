@@ -10,7 +10,7 @@ import WhatsAppButton from "@/components/common/WhatsAppButton";
 import PageTransition from "@/components/common/PageTransition";
 import { useVisitorTracking } from "@/hooks/useVisitorTracking";
 import AIChatbot from "@/components/common/AIChatbot";
-import MaintenanceGate from "@/components/common/MaintenanceGate";
+import SiteGate from "@/components/common/SiteGate";
 
 import Index from "./pages/Index";
 import Destinations from "./pages/Destinations";
