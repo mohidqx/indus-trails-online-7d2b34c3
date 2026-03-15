@@ -414,15 +414,24 @@ export default function Auth() {
 
           {!isForgotPassword && (
             <div className="mt-6 text-center">
+              {isRegistrationDisabled && !isLogin ? (
+                <p className="text-sm text-destructive font-medium">
+                  🚫 New registrations are currently closed
+                </p>
+              ) : null}
               <button
                 type="button"
                 onClick={() => {
+                  if (!isLogin && isRegistrationDisabled) return;
                   setIsLogin(!isLogin);
                   setErrors({});
                 }}
-                className="text-sm text-primary hover:underline"
+                className={`text-sm mt-1 ${isRegistrationDisabled && isLogin ? 'text-muted-foreground/50 cursor-not-allowed' : 'text-primary hover:underline'}`}
+                disabled={isRegistrationDisabled && isLogin}
               >
-                {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Login'}
+                {isLogin 
+                  ? (isRegistrationDisabled ? 'Registration is currently closed' : "Don't have an account? Sign up")
+                  : 'Already have an account? Login'}
               </button>
             </div>
           )}
