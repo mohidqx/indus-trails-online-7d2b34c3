@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Calendar, Users, Check, Loader2, Tag, FileCheck, Star, Sparkles } from 'lucide-react';
+import { Calendar, Users, Check, Loader2, Tag, FileCheck, Star, Sparkles, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { dealsApi } from '@/lib/api';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Tour {
   id: string;
