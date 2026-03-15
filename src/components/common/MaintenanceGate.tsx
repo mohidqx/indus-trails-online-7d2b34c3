@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Wrench, RefreshCw } from 'lucide-react';
@@ -10,9 +11,13 @@ interface MaintenanceGateProps {
 
 export default function MaintenanceGate({ children }: MaintenanceGateProps) {
   const { isAdmin, isLoading: authLoading } = useAuth();
+  const location = useLocation();
   const [isMaintenanceOn, setIsMaintenanceOn] = useState(false);
   const [maintenanceMsg, setMaintenanceMsg] = useState('');
   const [checked, setChecked] = useState(false);
+
+  // Admin and auth routes are always accessible
+  const isExemptRoute = location.pathname.startsWith('/admin') || location.pathname.startsWith('/auth');
 
   useEffect(() => {
     const check = async () => {
@@ -49,8 +54,8 @@ export default function MaintenanceGate({ children }: MaintenanceGateProps) {
   // Don't block until we've checked
   if (!checked || authLoading) return <>{children}</>;
 
-  // Admins bypass maintenance
-  if (isMaintenanceOn && !isAdmin) {
+  // Admins and exempt routes bypass maintenance
+  if (isMaintenanceOn && !isAdmin && !isExemptRoute) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#030508] via-[#0a0f1e] to-[#030508] flex items-center justify-center p-6">
         <div className="max-w-lg w-full text-center space-y-8">

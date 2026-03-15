@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Calendar, Users, Check, Loader2, Tag, FileCheck, Star, Sparkles } from 'lucide-react';
+import { Calendar, Users, Check, Loader2, Tag, FileCheck, Star, Sparkles, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { dealsApi } from '@/lib/api';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Tour {
   id: string;
@@ -30,6 +31,8 @@ interface Deal {
 
 export default function Booking() {
   const { toast } = useToast();
+  const { user, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dealId = searchParams.get('deal');
   const tourIdParam = searchParams.get('tour');
@@ -158,6 +161,39 @@ export default function Booking() {
       setIsSubmitting(false);
     }
   };
+
+  // Auth gate — require login to book
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="pt-24 pb-16 flex items-center justify-center px-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-md w-full text-center space-y-6 p-8 rounded-2xl border border-border bg-card shadow-lg"
+          >
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
+              <LogIn className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="text-2xl font-serif font-bold text-foreground">Login Required</h2>
+            <p className="text-muted-foreground text-sm">
+              Please sign in or create an account to book your tour. It only takes a moment!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={() => navigate('/auth')} className="gap-2">
+                <LogIn className="w-4 h-4" /> Sign In / Sign Up
+              </Button>
+              <Button variant="outline" onClick={() => navigate(-1)}>
+                Go Back
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
