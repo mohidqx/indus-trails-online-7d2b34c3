@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 
 interface TourOption {
