@@ -26,6 +26,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import LoyaltyTierCard from '@/components/common/LoyaltyTierCard';
 
 interface Booking {
   id: string;
