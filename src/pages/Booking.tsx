@@ -279,7 +279,7 @@ export default function Booking() {
                         <option value="">Select a tour...</option>
                         {tours.map((tour) => (
                           <option key={tour.id} value={tour.id}>
-                            {tour.title} - PKR {(tour.discount_price || tour.price).toLocaleString()}
+                            {tour.title} - {format(tour.discount_price || tour.price)}
                           </option>
                         ))}
                       </select>
