@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { MapPin, ArrowRight, Loader2, Calendar, Compass } from 'lucide-react';
+import WeatherWidget from '@/components/common/WeatherWidget';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
