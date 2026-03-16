@@ -133,6 +133,12 @@ export default function Destinations() {
                       </div>
                     )}
 
+                    {dest.name && (
+                      <div className="mb-4 md:mb-6">
+                        <WeatherWidget location={dest.name} />
+                      </div>
+                    )}
+
                     <Button variant="default" asChild className="shadow-teal hover:shadow-lg transition-shadow group">
                       <Link to="/tours" className="flex items-center gap-2">
                         Explore Tours
