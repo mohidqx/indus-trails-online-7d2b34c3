@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useSiteContent } from '@/hooks/useSiteContent';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
+import CurrencyToggle from '@/components/common/CurrencyToggle';
 import logo from '@/assets/indus-tours-logo.jpeg';
 
 const navLinks = [
