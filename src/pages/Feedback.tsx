@@ -58,7 +58,7 @@ export default function Feedback() {
     setIsSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await supabase.from('feedback').insert({
+      const { data: insertedData, error } = await supabase.from('feedback').insert({
         user_id: user?.id || null,
         name: formData.name,
         email: formData.email,
@@ -66,21 +66,22 @@ export default function Feedback() {
         rating: formData.rating,
         message: formData.feedback,
         is_approved: false,
-      });
+      }).select('id');
       if (error) {
         toast({ title: 'Error', description: 'Failed to submit feedback.', variant: 'destructive' });
         return;
       }
 
       // Upload photos if any
-      if (photos.length > 0 && data) {
+      const feedbackId = insertedData?.[0]?.id;
+      if (photos.length > 0 && feedbackId) {
         for (const photo of photos) {
           const ext = photo.name.split('.').pop();
-          const path = `${(data as any)[0]?.id || Date.now()}/${Date.now()}.${ext}`;
+          const path = `${feedbackId}/${Date.now()}.${ext}`;
           const { data: uploaded } = await supabase.storage.from('review-photos').upload(path, photo);
           if (uploaded) {
             const url = supabase.storage.from('review-photos').getPublicUrl(uploaded.path).data.publicUrl;
-            await supabase.from('review_photos').insert({ feedback_id: (data as any)[0]?.id, image_url: url });
+            await supabase.from('review_photos').insert({ feedback_id: feedbackId, image_url: url });
           }
         }
       }
