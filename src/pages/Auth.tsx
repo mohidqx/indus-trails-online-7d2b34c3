@@ -199,6 +199,12 @@ export default function Auth() {
             description: 'New user registration is currently disabled by the administrator.',
             variant: 'destructive',
           });
+          // Notify admin about blocked attempt
+          try {
+            await supabase.functions.invoke('notify-blocked-registration', {
+              body: { email: formData.email, fullName: formData.fullName },
+            });
+          } catch {}
           return;
         }
 

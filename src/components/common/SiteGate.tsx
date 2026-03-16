@@ -195,13 +195,13 @@ function AnnouncementBanner({ message, type, dismissible, onDismiss }: {
   };
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-[100] ${typeStyles[type] || typeStyles.info} py-2.5 px-4 text-center text-sm font-medium shadow-lg`}>
-      <div className="max-w-5xl mx-auto flex items-center justify-center gap-3">
-        <span className="flex-1">{message}</span>
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-xl animate-in slide-in-from-top-4 fade-in duration-500">
+      <div className={`${typeStyles[type] || typeStyles.info} rounded-xl py-3 px-5 text-sm font-medium shadow-2xl backdrop-blur-sm flex items-center gap-3`}>
+        <span className="flex-1 text-center">{message}</span>
         {dismissible && (
           <button
             onClick={onDismiss}
-            className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity text-lg leading-none font-bold"
+            className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity text-lg leading-none font-bold ml-2"
             aria-label="Dismiss"
           >
             ×

@@ -31,3 +31,6 @@ verify_jwt = false
 
 [functions.ai-chatbot]
 verify_jwt = false
+
+[functions.notify-blocked-registration]
+verify_jwt = false
