@@ -362,6 +362,13 @@ export default function Booking() {
                       </div>
                     </div>
 
+                    {/* Group Booking Discounts */}
+                    {travelersNum >= 5 && (
+                      <GroupBookingSection travelers={travelersNum} onTravelersChange={(n) => setFormData({ ...formData, travelers: String(n) })} />
+                    )}
+                      </div>
+                    </div>
+
                     {selectedTour && (
                       <div className="p-4 sm:p-6 rounded-xl bg-primary/10 border border-primary/20">
                         {selectedDeal && discountPercent > 0 && (
