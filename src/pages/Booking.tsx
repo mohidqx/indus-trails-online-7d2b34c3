@@ -12,6 +12,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { dealsApi } from '@/lib/api';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
+import { useCurrency } from '@/hooks/useCurrency';
+import { useDynamicPricing } from '@/hooks/useDynamicPricing';
+import GroupBookingSection, { getGroupDiscount } from '@/components/tours/GroupBookingSection';
 
 interface Tour {
   id: string;
