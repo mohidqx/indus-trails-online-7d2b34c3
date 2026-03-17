@@ -320,7 +320,7 @@ export default function Booking() {
                                     key={deal.id}
                                     onClick={() => {
                                       setSelectedDeal(deal);
-                                      if (deal.tour_id && !formData.tour) setFormData(prev => ({ ...prev, tour: deal.tour_id! }));
+                                      if (deal.tour_id) setFormData(prev => ({ ...prev, tour: deal.tour_id! }));
                                     }}
                                     className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-all text-left"
                                   >

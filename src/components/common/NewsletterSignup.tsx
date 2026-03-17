@@ -31,7 +31,7 @@ export default function NewsletterSignup() {
 
   if (subscribed) {
     return (
-      <div className="flex items-center gap-2 text-emerald-400 text-sm">
+      <div className="flex items-center justify-center gap-2 text-emerald-400 text-sm w-full text-center">
         <CheckCircle className="w-4 h-4" />
         <span>Subscribed! Check your inbox 🎉</span>
       </div>
