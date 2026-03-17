@@ -93,9 +93,12 @@ const pageTitle: Record<string, string> = {
   notifications: 'Notifications',
   contact: 'Contact Messages',
   'god-mode': '☠️ God Mode',
-  'user-analytics': 'User Analytics',
   'audit-trail': 'Audit Trail',
   'system-health': 'System Health',
+  'pricing-rules': 'Dynamic Pricing',
+  availability: 'Tour Availability',
+  wishlists: 'User Wishlists',
+  testimonials: 'Testimonials',
 };
 
 // Swipe hook for mobile sidebar — only triggers on strong horizontal gestures from screen edge
