@@ -238,8 +238,11 @@ export default function Admin() {
       case 'loyalty': return <AdminLoyalty />;
       case 'abandoned': return <AdminAbandonedBookings />;
       case 'visitors': return <AdminVisitors />;
-      case 'user-analytics': return <AdminUserAnalytics />;
       case 'analytics': return <AdminAnalytics />;
+      case 'pricing-rules': return <AdminPricingRules />;
+      case 'availability': return <AdminAvailability />;
+      case 'wishlists': return <AdminWishlists />;
+      case 'testimonials': return <AdminTestimonials />;
       case 'activity': return <AdminActivityLogs />;
       case 'security': return <AdminSecurityDashboard />;
       case 'audit-trail': return <AdminAuditTrail />;
