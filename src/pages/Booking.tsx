@@ -64,7 +64,11 @@ export default function Booking() {
   useEffect(() => {
     fetchTours();
     fetchDeals();
-  }, []);
+    // Autofill from profile
+    if (user) {
+      autofillFromProfile();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (tourIdParam && tours.length > 0) {
@@ -96,6 +100,17 @@ export default function Booking() {
       .order('title');
     if (!error && data) setTours(data);
     setIsLoadingTours(false);
+  };
+
+  const autofillFromProfile = async () => {
+    if (!user) return;
+    const { data } = await supabase.from('profiles').select('full_name, phone').eq('id', user.id).maybeSingle();
+    setFormData(prev => ({
+      ...prev,
+      name: data?.full_name || prev.name,
+      email: user.email || prev.email,
+      phone: data?.phone || prev.phone,
+    }));
   };
 
   const fetchDeals = async () => {
@@ -316,7 +331,7 @@ export default function Booking() {
                                     key={deal.id}
                                     onClick={() => {
                                       setSelectedDeal(deal);
-                                      if (deal.tour_id && !formData.tour) setFormData(prev => ({ ...prev, tour: deal.tour_id! }));
+                                      if (deal.tour_id) setFormData(prev => ({ ...prev, tour: deal.tour_id! }));
                                     }}
                                     className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-all text-left"
                                   >

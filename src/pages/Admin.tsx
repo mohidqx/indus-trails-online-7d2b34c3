@@ -35,8 +35,11 @@ import AdminNotifications from '@/components/admin/AdminNotifications';
 import AdminContactMessages from '@/components/admin/AdminContactMessages';
 import AdminSecurityDashboard from '@/components/admin/AdminSecurityDashboard';
 import AdminSystemHealth from '@/components/admin/AdminSystemHealth';
-import AdminUserAnalytics from '@/components/admin/AdminUserAnalytics';
 import AdminAuditTrail from '@/components/admin/AdminAuditTrail';
+import AdminPricingRules from '@/components/admin/AdminPricingRules';
+import AdminAvailability from '@/components/admin/AdminAvailability';
+import AdminWishlists from '@/components/admin/AdminWishlists';
+import AdminTestimonials from '@/components/admin/AdminTestimonials';
 import AdminSiteControl from '@/components/admin/AdminSiteControl';
 import AdminBlog from '@/components/admin/AdminBlog';
 import AdminGallery from '@/components/admin/AdminGallery';
@@ -60,10 +63,13 @@ const menuItems = [
   { id: 'users', icon: Users, label: 'Users', group: 'Engagement' },
   { id: 'notifications', icon: Bell, label: 'Notifications', group: 'Engagement' },
   { id: 'newsletter', icon: Mail, label: 'Newsletter', group: 'Engagement' },
+  { id: 'pricing-rules', icon: Tag, label: 'Dynamic Pricing', group: 'Revenue' },
   { id: 'loyalty', icon: Gift, label: 'Loyalty & Referrals', group: 'Revenue' },
   { id: 'abandoned', icon: AlertTriangle, label: 'Abandoned Bookings', group: 'Revenue' },
+  { id: 'wishlists', icon: Eye, label: 'Wishlists', group: 'Revenue' },
+  { id: 'availability', icon: CalendarDays, label: 'Availability', group: 'Manage' },
+  { id: 'testimonials', icon: MessageSquare, label: 'Testimonials', group: 'Engagement' },
   { id: 'visitors', icon: Eye, label: 'Visitor Logs', group: 'Intelligence' },
-  { id: 'user-analytics', icon: Monitor, label: 'User Analytics', group: 'Intelligence' },
   { id: 'analytics', icon: BarChart3, label: 'Analytics', group: 'Intelligence' },
   { id: 'activity', icon: Activity, label: 'Activity Logs', group: 'Intelligence' },
   { id: 'security', icon: Shield, label: 'Security Threats', group: 'Security' },
@@ -87,9 +93,12 @@ const pageTitle: Record<string, string> = {
   notifications: 'Notifications',
   contact: 'Contact Messages',
   'god-mode': '☠️ God Mode',
-  'user-analytics': 'User Analytics',
   'audit-trail': 'Audit Trail',
   'system-health': 'System Health',
+  'pricing-rules': 'Dynamic Pricing',
+  availability: 'Tour Availability',
+  wishlists: 'User Wishlists',
+  testimonials: 'Testimonials',
 };
 
 // Swipe hook for mobile sidebar — only triggers on strong horizontal gestures from screen edge
@@ -229,8 +238,11 @@ export default function Admin() {
       case 'loyalty': return <AdminLoyalty />;
       case 'abandoned': return <AdminAbandonedBookings />;
       case 'visitors': return <AdminVisitors />;
-      case 'user-analytics': return <AdminUserAnalytics />;
       case 'analytics': return <AdminAnalytics />;
+      case 'pricing-rules': return <AdminPricingRules />;
+      case 'availability': return <AdminAvailability />;
+      case 'wishlists': return <AdminWishlists />;
+      case 'testimonials': return <AdminTestimonials />;
       case 'activity': return <AdminActivityLogs />;
       case 'security': return <AdminSecurityDashboard />;
       case 'audit-trail': return <AdminAuditTrail />;
