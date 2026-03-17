@@ -102,6 +102,17 @@ export default function Booking() {
     setIsLoadingTours(false);
   };
 
+  const autofillFromProfile = async () => {
+    if (!user) return;
+    const { data } = await supabase.from('profiles').select('full_name, phone').eq('id', user.id).maybeSingle();
+    setFormData(prev => ({
+      ...prev,
+      name: data?.full_name || prev.name,
+      email: user.email || prev.email,
+      phone: data?.phone || prev.phone,
+    }));
+  };
+
   const fetchDeals = async () => {
     const { data } = await dealsApi.getAll({ active: true });
     if (data) setDeals(data as Deal[]);
