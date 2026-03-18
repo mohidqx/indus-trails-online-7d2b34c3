@@ -271,6 +271,12 @@ export default function Vehicles() {
                       >
                         {compareList.includes(vehicle.id) ? '✓' : 'VS'}
                       </button>
+                      <button
+                        onClick={() => setDetailVehicle(vehicle)}
+                        className="absolute top-3 md:top-4 right-14 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-all"
+                      >
+                        <Eye className="w-4 h-4 text-foreground" />
+                      </button>
                     </div>
 
                     <div className="p-4 md:p-6 space-y-3 md:space-y-4">
