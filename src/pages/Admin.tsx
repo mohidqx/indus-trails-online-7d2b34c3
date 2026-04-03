@@ -5,7 +5,7 @@ import {
   LayoutDashboard, MapPin, CalendarDays, Car, Tag, MessageSquare, Settings,
   LogOut, FileText, Bell, BarChart3, Loader2, Menu, Hotel, Home, Users, Activity, Eye,
   ChevronRight, Zap, Search, Mail, MessageCircle, Shield, Server, FileCheck, Monitor,
-  Skull, BookOpen, Image, Gift, AlertTriangle, X
+  Skull, BookOpen, Image, Gift, AlertTriangle, X, Palette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
