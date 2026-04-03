@@ -5,7 +5,7 @@ import {
   LayoutDashboard, MapPin, CalendarDays, Car, Tag, MessageSquare, Settings,
   LogOut, FileText, Bell, BarChart3, Loader2, Menu, Hotel, Home, Users, Activity, Eye,
   ChevronRight, Zap, Search, Mail, MessageCircle, Shield, Server, FileCheck, Monitor,
-  Skull, BookOpen, Image, Gift, AlertTriangle, X
+  Skull, BookOpen, Image, Gift, AlertTriangle, X, Palette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,7 @@ import AdminHotels from '@/components/admin/AdminHotels';
 import AdminDeals from '@/components/admin/AdminDeals';
 import AdminFeedback from '@/components/admin/AdminFeedback';
 import AdminContent from '@/components/admin/AdminContent';
+import AdminCMS from '@/components/admin/AdminCMS';
 import AdminSettings from '@/components/admin/AdminSettings';
 import AdminUsers from '@/components/admin/AdminUsers';
 import AdminAnalytics from '@/components/admin/AdminAnalytics';
@@ -56,6 +57,7 @@ const menuItems = [
   { id: 'vehicles', icon: Car, label: 'Vehicles', group: 'Manage' },
   { id: 'hotels', icon: Hotel, label: 'Hotels', group: 'Manage' },
   { id: 'deals', icon: Tag, label: 'Deals & Offers', group: 'Manage' },
+  { id: 'cms', icon: Palette, label: 'CMS', group: 'Content' },
   { id: 'blog', icon: BookOpen, label: 'Blog Posts', group: 'Content' },
   { id: 'gallery', icon: Image, label: 'Photo Gallery', group: 'Content' },
   { id: 'feedback', icon: MessageSquare, label: 'Feedback', group: 'Engagement' },
@@ -86,6 +88,7 @@ const groups = ['Overview', 'Manage', 'Content', 'Engagement', 'Revenue', 'Intel
 
 const pageTitle: Record<string, string> = {
   content: 'Content Editor',
+  cms: 'Content Management System',
   activity: 'Activity Logs',
   visitors: 'Visitor Logs',
   seo: 'SEO Settings',
@@ -228,6 +231,7 @@ export default function Admin() {
       case 'vehicles': return <AdminVehicles />;
       case 'hotels': return <AdminHotels />;
       case 'deals': return <AdminDeals />;
+      case 'cms': return <AdminCMS />;
       case 'blog': return <AdminBlog />;
       case 'gallery': return <AdminGallery />;
       case 'feedback': return <AdminFeedback />;
