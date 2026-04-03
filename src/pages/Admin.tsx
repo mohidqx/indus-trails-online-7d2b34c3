@@ -230,6 +230,7 @@ export default function Admin() {
       case 'vehicles': return <AdminVehicles />;
       case 'hotels': return <AdminHotels />;
       case 'deals': return <AdminDeals />;
+      case 'cms': return <AdminCMS />;
       case 'blog': return <AdminBlog />;
       case 'gallery': return <AdminGallery />;
       case 'feedback': return <AdminFeedback />;
