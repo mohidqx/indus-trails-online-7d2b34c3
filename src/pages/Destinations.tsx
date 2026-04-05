@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { getDestinationImage } from '@/lib/destinationImages';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import DestinationDetailDialog from '@/components/destinations/DestinationDetailDialog';
 
 interface Destination {
   id: string;
@@ -167,36 +167,7 @@ export default function Destinations() {
       </section>
 
       {/* Detail Dialog */}
-      <Dialog open={!!detailDest} onOpenChange={() => setDetailDest(null)}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="font-serif">{detailDest?.name}</DialogTitle></DialogHeader>
-          {detailDest && (
-            <div className="space-y-4">
-              <img src={getDestinationImage(detailDest.name, detailDest.image_url)} alt={detailDest.name} className="w-full h-48 object-cover rounded-xl" />
-              {detailDest.location && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="w-4 h-4 text-primary" />{detailDest.location}</div>
-              )}
-              {detailDest.description && <p className="text-sm text-muted-foreground leading-relaxed">{detailDest.description}</p>}
-              {detailDest.best_time && (
-                <div className="p-3 rounded-xl bg-primary/5 border border-primary/10">
-                  <p className="text-xs text-muted-foreground">Best Time to Visit</p>
-                  <p className="font-medium text-foreground">{detailDest.best_time}</p>
-                </div>
-              )}
-              {detailDest.highlights && detailDest.highlights.length > 0 && (
-                <div>
-                  <p className="text-sm font-medium text-foreground mb-2">Highlights</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {detailDest.highlights.map(h => <span key={h} className="text-xs px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground">{h}</span>)}
-                  </div>
-                </div>
-              )}
-              <WeatherWidget location={detailDest.name} />
-              <Button variant="gold" className="w-full" asChild><Link to="/tours">Browse Tours in {detailDest.name}</Link></Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <DestinationDetailDialog dest={detailDest} onClose={() => setDetailDest(null)} />
 
       <Footer />
     </div>
