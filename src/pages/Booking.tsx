@@ -357,7 +357,9 @@ export default function Booking() {
                                     key={deal.id}
                                     onClick={() => {
                                       setSelectedDeal(deal);
+                                      // Only auto-select tour if the deal is tied to a specific tour
                                       if (deal.tour_id) setFormData(prev => ({ ...prev, tour: deal.tour_id! }));
+                                      // Don't auto-select tour - user must still choose
                                     }}
                                     className="flex items-center justify-between p-3 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-all text-left"
                                   >
