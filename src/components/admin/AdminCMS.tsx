@@ -92,6 +92,10 @@ export default function AdminCMS() {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('branding');
+  const [teamMembers, setTeamMembers] = useState([
+    { name: 'Shahzaib Khan Mughal', role: 'Founder & CEO', initials: 'SM', desc: 'Visionary leader with a passion for showcasing Pakistan\'s beauty' },
+    { name: 'Mohid Mughal', role: 'Head of Operations', initials: 'MM', desc: 'Ensuring smooth operations and customer satisfaction' },
+  ]);
 
   useEffect(() => { fetchContent(); }, []);
 
