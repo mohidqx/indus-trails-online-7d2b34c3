@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Loader2, Globe, Phone, Mail, MapPin, AlertCircle, Eye, Palette, Layout, FileText, Image, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Save, Loader2, Globe, Phone, Mail, MapPin, AlertCircle, Eye, Palette, Layout, FileText, Image, RefreshCw, CheckCircle2, Users, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -92,6 +92,10 @@ export default function AdminCMS() {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('branding');
+  const [teamMembers, setTeamMembers] = useState([
+    { name: 'Shahzaib Khan Mughal', role: 'Founder & CEO', initials: 'SM', desc: 'Visionary leader with a passion for showcasing Pakistan\'s beauty' },
+    { name: 'Mohid Mughal', role: 'Head of Operations', initials: 'MM', desc: 'Ensuring smooth operations and customer satisfaction' },
+  ]);
 
   useEffect(() => { fetchContent(); }, []);
 
@@ -101,7 +105,9 @@ export default function AdminCMS() {
     if (!error && data) {
       const contentObj = { ...defaultContent };
       data.forEach((item) => {
-        if (item.key in contentObj) {
+        if (item.key === 'team_members' && Array.isArray(item.value)) {
+          setTeamMembers(item.value as any[]);
+        } else if (item.key in contentObj) {
           (contentObj as any)[item.key] = item.value;
         }
       });
@@ -121,6 +127,13 @@ export default function AdminCMS() {
           updated_at: new Date().toISOString(),
         }, { onConflict: 'key' });
       }
+      // Save team members
+      await supabase.from('site_content').upsert({
+        key: 'team_members',
+        value: teamMembers as any,
+        updated_by: user?.id,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'key' });
       setLastSaved(new Date().toLocaleTimeString());
       toast({ title: '✅ Content Saved', description: 'All changes published to the website.' });
     } catch {
@@ -176,6 +189,7 @@ export default function AdminCMS() {
           <TabsTrigger value="contact" className="gap-1.5 text-xs"><Phone className="w-3.5 h-3.5" /> Contact</TabsTrigger>
           <TabsTrigger value="social" className="gap-1.5 text-xs"><Globe className="w-3.5 h-3.5" /> Social</TabsTrigger>
           <TabsTrigger value="policies" className="gap-1.5 text-xs"><FileText className="w-3.5 h-3.5" /> Policies</TabsTrigger>
+          <TabsTrigger value="team" className="gap-1.5 text-xs"><Users className="w-3.5 h-3.5" /> Team</TabsTrigger>
           <TabsTrigger value="alerts" className="gap-1.5 text-xs"><AlertCircle className="w-3.5 h-3.5" /> Alerts</TabsTrigger>
         </TabsList>
 
@@ -380,6 +394,46 @@ export default function AdminCMS() {
               </CardContent>
             </Card>
           ))}
+        </TabsContent>
+
+        {/* Team */}
+        <TabsContent value="team" className="space-y-4">
+          <Card className="border-0 shadow-card">
+            <CardContent className="p-6 space-y-5">
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className="text-[10px]">Team Members (About Page)</Badge>
+                <Button variant="outline" size="sm" onClick={() => setTeamMembers(prev => [...prev, { name: '', role: '', initials: '', desc: '' }])} className="gap-1">
+                  <Plus className="w-3.5 h-3.5" /> Add Member
+                </Button>
+              </div>
+              {teamMembers.map((member, i) => (
+                <div key={i} className="p-4 bg-muted/30 rounded-xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Member {i + 1}</span>
+                    {teamMembers.length > 1 && (
+                      <Button variant="ghost" size="sm" onClick={() => setTeamMembers(prev => prev.filter((_, j) => j !== i))} className="text-destructive h-7 w-7 p-0">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-medium mb-1 block">Name</label>
+                      <Input value={member.name} onChange={e => setTeamMembers(prev => prev.map((m, j) => j === i ? { ...m, name: e.target.value, initials: e.target.value.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() } : m))} />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium mb-1 block">Role</label>
+                      <Input value={member.role} onChange={e => setTeamMembers(prev => prev.map((m, j) => j === i ? { ...m, role: e.target.value } : m))} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium mb-1 block">Description</label>
+                    <Input value={member.desc} onChange={e => setTeamMembers(prev => prev.map((m, j) => j === i ? { ...m, desc: e.target.value } : m))} />
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Alerts */}

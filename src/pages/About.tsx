@@ -5,6 +5,7 @@ import { Award, Heart, Target, Shield, Star, MapPin, Users, Calendar, ChevronRig
 import heroImage from '@/assets/hero-hunza.jpg';
 import founderImage from '@/assets/founder-shahzaib.jpeg';
 import { motion, useInView } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -42,6 +43,30 @@ const timeline = [
 ];
 
 export default function About() {
+  const [teamMembers, setTeamMembers] = useState([
+    { name: 'Shahzaib Khan Mughal', role: 'Founder & CEO', img: founderImage, initials: '', desc: 'Visionary leader with a passion for showcasing Pakistan\'s beauty' },
+    { name: 'Mohid Mughal', role: 'Head of Operations', img: null as string | null, initials: 'MM', desc: 'Ensuring smooth operations and customer satisfaction' },
+  ]);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      const { data } = await supabase.from('site_content').select('key, value').in('key', ['team_members']);
+      if (data && data.length > 0) {
+        const teamData = data.find(d => d.key === 'team_members');
+        if (teamData && Array.isArray(teamData.value)) {
+          setTeamMembers(teamData.value.map((m: any) => ({
+            name: m.name || '',
+            role: m.role || '',
+            img: m.img || null,
+            initials: m.initials || m.name?.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase() || '',
+            desc: m.desc || '',
+          })));
+        }
+      }
+    };
+    fetchTeam();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -276,11 +301,7 @@ export default function About() {
           </motion.div>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
-            {[
-              { name: 'Shahzaib Khan Mughal', role: 'Founder & CEO', img: founderImage, initials: '', desc: 'Visionary leader with a passion for showcasing Pakistan\'s beauty' },
-              { name: 'Ahmed Raza', role: 'Head of Operations', img: null, initials: 'AR', desc: 'Ensuring smooth operations and customer satisfaction' },
-              { name: 'Fatima Ali', role: 'Customer Relations', img: null, initials: 'FA', desc: 'Dedicated to making every traveler feel at home' },
-            ].map((member, i) => (
+            {teamMembers.map((member, i) => (
               <motion.div
                 key={member.name}
                 className="text-center ultra-card p-6 rounded-2xl bg-card group"

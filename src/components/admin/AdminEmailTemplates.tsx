@@ -144,12 +144,13 @@ export default function AdminEmailTemplates() {
 
     return (
       <div className="rounded-xl overflow-hidden border border-border bg-white text-gray-800">
-        {/* Banner Header */}
+        {/* Banner Header with Logo */}
         <div style={{ backgroundColor: bannerColor }} className="p-6 text-center">
           {current.showLogo && (
             <div className="mb-3">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                <span className="text-white font-bold text-lg">🏔️ Indus Tours Pakistan</span>
+              <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full">
+                <img src="/placeholder.svg" alt="Logo" className="w-8 h-8 rounded-lg bg-white/30 p-0.5" />
+                <span className="text-white font-bold text-lg">Indus Tours Pakistan</span>
               </div>
             </div>
           )}
@@ -169,10 +170,23 @@ export default function AdminEmailTemplates() {
             return <p key={i} className="text-sm leading-relaxed">{line}</p>;
           })}
         </div>
-        {/* Footer */}
-        <div style={{ backgroundColor: bannerColor + '10' }} className="p-4 border-t border-gray-100 text-center">
-          <p className="text-xs text-gray-500">© 2026 Indus Tours Pakistan | industours.pk</p>
-          <p className="text-xs text-gray-400">📍 Islamabad, Pakistan | 📞 +92 311 8088007</p>
+        {/* Professional Footer Signature */}
+        <div className="border-t border-gray-200 px-6 py-5 bg-gray-50">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-700 flex items-center justify-center text-white font-bold text-lg shadow-md">IT</div>
+            <div>
+              <p className="font-bold text-gray-800 text-sm">Shahzaib Khan Mughal</p>
+              <p className="text-xs text-gray-500">Founder & CEO — Indus Tours Pakistan</p>
+            </div>
+          </div>
+          <div className="text-xs text-gray-500 space-y-0.5 pl-16">
+            <p>📞 +92 311 8088007 &nbsp;|&nbsp; ✉️ info@industours.pk</p>
+            <p>🌐 industours.pk &nbsp;|&nbsp; 📍 Islamabad, Pakistan</p>
+          </div>
+        </div>
+        {/* Copyright Footer */}
+        <div style={{ backgroundColor: bannerColor }} className="px-6 py-3 text-center">
+          <p className="text-[11px] text-white/70">© 2026 Indus Tours Pakistan. All rights reserved.</p>
         </div>
       </div>
     );
