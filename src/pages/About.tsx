@@ -5,6 +5,7 @@ import { Award, Heart, Target, Shield, Star, MapPin, Users, Calendar, ChevronRig
 import heroImage from '@/assets/hero-hunza.jpg';
 import founderImage from '@/assets/founder-shahzaib.jpeg';
 import { motion, useInView } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
