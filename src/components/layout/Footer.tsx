@@ -22,6 +22,8 @@ const supportLinks = [
   { name: 'Contact', path: '/contact' },
   { name: 'Feedback', path: '/feedback' },
   { name: 'My Account', path: '/dashboard' },
+  { name: 'Privacy Policy', path: '/privacy-policy' },
+  { name: 'Terms & Conditions', path: '/terms-conditions' },
 ];
 
 const destinations = ['Hunza Valley', 'Skardu', 'Fairy Meadows', 'Swat Valley', 'Naran Kaghan', 'Chitral'];
