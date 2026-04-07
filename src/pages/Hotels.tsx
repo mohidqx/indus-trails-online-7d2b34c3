@@ -5,7 +5,7 @@ import { Star, MapPin, Wifi, Utensils, Car, Loader2, Search, SlidersHorizontal, 
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import HotelDetailDialog from '@/components/hotels/HotelDetailDialog';
 interface Hotel {
   id: string;
   name: string;
