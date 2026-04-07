@@ -30,6 +30,7 @@ export default function Hotels() {
   const [searchQuery, setSearchQuery] = useState('');
   const [minStars, setMinStars] = useState(0);
   const [expandedHotel, setExpandedHotel] = useState<string | null>(null);
+  const [detailHotel, setDetailHotel] = useState<Hotel | null>(null);
 
   useEffect(() => {
     fetchHotels();
