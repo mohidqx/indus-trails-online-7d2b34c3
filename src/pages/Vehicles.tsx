@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { getVehicleImage } from '@/lib/vehicleImages';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import VehicleDetailDialog from '@/components/vehicles/VehicleDetailDialog';
 import { useCurrency } from '@/hooks/useCurrency';
 
 interface Vehicle {
@@ -325,27 +325,8 @@ export default function Vehicles() {
         </div>
       </section>
 
-      {/* Vehicle Detail Popup */}
-      <Dialog open={!!detailVehicle} onOpenChange={() => setDetailVehicle(null)}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="font-serif">{detailVehicle?.name}</DialogTitle></DialogHeader>
-          {detailVehicle && (
-            <div className="space-y-4">
-              <img src={getVehicleImage(detailVehicle.name, detailVehicle.image_url)} alt={detailVehicle.name} className="w-full h-48 object-cover rounded-xl" />
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-xl bg-muted/50"><p className="text-xs text-muted-foreground">Type</p><p className="font-medium text-foreground">{detailVehicle.type}</p></div>
-                <div className="p-3 rounded-xl bg-muted/50"><p className="text-xs text-muted-foreground">Capacity</p><p className="font-medium text-foreground">{detailVehicle.capacity} passengers</p></div>
-                <div className="p-3 rounded-xl bg-primary/10"><p className="text-xs text-muted-foreground">Price</p><p className="font-bold text-primary">{format(detailVehicle.price_per_day)}/day</p></div>
-                <div className="p-3 rounded-xl bg-emerald-500/10"><p className="text-xs text-muted-foreground">Status</p><p className="font-medium text-emerald-500">Available</p></div>
-              </div>
-              {detailVehicle.features && detailVehicle.features.length > 0 && (
-                <div><p className="text-sm font-medium text-foreground mb-2">Features</p><div className="flex flex-wrap gap-1.5">{detailVehicle.features.map(f => <span key={f} className="text-xs px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground">{f}</span>)}</div></div>
-              )}
-              <Button variant="gold" className="w-full" asChild><Link to={`/booking?vehicle=${detailVehicle.id}`}>Book This Vehicle</Link></Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Vehicle Detail Dialog */}
+      <VehicleDetailDialog vehicle={detailVehicle} onClose={() => setDetailVehicle(null)} />
 
       <Footer />
     </div>

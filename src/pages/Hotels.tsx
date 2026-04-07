@@ -5,7 +5,7 @@ import { Star, MapPin, Wifi, Utensils, Car, Loader2, Search, SlidersHorizontal, 
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import HotelDetailDialog from '@/components/hotels/HotelDetailDialog';
 interface Hotel {
   id: string;
   name: string;
@@ -30,6 +30,7 @@ export default function Hotels() {
   const [searchQuery, setSearchQuery] = useState('');
   const [minStars, setMinStars] = useState(0);
   const [expandedHotel, setExpandedHotel] = useState<string | null>(null);
+  const [detailHotel, setDetailHotel] = useState<Hotel | null>(null);
 
   useEffect(() => {
     fetchHotels();
@@ -159,7 +160,7 @@ export default function Hotels() {
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.4, delay: i * 0.05 }}
                     className="bg-card rounded-2xl sm:rounded-3xl overflow-hidden shadow-card hover:shadow-xl transition-all duration-300 group ultra-card cursor-pointer"
-                    onClick={() => setExpandedHotel(expandedHotel === hotel.id ? null : hotel.id)}
+                    onClick={() => setDetailHotel(hotel)}
                   >
                     {/* Image */}
                     <div className="relative h-48 sm:h-56 overflow-hidden">
@@ -239,6 +240,8 @@ export default function Hotels() {
           </motion.div>
         </div>
       </section>
+
+      <HotelDetailDialog hotel={detailHotel} onClose={() => setDetailHotel(null)} />
 
       <Footer />
     </div>
