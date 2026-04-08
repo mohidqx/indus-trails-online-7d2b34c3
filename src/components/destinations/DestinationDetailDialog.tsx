@@ -42,6 +42,11 @@ const famousPlaces: Record<string, string[]> = {
   'nathia gali': ['Mushkpuri Top', 'Miranjani Top', 'Ayubia National Park', 'Pipeline Track'],
   'kumrat': ['Jahaz Banda', 'Katora Lake', 'Do Kala Chashma', 'Kumrat Waterfall'],
   'deosai': ['Sheosar Lake', 'Bara Pani', 'Kala Pani', 'Deosai Wildlife'],
+  'astore': ['Rama Lake', 'Rama Meadows', 'Rupal Valley', 'Nanga Parbat South Face', 'Gudai Waterfall', 'Rattu Fort', 'Minimarg'],
+  'khunjerab': ['Khunjerab Pass (4,693m)', 'Pakistan-China Border', 'Marco Polo Sheep', 'Snow Leopard Territory', 'Khunjerab National Park', 'Dih Village'],
+  'naltar': ['Satrangi Lake', 'Pari Lake', 'Naltar Ski Resort', 'Naltar Pine Forest', 'Bashkiri Lake', 'Naltar Meadows'],
+  'islamabad': ['Faisal Mosque', 'Margalla Hills', 'Trail 5', 'Daman-e-Koh', 'Pakistan Monument', 'Lok Virsa Museum', 'Centaurus Mall', 'Saidpur Village', 'Rawal Lake'],
+  'ayubia': ['Ayubia National Park', 'Pipeline Track', 'Dunga Gali', 'Mushkpuri Top', 'Miranjani Top', 'Nathia Gali Church', 'Khanspur'],
 };
 
 // Approximate distances from Islamabad (km)
@@ -59,6 +64,11 @@ const distancesFromIslamabad: Record<string, number> = {
   'nathia gali': 85,
   'kumrat': 350,
   'deosai': 560,
+  'astore': 520,
+  'khunjerab': 810,
+  'naltar': 580,
+  'islamabad': 0,
+  'ayubia': 80,
 };
 
 function getDestKey(name: string): string | undefined {
@@ -89,6 +99,11 @@ const destCoords: Record<string, [number, number]> = {
   'nathia gali': [34.073, 73.385],
   'kumrat': [35.524, 72.227],
   'deosai': [35.088, 75.491],
+  'astore': [35.366, 74.856],
+  'khunjerab': [36.850, 75.423],
+  'naltar': [36.167, 74.175],
+  'islamabad': [33.684, 73.048],
+  'ayubia': [34.060, 73.395],
 };
 
 const ISLAMABAD_COORDS: [number, number] = [33.6844, 73.0479];
