@@ -42,6 +42,9 @@ interface Destination {
   name: string;
   location: string | null;
   description: string | null;
+  image_url: string | null;
+  highlights: string[] | null;
+  best_time: string | null;
   is_featured: boolean;
 }
 
