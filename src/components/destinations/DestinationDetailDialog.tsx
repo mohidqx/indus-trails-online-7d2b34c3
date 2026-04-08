@@ -42,6 +42,11 @@ const famousPlaces: Record<string, string[]> = {
   'nathia gali': ['Mushkpuri Top', 'Miranjani Top', 'Ayubia National Park', 'Pipeline Track'],
   'kumrat': ['Jahaz Banda', 'Katora Lake', 'Do Kala Chashma', 'Kumrat Waterfall'],
   'deosai': ['Sheosar Lake', 'Bara Pani', 'Kala Pani', 'Deosai Wildlife'],
+  'astore': ['Rama Lake', 'Rama Meadows', 'Rupal Valley', 'Nanga Parbat South Face', 'Gudai Waterfall', 'Rattu Fort', 'Minimarg'],
+  'khunjerab': ['Khunjerab Pass (4,693m)', 'Pakistan-China Border', 'Marco Polo Sheep', 'Snow Leopard Territory', 'Khunjerab National Park', 'Dih Village'],
+  'naltar': ['Satrangi Lake', 'Pari Lake', 'Naltar Ski Resort', 'Naltar Pine Forest', 'Bashkiri Lake', 'Naltar Meadows'],
+  'islamabad': ['Faisal Mosque', 'Margalla Hills', 'Trail 5', 'Daman-e-Koh', 'Pakistan Monument', 'Lok Virsa Museum', 'Centaurus Mall', 'Saidpur Village', 'Rawal Lake'],
+  'ayubia': ['Ayubia National Park', 'Pipeline Track', 'Dunga Gali', 'Mushkpuri Top', 'Miranjani Top', 'Nathia Gali Church', 'Khanspur'],
 };
 
 // Approximate distances from Islamabad (km)
