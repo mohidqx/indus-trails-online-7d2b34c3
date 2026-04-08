@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { MapPin, ArrowRight, Loader2, Calendar, Compass, Eye } from 'lucide-react';
+import { MapPin, ArrowRight, Loader2, Calendar, Compass, Eye, Map } from 'lucide-react';
 import WeatherWidget from '@/components/common/WeatherWidget';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { getDestinationImage } from '@/lib/destinationImages';
 import DestinationDetailDialog from '@/components/destinations/DestinationDetailDialog';
+import DestinationMap from '@/components/destinations/DestinationMap';
 
 interface Destination {
   id: string;
