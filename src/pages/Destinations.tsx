@@ -61,6 +61,24 @@ export default function Destinations() {
         </div>
       </section>
 
+      {/* Interactive Map */}
+      {!isLoading && destinations.length > 0 && (
+        <section className="py-8 md:py-12 bg-secondary/20">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Map className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">Explore on Map</h2>
+                <p className="text-xs text-muted-foreground">Click any pin to see details & distance from you</p>
+              </div>
+            </div>
+            <DestinationMap destinations={destinations} onSelectDestination={setDetailDest} />
+          </div>
+        </section>
+      )}
+
       {/* Destinations */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 sm:px-6">
